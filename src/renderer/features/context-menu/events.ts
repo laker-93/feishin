@@ -26,6 +26,7 @@ export type ContextMenuItemType =
     | 'playShuffled'
     | 'addToPlaylist'
     | 'removeFromPlaylist'
+    | 'deleteSong'
     | 'addToFavorites'
     | 'removeFromFavorites'
     | 'setRating'

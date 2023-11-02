@@ -283,12 +283,19 @@ const updatePlaylistParameters = createPlaylistParameters.partial();
 
 const deletePlaylist = z.null();
 
+const deleteSong = z.null();
+
 const addToPlaylist = z.object({
     added: z.number(),
 });
 
 const addToPlaylistParameters = z.object({
     ids: z.array(z.string()),
+});
+
+const deleteSongParameters = z.object({
+    ids: z.array(z.string()),
+    user: z.string()
 });
 
 const removeFromPlaylist = z.object({
@@ -332,6 +339,7 @@ export const ndType = {
         albumList: albumListParameters,
         authenticate: authenticateParameters,
         createPlaylist: createPlaylistParameters,
+        deleteSong: deleteSongParameters,
         genreList: genreListParameters,
         moveItem: moveItemParameters,
         playlistList: playlistListParameters,
@@ -350,6 +358,7 @@ export const ndType = {
         authenticate,
         createPlaylist,
         deletePlaylist,
+        deleteSong,
         error,
         genre,
         genreList,
