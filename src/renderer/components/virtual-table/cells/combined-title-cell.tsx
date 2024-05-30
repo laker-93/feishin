@@ -75,6 +75,8 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
         );
     }
 
+    console.log(`lajp song id ${value.songId}`);
+
     return (
         <CellContainer height={node.rowHeight || 40}>
             <ImageWrapper>
@@ -105,9 +107,15 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
             </ImageWrapper>
             <MetadataWrapper>
                 <Text
-                    className="current-song-child"
+                    $link
+                    $secondary
+                    component={Link}
                     overflow="hidden"
                     size="md"
+                    sx={{ width: 'fit-content' }}
+                    to={generatePath(AppRoute.LIBRARY_SONG_INFO, {
+                        songId: "1",
+                    })}
                 >
                     {value.name}
                 </Text>

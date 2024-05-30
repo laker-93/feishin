@@ -577,6 +577,10 @@ export type SongDetailQuery = { id: string };
 
 export type SongDetailArgs = { query: SongDetailQuery } & BaseEndpointArgs;
 
+export type SongInfoQuery = { id: string };
+
+export type SongInfoArgs = { query: SongInfoQuery } & BaseEndpointArgs;
+
 // Delete Song
 export type DeleteSongResponse = null | undefined;
 
