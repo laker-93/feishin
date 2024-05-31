@@ -59,9 +59,9 @@ interface SongInfoContentProps {
 
 export const SongInfoContent = ({ tableRef, background }: SongInfoContentProps) => {
     const { t } = useTranslation();
-    const { albumId } = useParams() as { albumId: string };
+    const { songId } = useParams() as { songId: string };
     const server = useCurrentServer();
-    const detailQuery = useSongInfo({ query: { id: albumId }, serverId: server?.id });
+    const detailQuery = useSongInfo({ query: { id: songId }, serverId: server?.id });
     const cq = useContainerQuery();
     const handlePlayQueueAdd = usePlayQueueAdd();
     const { setTable } = useSettingsStoreActions();
@@ -140,7 +140,7 @@ export const SongInfoContent = ({ tableRef, background }: SongInfoContentProps) 
             enabled: !!detailQuery?.data?.genres?.[0],
             queryKey: queryKeys.albums.related(
                 server?.id || '',
-                albumId,
+                songId,
                 relatedAlbumGenresRequest,
             ),
             staleTime: 1000 * 60,
@@ -205,7 +205,7 @@ export const SongInfoContent = ({ tableRef, background }: SongInfoContentProps) 
 
     const handlePlay = async (playType?: Play) => {
         handlePlayQueueAdd?.({
-            byData: detailQuery?.data,
+            byItemType: {id: [songId], type: LibraryItem.SONG},
             playType: playType || playButtonBehavior,
         });
     };

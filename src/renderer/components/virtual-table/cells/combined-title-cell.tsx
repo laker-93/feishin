@@ -114,7 +114,7 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
                     size="md"
                     sx={{ width: 'fit-content' }}
                     to={generatePath(AppRoute.LIBRARY_SONG_INFO, {
-                        songId: "1",
+                        songId: value.songId,
                     })}
                 >
                     {value.name}

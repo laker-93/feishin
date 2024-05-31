@@ -112,6 +112,7 @@ const normalizeSong = (
         lastPlayedAt: normalizePlayDate(item),
         lyrics: item.lyrics ? item.lyrics : null,
         name: item.title,
+        mbzId: item.mbzTrackId ? item.mbzTrackId: null,
         path: item.path,
         peak:
             item.rgAlbumPeak || item.rgTrackPeak

@@ -207,6 +207,7 @@ export type Song = {
     itemType: LibraryItem.SONG;
     lastPlayedAt: string | null;
     lyrics: string | null;
+    mbzId: string | null;
     name: string;
     path: string | null;
     peak: GainInfo | null;

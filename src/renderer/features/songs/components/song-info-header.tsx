@@ -17,9 +17,10 @@ interface SongInfoHeaderProps {
 
 export const SongInfoHeader = forwardRef(
     ({ background }: SongInfoHeaderProps, ref: Ref<HTMLDivElement>) => {
-        const { albumId } = useParams() as { albumId: string };
+        const { songId } = useParams() as { songId: string };
+        console.log(`lajp songinfoheader id ${songId}`);
         const server = useCurrentServer();
-        const detailQuery = useSongInfo({ query: { id: albumId }, serverId: server?.id });
+        const detailQuery = useSongInfo({ query: { id: songId }, serverId: server?.id });
         const cq = useContainerQuery();
 
         const metadataItems = [
