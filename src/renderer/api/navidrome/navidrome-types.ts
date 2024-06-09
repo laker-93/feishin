@@ -362,6 +362,15 @@ const shareItemParameters = z.object({
     resourceType: z.string(),
 });
 
+const beetTrack = z.object({
+    id: z.number(),
+});
+
+const beetTrackParameters = z.object({
+    id: z.string(),
+    user: z.string()
+});
+
 export const ndType = {
     _enum: {
         albumArtistList: ndAlbumArtistListSort,
@@ -385,6 +394,7 @@ export const ndType = {
         songList: songListParameters,
         updatePlaylist: updatePlaylistParameters,
         userList: userListParameters,
+        beetTrack: beetTrackParameters
     },
     _response: {
         addToPlaylist,
@@ -410,5 +420,6 @@ export const ndType = {
         updatePlaylist,
         user,
         userList,
+        beetTrack
     },
 };

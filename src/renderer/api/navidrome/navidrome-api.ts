@@ -148,6 +148,15 @@ export const contract = c.router({
             500: resultWithHeaders(ndType._response.error),
         },
     },
+    getBeetTrack: {
+        method: 'GET',
+        path: 'getBeetTrack',
+        query: ndType._parameters.beetTrack,
+        responses: {
+            200: resultWithHeaders(ndType._response.beetTrack),
+            500: resultWithHeaders(ndType._response.error),
+        },
+    },
     getUserList: {
         method: 'GET',
         path: 'user',

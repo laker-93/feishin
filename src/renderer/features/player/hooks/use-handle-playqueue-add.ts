@@ -169,6 +169,7 @@ export const useHandlePlayQueueAdd = () => {
 
             const hadSong = usePlayerStore.getState().queue.default.length > 0;
             const playerData = addToQueue({ initialIndex: initialSongIndex, playType, songs });
+            console.log(`lajp player ${playbackType}`);
 
             if (playbackType === PlaybackType.LOCAL) {
                 mpvPlayer!.volume(usePlayerStore.getState().volume);

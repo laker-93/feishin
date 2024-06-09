@@ -90,6 +90,7 @@ const createMpv = async (data: {
     const params = uniq([...DEFAULT_MPV_PARAMETERS(extraParameters), ...(extraParameters || [])]);
 
     const extra = isDevelopment ? '-dev' : '';
+    console.log(`lajp creating mpv`);
 
     const mpv = new MpvAPI(
         {
@@ -139,6 +140,7 @@ const createMpv = async (data: {
 
     // Event output every interval set by time_update, used to update the current time
     mpv.on('timeposition', (time: number) => {
+        console.log(`lajp getting time position from mpv ${time}`);
         getMainWindow()?.webContents.send('renderer-player-current-time', time);
     });
 

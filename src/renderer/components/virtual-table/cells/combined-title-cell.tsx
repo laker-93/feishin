@@ -74,8 +74,11 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
             </CellContainer>
         );
     }
+    console.log(`lajp value ${value}`);
 
     console.log(`lajp song id ${value.songId}`);
+
+    // todo: get beets id using navidrome songId using new navidrome endpoint.
 
     return (
         <CellContainer height={node.rowHeight || 40}>
@@ -113,7 +116,7 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
                     overflow="hidden"
                     size="md"
                     sx={{ width: 'fit-content' }}
-                    to={generatePath(AppRoute.LIBRARY_SONG_INFO, {
+                    to={generatePath(AppRoute.LIBRARY_MIX_INFO, {
                         songId: value.songId,
                     })}
                 >

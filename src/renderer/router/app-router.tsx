@@ -60,6 +60,9 @@ const SongInfoRoute = lazy(
     () => import('/@/renderer/features/songs/routes/song-info-route'),
 );
 
+const MixInfoRoute = lazy(
+    () => import('/@/renderer/features/songs/routes/mix-info-route'),
+);
 const DummyAlbumDetailRoute = lazy(
     () => import('/@/renderer/features/albums/routes/dummy-album-detail-route'),
 );
@@ -158,6 +161,11 @@ export const AppRouter = () => {
                                     element={<SongInfoRoute />}
                                     errorElement={<RouteErrorBoundary />}
                                     path={AppRoute.LIBRARY_SONG_INFO}
+                                />
+                                <Route
+                                    element={<MixInfoRoute />}
+                                    errorElement={<RouteErrorBoundary />}
+                                    path={AppRoute.LIBRARY_MIX_INFO}
                                 />
                                 <Route
                                     element={<DummyAlbumDetailRoute />}

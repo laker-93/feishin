@@ -51,6 +51,8 @@ import {
     Song,
     DeleteSongArgs,
     DeleteSongResponse,
+    GetBeetTrackArgs,
+    GetBeetTrackResponse,
 } from '../types';
 import { VersionInfo, getFeatures, hasFeature } from '/@/renderer/api/utils';
 import { ServerFeature, ServerFeatures } from '/@/renderer/api/features-types';
@@ -623,6 +625,27 @@ const deleteSong = async (args: DeleteSongArgs): Promise<DeleteSongResponse> => 
     return null;
 };
 
+const getBeetTrack = async (args: GetBeetTrackArgs): Promise<GetBeetTrackResponse> => {
+    const { query, apiClientProps } = args;
+    console.log(`lajp get beet track api ${query}`);
+    const res = await ndApiClient(apiClientProps).getBeetTrack({
+        query: {
+            id: query.id,
+            user: query.user
+        },
+    });
+    console.log(`lajp getbeet api resonse ${res}`)
+
+    if (res.status !== 200) {
+        throw new Error('Failed to get beet track');
+    }
+
+    return res.body.data;
+};
+
+
+
+
 export const ndController = {
     addToPlaylist,
     authenticate,
@@ -645,4 +668,5 @@ export const ndController = {
     removeFromPlaylist,
     shareItem,
     updatePlaylist,
+    getBeetTrack
 };

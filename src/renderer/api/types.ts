@@ -1212,3 +1212,33 @@ export type SimilarSongsQuery = {
 export type SimilarSongsArgs = {
     query: SimilarSongsQuery;
 } & BaseEndpointArgs;
+
+export type IderTrack = {
+    track_id: number;
+    start: number;
+    end: number;
+    mbid: string;
+    artist: string;
+    title: string;
+};
+
+export type TrackListResponse = BasePaginatedResponse<IderTrack[]> | null | undefined;
+
+export type TrackListQuery = {
+    track_id: string;
+};
+
+export type TrackListArgs = { query: TrackListQuery } & BaseEndpointArgs;
+
+export type GetBeetTrackQuery = {
+    id: string;
+    user: string;
+};
+
+export type GetBeetTrackArgs = { query: GetBeetTrackQuery } & BaseEndpointArgs;
+
+export type BeetTrack = {
+    ID: number;
+};
+
+export type GetBeetTrackResponse = BasePaginatedResponse<BeetTrack> | null | undefined;

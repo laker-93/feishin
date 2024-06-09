@@ -32,7 +32,6 @@ import {
 } from '/@/renderer/store/settings.store';
 import { Play } from '/@/renderer/types';
 import { replaceURLWithHTMLLinks } from '/@/renderer/utils/linkify';
-import { useSongInfo } from '/@/renderer/features/songs/queries/song-info-query';
 import { useTrackList } from '/@/renderer/features/songs/queries/track-list-query';
 import { useBeetTrack } from '/@/renderer/features/songs/queries/get-beet-id-query';
 
@@ -50,19 +49,20 @@ const DetailContainer = styled.div`
     overflow: hidden;
 `;
 
-interface SongInfoContentProps {
+interface MixInfoContentProps {
     background?: string;
     tableRef: MutableRefObject<AgGridReactType | null>;
 }
 
-export const SongInfoContent = ({ background }: SongInfoContentProps) => {
+export const MixInfoContent = ({ background }: MixInfoContentProps) => {
     const { t } = useTranslation();
     const { songId } = useParams() as { songId: string };
     const server = useCurrentServer();
+    const beetTrack = useBeetTrack({ query: { id: songId, user: 'foo'  }, serverId: server?.id });
+    console.log(`lajp beet track ${beetTrack}`);
     // todo make a 'mix' route where the params are the beets id
-    console.log(`lajp get track list for id ${songId}`);
-    const detailQuery = useTrackList({ track_id: songId });
-
+    // console.log(`lajp get track list for id ${id}`);
+    const detailQuery = useTrackList({ query: { track_id: songId } });
     const cq = useContainerQuery();
     const handlePlayQueueAdd = usePlayQueueAdd();
     const { setTable } = useSettingsStoreActions();
