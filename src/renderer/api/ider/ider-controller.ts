@@ -5,12 +5,12 @@ import {
 import { iderApiClient } from '/@/renderer/api/ider/ider-api';
 
 const getTrackList = async (args: TrackListArgs): Promise<TrackListResponse> => {
-    const { query } = args;
+    const { apiClientProps, query } = args;
     console.log(`lajp query ${query}`);
 
-    const res = await iderApiClient({url: "http://localhost:8001"}).getTrackList({
+    const res = await iderApiClient({server: null, signal: apiClientProps.signal, url: "http://localhost:8001"}).getTrackList({
         query: {
-            track_id: query
+            track_id: query.track_id
         },
     });
 

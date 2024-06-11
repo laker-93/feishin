@@ -640,6 +640,8 @@ const getBeetTrack = async (args: GetBeetTrackArgs): Promise<GetBeetTrackRespons
         throw new Error('Failed to get beet track');
     }
 
+    console.log(`lajp returning ${res.body.data}`);
+    console.log(`lajp returning id ${res.body.data.results[0].id}`);
     return res.body.data;
 };
 

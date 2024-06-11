@@ -363,8 +363,13 @@ const shareItemParameters = z.object({
 });
 
 const beetTrack = z.object({
+    month: z.number(),
     id: z.number(),
 });
+
+const beetResults = z.object({
+    results: z.array(beetTrack)
+})
 
 const beetTrackParameters = z.object({
     id: z.string(),
@@ -420,6 +425,6 @@ export const ndType = {
         updatePlaylist,
         user,
         userList,
-        beetTrack
+        beetResults
     },
 };

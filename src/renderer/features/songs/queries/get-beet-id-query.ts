@@ -7,12 +7,12 @@ import { getServerById } from '/@/renderer/store';
 export const useBeetTrack = (args: QueryHookArgs<GetBeetTrackQuery>) => {
     const { options, query, serverId } = args;
     const server = getServerById(serverId);
-    console.log(`use beet track ${query.id}`);
 
     return useQuery({
         queryFn: ({ signal }) => {
             if (!server) throw new Error('Server not found');
             return ndController.getBeetTrack({ apiClientProps: { server, signal }, query });
+            
         },
         queryKey: [serverId, 'id', query],
     });

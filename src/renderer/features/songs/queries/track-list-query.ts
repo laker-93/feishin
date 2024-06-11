@@ -1,14 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
 import type { TrackListQuery } from '/@/renderer/api/types';
 import { iderController } from '/@/renderer/api/ider/ider-controller';
+import { QueryHookArgs } from '/@/renderer/lib/react-query';
+import { getServerById } from '/@/renderer/store';
 
-export const useTrackList = (args: TrackListQuery) => {
-    const { track_id } = args;
+export const useTrackList = (args: QueryHookArgs<TrackListQuery>) => {
+    const { options, query, serverId } = args;
+    const server = getServerById(serverId);
 
     return useQuery({
         queryFn: ({ signal }) => {
-            return iderController.getTrackList({ query: track_id });
+            if (!server) throw new Error('Server not found');
+            return iderController.getTrackList({ apiClientProps: { server, signal }, query });
         },
-        queryKey: ['track_id'],
+        queryKey: [serverId, 'track_id', query],
     });
 };

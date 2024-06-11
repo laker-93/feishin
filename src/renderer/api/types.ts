@@ -1225,7 +1225,7 @@ export type IderTrack = {
 export type TrackListResponse = BasePaginatedResponse<IderTrack[]> | null | undefined;
 
 export type TrackListQuery = {
-    track_id: string;
+    track_id: number;
 };
 
 export type TrackListArgs = { query: TrackListQuery } & BaseEndpointArgs;
@@ -1237,8 +1237,12 @@ export type GetBeetTrackQuery = {
 
 export type GetBeetTrackArgs = { query: GetBeetTrackQuery } & BaseEndpointArgs;
 
-export type BeetTrack = {
-    ID: number;
+type BeetTrack = {
+    id: number;
 };
 
-export type GetBeetTrackResponse = BasePaginatedResponse<BeetTrack> | null | undefined;
+export type BeetResults = {
+    results: BeetTrack[]
+}
+
+export type GetBeetTrackResponse = BeetResults;
