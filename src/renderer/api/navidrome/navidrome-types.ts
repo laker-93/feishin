@@ -364,6 +364,7 @@ const shareItemParameters = z.object({
 
 const beetTrack = z.object({
     month: z.number(),
+    length: z.number(),
     id: z.number(),
 });
 

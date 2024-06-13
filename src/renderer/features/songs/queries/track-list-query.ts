@@ -5,7 +5,7 @@ import { QueryHookArgs } from '/@/renderer/lib/react-query';
 import { getServerById } from '/@/renderer/store';
 
 export const useTrackList = (args: QueryHookArgs<TrackListQuery>) => {
-    const { options, query, serverId } = args;
+    const { options, query, serverId } = args || {};
     const server = getServerById(serverId);
 
     return useQuery({
@@ -13,6 +13,7 @@ export const useTrackList = (args: QueryHookArgs<TrackListQuery>) => {
             if (!server) throw new Error('Server not found');
             return iderController.getTrackList({ apiClientProps: { server, signal }, query });
         },
-        queryKey: [serverId, 'track_id', query],
+        queryKey: [serverId || '', 'track_id', query],
+        ...options,
     });
 };

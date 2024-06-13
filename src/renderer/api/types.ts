@@ -1239,6 +1239,7 @@ export type GetBeetTrackArgs = { query: GetBeetTrackQuery } & BaseEndpointArgs;
 
 type BeetTrack = {
     id: number;
+    length: number;
 };
 
 export type BeetResults = {
