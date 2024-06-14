@@ -116,6 +116,7 @@
         "yes": "yes"
     },
     "entity": {
+        "about": "about",
         "album_one": "album",
         "album_other": "albums",
         "albumArtist_one": "album artist",
@@ -280,6 +281,9 @@
         }
     },
     "page": {
+        "about": {
+            "title": "$t(entity.about)"
+        },
         "albumArtistDetail": {
             "about": "About {{artist}}",
             "appearsOn": "appears on",
@@ -391,6 +395,7 @@
             "windowTab": "window"
         },
         "sidebar": {
+            "about": "$t(entity.about)",
             "albumArtists": "$t(entity.albumArtist_other)",
             "albums": "$t(entity.album_other)",
             "artists": "$t(entity.artist_other)",

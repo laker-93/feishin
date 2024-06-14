@@ -47,6 +47,7 @@ export const sidebarItems = [
         label: i18n.t('page.sidebar.search'),
         route: generatePath(AppRoute.SEARCH, { itemType: LibraryItem.SONG }),
     },
+    { disabled: false, id: 'About', label: i18n.t('page.sidebar.about'), route: AppRoute.ABOUT },
     { disabled: false, id: 'Home', label: i18n.t('page.sidebar.home'), route: AppRoute.HOME },
     {
         disabled: false,

@@ -38,6 +38,8 @@ const InvalidRoute = lazy(
     () => import('/@/renderer/features/action-required/routes/invalid-route'),
 );
 
+const AboutRoute = lazy(() => import('/@/renderer/features/about/routes/about-route'));
+
 const HomeRoute = lazy(() => import('/@/renderer/features/home/routes/home-route'));
 
 const AlbumArtistListRoute = lazy(
@@ -116,6 +118,11 @@ export const AppRouter = () => {
                                     element={<HomeRoute />}
                                     errorElement={<RouteErrorBoundary />}
                                     path={AppRoute.HOME}
+                                />
+                                <Route
+                                    element={<AboutRoute />}
+                                    errorElement={<RouteErrorBoundary />}
+                                    path={AppRoute.ABOUT}
                                 />
                                 <Route
                                     element={<SearchRoute />}

@@ -7,6 +7,8 @@ import {
     RiFolder3Line,
     RiHome6Fill,
     RiHome6Line,
+    RiInformationFill,
+    RiInformationLine,
     RiMusic2Fill,
     RiMusic2Line,
     RiPlayFill,
@@ -31,10 +33,14 @@ interface SidebarIconProps {
 }
 
 export const SidebarIcon = ({ active, route, size }: SidebarIconProps) => {
+
     switch (route) {
         case AppRoute.HOME:
             if (active) return <RiHome6Fill size={size} />;
             return <RiHome6Line size={size} />;
+        case AppRoute.ABOUT:
+            if (active) return <RiInformationFill size={size} />;
+            return <RiInformationLine size={size} />;
         case AppRoute.LIBRARY_ALBUMS:
             if (active) return <RiAlbumFill size={size} />;
             return <RiAlbumLine size={size} />;

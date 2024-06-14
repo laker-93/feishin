@@ -18,6 +18,7 @@ import { Play } from '/@/renderer/types';
 import { useTrackList } from '/@/renderer/features/songs/queries/track-list-query';
 import { useBeetTrack } from '/@/renderer/features/songs/queries/get-beet-id-query';
 import { useContainerQuery } from '/@/renderer/hooks';
+import { Link } from 'react-router-dom';
 
 
 const ContentContainer = styled.div`

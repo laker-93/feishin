@@ -59,16 +59,12 @@ export const SongInfoContent = ({ background }: SongInfoContentProps) => {
     const { t } = useTranslation();
     const { songId } = useParams() as { songId: string };
     const server = useCurrentServer();
-    // todo make a 'mix' route where the params are the beets id
-    console.log(`lajp get track list for id ${songId}`);
-    const detailQuery = useTrackList({ track_id: songId });
+    const detailQuery = useSongInfo({ query: { id: id } });
 
     const cq = useContainerQuery();
     const handlePlayQueueAdd = usePlayQueueAdd();
     const { setTable } = useSettingsStoreActions();
     const { externalLinks } = useGeneralSettings();
-    console.log(`lajp got track list response ${detailQuery}`);
-
 
     const [pagination, setPagination] = useSetState({
         artist: 0,
