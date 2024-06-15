@@ -59,7 +59,7 @@ export const SongInfoContent = ({ background }: SongInfoContentProps) => {
     const { t } = useTranslation();
     const { songId } = useParams() as { songId: string };
     const server = useCurrentServer();
-    const detailQuery = useSongInfo({ query: { id: id } });
+    const detailQuery = useSongInfo({ query: { id: songId } });
 
     const cq = useContainerQuery();
     const handlePlayQueueAdd = usePlayQueueAdd();
