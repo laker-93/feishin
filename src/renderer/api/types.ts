@@ -1214,12 +1214,12 @@ export type SimilarSongsArgs = {
 } & BaseEndpointArgs;
 
 export type IderTrack = {
-    track_id: number;
-    start: number;
+    artist: string;
     end: number;
     mbid: string;
-    artist: string;
+    start: number;
     title: string;
+    track_id: number;
 };
 
 export type TrackListResponse = BasePaginatedResponse<IderTrack[]> | null | undefined;
@@ -1243,7 +1243,7 @@ type BeetTrack = {
 };
 
 export type BeetResults = {
-    results: BeetTrack[]
-}
+    results: BeetTrack[];
+};
 
 export type GetBeetTrackResponse = BeetResults;

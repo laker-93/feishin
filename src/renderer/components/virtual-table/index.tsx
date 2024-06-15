@@ -365,8 +365,8 @@ const tableColumns: { [key: string]: ColDef } = {
                       imagePlaceholderUrl: params.data?.imagePlaceholderUrl,
                       imageUrl: params.data?.imageUrl,
                       name: params.data?.name,
-                      songId: params.data?.id,
                       rowHeight: params.node?.rowHeight,
+                      songId: params.data?.id,
                       type: params.data?.serverType,
                   }
                 : undefined,

@@ -2,20 +2,15 @@ import { z } from 'zod';
 
 const error = z.string();
 const track = z.object({
-    track_id: z.number(),
-    start: z.number(),
+    artist: z.string(),
     end: z.number(),
     mbid: z.string(),
-    artist: z.string(),
+    start: z.number(),
     title: z.string(),
+    track_id: z.number(),
 });
 
 const trackList = z.array(track);
-
-const segmentIdParameters = z.object({
-    track_id: z.number(),
-    time: z.number(),
-});
 
 const trackListParameters = z.object({
     track_id: z.number(),
@@ -26,8 +21,7 @@ export const iderType = {
         trackList: trackListParameters,
     },
     _response: {
+        error,
         trackList,
-        error
     },
 };
-

@@ -54,8 +54,7 @@ const parsePath = (fullPath: string) => {
     };
 };
 
-let authSuccess = true;
-let shouldDelay = false;
+const shouldDelay = false;
 
 const RETRY_DELAY_MS = 1000;
 const MAX_RETRIES = 5;
@@ -72,7 +71,6 @@ const waitForResult = async (count = 0): Promise<void> => {
     });
 };
 
-
 export const iderApiClient = (args: {
     server: ServerListItem | null;
     signal?: AbortSignal;
@@ -81,15 +79,13 @@ export const iderApiClient = (args: {
     const { server, url, signal } = args;
 
     return initClient(contract, {
-        api: async ({ path, method, headers, body }) => {
+        api: async ({ path, method, body }) => {
             let baseUrl: string | undefined;
-            let token: string | undefined;
 
             const { params, path: api } = parsePath(path);
 
             if (server) {
                 baseUrl = `${server?.url}/api`;
-                token = server?.ndCredential;
             } else {
                 baseUrl = url;
             }

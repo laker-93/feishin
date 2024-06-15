@@ -12,9 +12,8 @@ export const useBeetTrack = (args: QueryHookArgs<GetBeetTrackQuery>) => {
         queryFn: ({ signal }) => {
             if (!server) throw new Error('Server not found');
             return ndController.getBeetTrack({ apiClientProps: { server, signal }, query });
-
         },
         queryKey: [serverId, 'id', query],
-        ...options
+        ...options,
     });
 };

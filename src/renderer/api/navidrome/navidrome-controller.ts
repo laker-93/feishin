@@ -109,6 +109,26 @@ const getUserList = async (args: UserListArgs): Promise<UserListResponse> => {
     };
 };
 
+const getBeetTrack = async (args: GetBeetTrackArgs): Promise<GetBeetTrackResponse> => {
+    const { query, apiClientProps } = args;
+    console.log(`lajp get beet track api ${query}`);
+    const res = await ndApiClient(apiClientProps).getBeetTrack({
+        query: {
+            id: query.id,
+            user: query.user,
+        },
+    });
+    console.log(`lajp getbeet api resonse ${res}`);
+
+    if (res.status !== 200) {
+        throw new Error('Failed to get beet track');
+    }
+
+    console.log(`lajp returning ${res.body.data}`);
+    console.log(`lajp returning id ${res.body.data.results[0].id}`);
+    return res.body.data;
+};
+
 const getGenreList = async (args: GenreListArgs): Promise<GenreListResponse> => {
     const { query, apiClientProps } = args;
 
@@ -613,7 +633,7 @@ const deleteSong = async (args: DeleteSongArgs): Promise<DeleteSongResponse> => 
     const res = await ndApiClient(apiClientProps).deleteSong({
         body: {
             ids: body.songId,
-            user: body.user
+            user: body.user,
         },
         query: null,
     });
@@ -625,29 +645,6 @@ const deleteSong = async (args: DeleteSongArgs): Promise<DeleteSongResponse> => 
     return null;
 };
 
-const getBeetTrack = async (args: GetBeetTrackArgs): Promise<GetBeetTrackResponse> => {
-    const { query, apiClientProps } = args;
-    console.log(`lajp get beet track api ${query}`);
-    const res = await ndApiClient(apiClientProps).getBeetTrack({
-        query: {
-            id: query.id,
-            user: query.user
-        },
-    });
-    console.log(`lajp getbeet api resonse ${res}`)
-
-    if (res.status !== 200) {
-        throw new Error('Failed to get beet track');
-    }
-
-    console.log(`lajp returning ${res.body.data}`);
-    console.log(`lajp returning id ${res.body.data.results[0].id}`);
-    return res.body.data;
-};
-
-
-
-
 export const ndController = {
     addToPlaylist,
     authenticate,
@@ -658,6 +655,7 @@ export const ndController = {
     getAlbumArtistList,
     getAlbumDetail,
     getAlbumList,
+    getBeetTrack,
     getGenreList,
     getPlaylistDetail,
     getPlaylistList,
@@ -670,5 +668,4 @@ export const ndController = {
     removeFromPlaylist,
     shareItem,
     updatePlaylist,
-    getBeetTrack
 };

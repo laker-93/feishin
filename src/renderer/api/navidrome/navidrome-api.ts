@@ -96,6 +96,15 @@ export const contract = c.router({
             500: resultWithHeaders(ndType._response.error),
         },
     },
+    getBeetTrack: {
+        method: 'GET',
+        path: 'getBeetTrack',
+        query: ndType._parameters.beetTrack,
+        responses: {
+            200: resultWithHeaders(ndType._response.beetResults),
+            500: resultWithHeaders(ndType._response.error),
+        },
+    },
     getGenreList: {
         method: 'GET',
         path: 'genre',
@@ -145,15 +154,6 @@ export const contract = c.router({
         query: ndType._parameters.songList,
         responses: {
             200: resultWithHeaders(ndType._response.songList),
-            500: resultWithHeaders(ndType._response.error),
-        },
-    },
-    getBeetTrack: {
-        method: 'GET',
-        path: 'getBeetTrack',
-        query: ndType._parameters.beetTrack,
-        responses: {
-            200: resultWithHeaders(ndType._response.beetResults),
             500: resultWithHeaders(ndType._response.error),
         },
     },

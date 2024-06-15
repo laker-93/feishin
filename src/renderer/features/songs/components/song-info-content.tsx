@@ -1,5 +1,4 @@
-import { MutableRefObject, useCallback, useEffect } from 'react';
-import type { AgGridReact as AgGridReactType } from '@ag-grid-community/react/lib/agGridReact';
+import { useCallback, useEffect } from 'react';
 import { Box, Group, Stack, Timeline, Text } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
 import { useTranslation } from 'react-i18next';
@@ -13,29 +12,18 @@ import { AlbumListSort, LibraryItem, SortOrder } from '/@/renderer/api/types';
 import { Button, Popover, Spoiler } from '/@/renderer/components';
 import { MemoizedSwiperGridCarousel } from '/@/renderer/components/grid-carousel';
 import { useAlbumList } from '/@/renderer/features/albums/queries/album-list-query';
-import {
-    useHandleGeneralContextMenu,
-} from '/@/renderer/features/context-menu';
-import {
-    ALBUM_CONTEXT_MENU_ITEMS,
-} from '/@/renderer/features/context-menu/context-menu-items';
+import { useHandleGeneralContextMenu } from '/@/renderer/features/context-menu';
+import { ALBUM_CONTEXT_MENU_ITEMS } from '/@/renderer/features/context-menu/context-menu-items';
 import { usePlayQueueAdd } from '/@/renderer/features/player';
 import { PlayButton, useCreateFavorite, useDeleteFavorite } from '/@/renderer/features/shared';
 import { LibraryBackgroundOverlay } from '/@/renderer/features/shared/components/library-background-overlay';
 import { useContainerQuery } from '/@/renderer/hooks';
 import { AppRoute } from '/@/renderer/router/routes';
 import { useCurrentServer, useCurrentTime } from '/@/renderer/store';
-import {
-    useGeneralSettings,
-    usePlayButtonBehavior,
-    useSettingsStoreActions,
-} from '/@/renderer/store/settings.store';
+import { useGeneralSettings, usePlayButtonBehavior } from '/@/renderer/store/settings.store';
 import { Play } from '/@/renderer/types';
 import { replaceURLWithHTMLLinks } from '/@/renderer/utils/linkify';
 import { useSongInfo } from '/@/renderer/features/songs/queries/song-info-query';
-import { useTrackList } from '/@/renderer/features/songs/queries/track-list-query';
-import { useBeetTrack } from '/@/renderer/features/songs/queries/get-beet-id-query';
-
 
 const ContentContainer = styled.div`
     position: relative;
@@ -52,7 +40,6 @@ const DetailContainer = styled.div`
 
 interface SongInfoContentProps {
     background?: string;
-    tableRef: MutableRefObject<AgGridReactType | null>;
 }
 
 export const SongInfoContent = ({ background }: SongInfoContentProps) => {
@@ -63,7 +50,6 @@ export const SongInfoContent = ({ background }: SongInfoContentProps) => {
 
     const cq = useContainerQuery();
     const handlePlayQueueAdd = usePlayQueueAdd();
-    const { setTable } = useSettingsStoreActions();
     const { externalLinks } = useGeneralSettings();
 
     const [pagination, setPagination] = useSetState({
@@ -134,19 +120,12 @@ export const SongInfoContent = ({ background }: SongInfoContentProps) => {
         options: {
             cacheTime: 1000 * 60,
             enabled: !!detailQuery?.data?.genres?.[0],
-            queryKey: queryKeys.albums.related(
-                server?.id || '',
-                songId,
-                relatedAlbumGenresRequest,
-            ),
+            queryKey: queryKeys.albums.related(server?.id || '', songId, relatedAlbumGenresRequest),
             staleTime: 1000 * 60,
         },
         query: relatedAlbumGenresRequest,
         serverId: server?.id,
     });
-
-
-
 
     const carousels = [
         {
@@ -181,11 +160,10 @@ export const SongInfoContent = ({ background }: SongInfoContentProps) => {
 
     const handlePlay = async (playType?: Play) => {
         handlePlayQueueAdd?.({
-            byItemType: {id: [songId], type: LibraryItem.SONG},
+            byItemType: { id: [songId], type: LibraryItem.SONG },
             playType: playType || playButtonBehavior,
         });
     };
-
 
     const createFavoriteMutation = useCreateFavorite({});
     const deleteFavoriteMutation = useDeleteFavorite({});
@@ -226,7 +204,6 @@ export const SongInfoContent = ({ background }: SongInfoContentProps) => {
     useEffect(() => {
         console.log(`lajp got time ${now}`);
     }, [now]);
-
 
     return (
         <ContentContainer>
@@ -329,27 +306,103 @@ export const SongInfoContent = ({ background }: SongInfoContentProps) => {
                     </Box>
                 )}
                 <Box style={{ minHeight: '300px' }}>
-                  <Timeline active={1} bulletSize={24} lineWidth={2}>
-                    <Timeline.Item title="New branch">
-                      <Text c="dimmed" size="sm">You&apos;ve created new branch {now} <Text variant="link" component="span" inherit>fix-notifications</Text> from master</Text>
-                      <Text size="xs" mt={4}>2 hours ago</Text>
-                    </Timeline.Item>
-    
-                    <Timeline.Item title="Commits">
-                      <Text c="dimmed" size="sm">You&apos;ve pushed 23 commits to<Text variant="link" component="span" inherit>fix-notifications branch</Text></Text>
-                      <Text size="xs" mt={4}>52 minutes ago</Text>
-                    </Timeline.Item>
-    
-                    <Timeline.Item title="Pull request" lineVariant="dashed">
-                      <Text c="dimmed" size="sm">You&apos;ve submitted a pull request<Text variant="link" component="span" inherit>Fix incorrect notification message (#187)</Text></Text>
-                      <Text size="xs" mt={4}>34 minutes ago</Text>
-                    </Timeline.Item>
-    
-                    <Timeline.Item title="Code review">
-                      <Text c="dimmed" size="sm"><Text variant="link" component="span" inherit>Robert Gluesticker</Text> left a code review on your pull request</Text>
-                      <Text size="xs" mt={4}>12 minutes ago</Text>
-                    </Timeline.Item>
-                  </Timeline>
+                    <Timeline
+                        active={1}
+                        bulletSize={24}
+                        lineWidth={2}
+                    >
+                        <Timeline.Item title="New branch">
+                            <Text
+                                c="dimmed"
+                                size="sm"
+                            >
+                                You&apos;ve created new branch {now}{' '}
+                                <Text
+                                    inherit
+                                    component="span"
+                                    variant="link"
+                                >
+                                    fix-notifications
+                                </Text>{' '}
+                                from master
+                            </Text>
+                            <Text
+                                mt={4}
+                                size="xs"
+                            >
+                                2 hours ago
+                            </Text>
+                        </Timeline.Item>
+
+                        <Timeline.Item title="Commits">
+                            <Text
+                                c="dimmed"
+                                size="sm"
+                            >
+                                You&apos;ve pushed 23 commits to
+                                <Text
+                                    inherit
+                                    component="span"
+                                    variant="link"
+                                >
+                                    fix-notifications branch
+                                </Text>
+                            </Text>
+                            <Text
+                                mt={4}
+                                size="xs"
+                            >
+                                52 minutes ago
+                            </Text>
+                        </Timeline.Item>
+
+                        <Timeline.Item
+                            lineVariant="dashed"
+                            title="Pull request"
+                        >
+                            <Text
+                                c="dimmed"
+                                size="sm"
+                            >
+                                You&apos;ve submitted a pull request
+                                <Text
+                                    inherit
+                                    component="span"
+                                    variant="link"
+                                >
+                                    Fix incorrect notification message (#187)
+                                </Text>
+                            </Text>
+                            <Text
+                                mt={4}
+                                size="xs"
+                            >
+                                34 minutes ago
+                            </Text>
+                        </Timeline.Item>
+
+                        <Timeline.Item title="Code review">
+                            <Text
+                                c="dimmed"
+                                size="sm"
+                            >
+                                <Text
+                                    inherit
+                                    component="span"
+                                    variant="link"
+                                >
+                                    Robert Gluesticker
+                                </Text>{' '}
+                                left a code review on your pull request
+                            </Text>
+                            <Text
+                                mt={4}
+                                size="xs"
+                            >
+                                12 minutes ago
+                            </Text>
+                        </Timeline.Item>
+                    </Timeline>
                 </Box>
                 <Stack
                     ref={cq.ref}

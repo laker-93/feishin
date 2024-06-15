@@ -339,7 +339,7 @@ const addToPlaylistParameters = z.object({
 
 const deleteSongParameters = z.object({
     ids: z.array(z.string()),
-    user: z.string()
+    user: z.string(),
 });
 
 const removeFromPlaylist = z.object({
@@ -363,18 +363,18 @@ const shareItemParameters = z.object({
 });
 
 const beetTrack = z.object({
-    month: z.number(),
-    length: z.number(),
     id: z.number(),
+    length: z.number(),
+    month: z.number(),
 });
 
 const beetResults = z.object({
-    results: z.array(beetTrack)
-})
+    results: z.array(beetTrack),
+});
 
 const beetTrackParameters = z.object({
     id: z.string(),
-    user: z.string()
+    user: z.string(),
 });
 
 export const ndType = {
@@ -391,6 +391,7 @@ export const ndType = {
         albumArtistList: albumArtistListParameters,
         albumList: albumListParameters,
         authenticate: authenticateParameters,
+        beetTrack: beetTrackParameters,
         createPlaylist: createPlaylistParameters,
         deleteSong: deleteSongParameters,
         genreList: genreListParameters,
@@ -400,7 +401,6 @@ export const ndType = {
         songList: songListParameters,
         updatePlaylist: updatePlaylistParameters,
         userList: userListParameters,
-        beetTrack: beetTrackParameters
     },
     _response: {
         addToPlaylist,
@@ -409,6 +409,7 @@ export const ndType = {
         albumArtistList,
         albumList,
         authenticate,
+        beetResults,
         createPlaylist,
         deletePlaylist,
         deleteSong,
@@ -426,6 +427,5 @@ export const ndType = {
         updatePlaylist,
         user,
         userList,
-        beetResults
     },
 };

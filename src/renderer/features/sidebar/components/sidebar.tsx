@@ -145,7 +145,6 @@ export const Sidebar = () => {
         return items;
     }, [sidebarItems, translatedSidebarItemMap]);
 
-
     return (
         <SidebarContainer
             ref={cq.ref}

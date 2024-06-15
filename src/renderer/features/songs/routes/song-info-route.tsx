@@ -1,7 +1,6 @@
 import { NativeScrollArea, Spinner } from '/@/renderer/components';
 import { AnimatedPage, LibraryHeaderBar } from '/@/renderer/features/shared';
 import { useRef } from 'react';
-import type { AgGridReact as AgGridReactType } from '@ag-grid-community/react/lib/agGridReact';
 import { useParams } from 'react-router';
 import { useFastAverageColor } from '/@/renderer/hooks';
 import { usePlayQueueAdd } from '/@/renderer/features/player';
@@ -13,7 +12,6 @@ import { SongInfoHeader } from '/@/renderer/features/songs/components/song-info-
 import { SongInfoContent } from '/@/renderer/features/songs/components/song-info-content';
 
 const SongInfoRoute = () => {
-    const tableRef = useRef<AgGridReactType | null>(null);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
 
@@ -28,9 +26,6 @@ const SongInfoRoute = () => {
 
     const handlePlayQueueAdd = usePlayQueueAdd();
     const playButtonBehavior = usePlayButtonBehavior();
-
-
-
 
     const handlePlay = () => {
         handlePlayQueueAdd?.({
@@ -68,11 +63,7 @@ const SongInfoRoute = () => {
                     ref={headerRef}
                     background={background}
                 />
-                <SongInfoContent
-                    background={background}
-                    tableRef={tableRef}
-                />
-
+                <SongInfoContent background={background} />
             </NativeScrollArea>
         </AnimatedPage>
     );
