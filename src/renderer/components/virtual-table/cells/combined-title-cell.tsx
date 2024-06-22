@@ -110,15 +110,15 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
             </ImageWrapper>
             <MetadataWrapper>
                 <Text
-                    $link
-                    $secondary
-                    component={Link}
-                    overflow="hidden"
-                    size="md"
-                    sx={{ width: 'fit-content' }}
-                    to={generatePath(AppRoute.LIBRARY_MIX_INFO, {
-                        songId: value.songId,
-                    })}
+                    // $link
+                    // $secondary
+                    // component={Link}
+                    // overflow="hidden"
+                    // size="md"
+                    // sx={{ width: 'fit-content' }}
+                    // to={generatePath(AppRoute.LIBRARY_MIX_INFO, {
+                    //     songId: value.songId,
+                    // })}
                 >
                     {value.name}
                 </Text>
