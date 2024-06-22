@@ -55,7 +55,7 @@ export const contract = c.router({
     deleteSong: {
         body: ndType._parameters.deleteSong,
         method: 'DELETE',
-        path: 'deleteSong',
+        path: 'delete',
         query: null,
         responses: {
             200: resultWithHeaders(ndType._response.deleteSong),
