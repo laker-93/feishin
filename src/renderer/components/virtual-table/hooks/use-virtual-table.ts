@@ -109,6 +109,9 @@ export const useVirtualTable = <TFilter>({
         if (itemType === LibraryItem.SONG) {
             return queryKeys.songs.list;
         }
+        if (itemType === LibraryItem.PUBLIC_SONG) {
+            return queryKeys.publicSongs.list;
+        }
         if (itemType === LibraryItem.GENRE) {
             return queryKeys.genres.list;
         }
@@ -129,6 +132,9 @@ export const useVirtualTable = <TFilter>({
             }
             if (itemType === LibraryItem.SONG) {
                 return api.controller.getSongList;
+            }
+            if (itemType === LibraryItem.PUBLIC_SONG) {
+                return api.controller.getPublicSongList;
             }
             if (itemType === LibraryItem.GENRE) {
                 return api.controller.getGenreList;

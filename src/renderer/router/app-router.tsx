@@ -9,7 +9,6 @@ import { BaseContextModal } from '/@/renderer/components';
 import { AddToPlaylistContextModal } from '/@/renderer/features/playlists';
 import { ShareItemContextModal } from '/@/renderer/features/sharing';
 import { DeleteSongContextModal } from '/@/renderer/features/songs/delete-song-context-modal';
-import MixListRoute from '/@/renderer/features/mixes/routes/mix-list-route';
 
 const NowPlayingRoute = lazy(
     () => import('/@/renderer/features/now-playing/routes/now-playing-route'),
@@ -18,6 +17,8 @@ const NowPlayingRoute = lazy(
 const AlbumListRoute = lazy(() => import('/@/renderer/features/albums/routes/album-list-route'));
 
 const SongListRoute = lazy(() => import('/@/renderer/features/songs/routes/song-list-route'));
+
+const MixListRoute = lazy(() => import('/@/renderer/features/mixes/routes/mix-list-route'));
 
 const PlaylistDetailRoute = lazy(
     () => import('/@/renderer/features/playlists/routes/playlist-detail-route'),

@@ -63,6 +63,12 @@ export const sidebarItems = [
     },
     {
         disabled: false,
+        id: 'Mixes',
+        label: i18n.t('page.sidebar.mixes'),
+        route: AppRoute.LIBRARY_MIXES,
+    },
+    {
+        disabled: false,
         id: 'Artists',
         label: i18n.t('page.sidebar.artists'),
         route: AppRoute.LIBRARY_ALBUM_ARTISTS,

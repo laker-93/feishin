@@ -15,6 +15,7 @@ import { useCurrentServer, useListFilterByKey } from '/@/renderer/store';
 import { Play } from '/@/renderer/types';
 import { titleCase } from '/@/renderer/utils';
 import { VirtualInfiniteGridRef } from '/@/renderer/components/virtual-grid';
+import { MixListContent } from '/@/renderer/features/mixes/components/mix-list-content';
 
 const MixListRoute = () => {
     const { t } = useTranslation();
@@ -151,7 +152,7 @@ const MixListRoute = () => {
                     tableRef={tableRef}
                     title={title}
                 />
-                <SongListContent
+                <MixListContent
                     gridRef={gridRef}
                     itemCount={itemCount}
                     tableRef={tableRef}
@@ -161,4 +162,4 @@ const MixListRoute = () => {
     );
 };
 
-export default TrackListRoute;
+export default MixListRoute;

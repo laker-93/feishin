@@ -33,6 +33,7 @@ interface SidebarIconProps {
 }
 
 export const SidebarIcon = ({ active, route, size }: SidebarIconProps) => {
+
     switch (route) {
         case AppRoute.HOME:
             if (active) return <RiHome6Fill size={size} />;

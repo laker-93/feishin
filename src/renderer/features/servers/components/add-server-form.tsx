@@ -52,6 +52,7 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
 
         // for local testing
         const url = `http://localhost:4533`;
+        const publicUrl = `http://localhost:4534`;
         // for production
         // have to go via sub-box internet as this is going to be running from user's browser!
         // const url = `https://www.sub-box.net/navidrome${values.username}`;
@@ -73,6 +74,21 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
                     message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
                 });
             }
+            const publicData: AuthenticationResponse | undefined = await authFunction(
+                publicUrl,
+                {
+                    legacy: values.legacyAuth,
+                    password: "lajp",
+                    username: "lajp",
+                },
+                values.type as ServerType,
+            );
+
+            if (!publicData) {
+                return toast.error({
+                    message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
+                });
+            }
 
             const serverItem = {
                 credential: data.credential,
@@ -83,6 +99,8 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
                 url: url.replace(/\/$/, ''),
                 userId: data.userId,
                 username: data.username,
+                publicUrl: publicUrl.replace(/\/$/, ''),
+                publicNdCredential: publicData.ndCredential
             };
 
             addServer(serverItem);

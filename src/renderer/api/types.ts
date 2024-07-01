@@ -29,6 +29,7 @@ export enum LibraryItem {
     GENRE = 'genre',
     PLAYLIST = 'playlist',
     SONG = 'song',
+    PUBLIC_SONG = 'publicSong',
 }
 
 export type AnyLibraryItem = Album | AlbumArtist | Artist | Playlist | Song | QueueSong;
@@ -62,9 +63,11 @@ export type ServerListItem = {
     id: string;
     name: string;
     ndCredential?: string;
+    publicNdCredential?: string;
     savePassword?: boolean;
     type: ServerType;
     url: string;
+    publicUrl: string;
     userId: string | null;
     username: string;
     version?: string;
@@ -501,6 +504,29 @@ export type SongListQuery = {
 };
 
 export type SongListArgs = { query: SongListQuery } & BaseEndpointArgs;
+
+export type PublicSongListQuery = {
+    _custom?: {
+        jellyfin?: Partial<z.infer<typeof jfType._parameters.songList>> & {
+            maxYear?: number;
+            minYear?: number;
+        };
+        navidrome?: Partial<z.infer<typeof ndType._parameters.songList>>;
+    };
+    albumIds?: string[];
+    artistIds?: string[];
+    imageSize?: number;
+    limit?: number;
+    musicFolderId?: string;
+    searchTerm?: string;
+    sortBy: SongListSort;
+    sortOrder: SortOrder;
+    startIndex: number;
+};
+
+export type PublicSongListArgs = { query: PublicSongListQuery } & BaseEndpointArgs;
+
+export type PublicSongListResponse = BasePaginatedResponse<Song[]> | null | undefined;
 
 type SongListSortMap = {
     jellyfin: Record<SongListSort, JFSongListSort | undefined>;

@@ -6,15 +6,15 @@ import { useListStoreByKey } from '/@/renderer/store';
 import { ListDisplayType } from '/@/renderer/types';
 import { VirtualInfiniteGridRef } from '/@/renderer/components/virtual-grid';
 
-const SongListTableView = lazy(() =>
-    import('/@/renderer/features/songs/components/song-list-table-view').then((module) => ({
-        default: module.SongListTableView,
+const MixListTableView = lazy(() =>
+    import('/@/renderer/features/mixes/components/mix-list-table-view').then((module) => ({
+        default: module.MixListTableView,
     })),
 );
 
-const SongListGridView = lazy(() =>
-    import('/@/renderer/features/songs/components/song-list-grid-view').then((module) => ({
-        default: module.SongListGridView,
+const MixListGridView = lazy(() =>
+    import('/@/renderer/features/mixes/components/mix-list-grid-view').then((module) => ({
+        default: module.MixListGridView,
     })),
 );
 
@@ -24,7 +24,7 @@ interface SongListContentProps {
     tableRef: MutableRefObject<AgGridReactType | null>;
 }
 
-export const SongListContent = ({ itemCount, gridRef, tableRef }: SongListContentProps) => {
+export const MixListContent = ({ itemCount, gridRef, tableRef }: SongListContentProps) => {
     const { pageKey } = useListContext();
     const { display } = useListStoreByKey({ key: pageKey });
 
@@ -33,12 +33,12 @@ export const SongListContent = ({ itemCount, gridRef, tableRef }: SongListConten
     return (
         <Suspense fallback={<Spinner container />}>
             {isGrid ? (
-                <SongListGridView
+                <MixListGridView
                     gridRef={gridRef}
                     itemCount={itemCount}
                 />
             ) : (
-                <SongListTableView
+                <MixListTableView
                     itemCount={itemCount}
                     tableRef={tableRef}
                 />

@@ -12,8 +12,6 @@ import { Text } from '/@/renderer/components/text';
 import { AppRoute } from '/@/renderer/router/routes';
 import { Skeleton } from '/@/renderer/components/skeleton';
 import { SEPARATOR_STRING } from '/@/renderer/api/utils';
-import { useCurrentServer } from '/@/renderer/store';
-import { useBeetTrack } from '/@/renderer/features/songs/queries/get-beet-id-query';
 
 const CellContainer = styled(motion.div)<{ height: number }>`
     display: grid;
@@ -57,13 +55,8 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
         if (!value) return null;
         return value.artists?.length ? value.artists : value.albumArtists;
     }, [value]);
-    const server = useCurrentServer();
-    const beetTrack = useBeetTrack({
-        query: { id: value?.songId, user: server?.username || '' },
-        serverId: server?.id,
-    });
 
-    if (value === undefined || beetTrack.isLoading || beetTrack?.data === undefined) {
+    if (value === undefined) {
         return (
             <CellContainer height={node.rowHeight || 40}>
                 <Skeleton>
@@ -83,11 +76,6 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
             </CellContainer>
         );
     }
-
-    const beetId = beetTrack.data?.results[0]?.id;
-    console.log(`lajp beetId ${beetId}`);
-
-
 
 
     return (
@@ -119,7 +107,7 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
                 )}
             </ImageWrapper>
             <MetadataWrapper>
-                {/* {beetId ? (
+                {/* {value.public ? (
                   <Text
                       $link
                       $secondary

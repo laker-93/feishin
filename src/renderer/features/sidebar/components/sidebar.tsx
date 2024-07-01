@@ -87,11 +87,11 @@ export const Sidebar = () => {
             Genres: t('page.sidebar.genres', { postProcess: 'titleCase' }),
             Home: t('page.sidebar.home', { postProcess: 'titleCase' }),
             'Now Playing': t('page.sidebar.nowPlaying', { postProcess: 'titleCase' }),
+            Mixes: t('page.sidebar.mixes', { postProcess: 'titleCase' }),
             Playlists: t('page.sidebar.playlists', { postProcess: 'titleCase' }),
             Search: t('page.sidebar.search', { postProcess: 'titleCase' }),
             Settings: t('page.sidebar.settings', { postProcess: 'titleCase' }),
             Tracks: t('page.sidebar.tracks', { postProcess: 'titleCase' }),
-            Mixes: t('page.sidebar.mixes', { postProcess: 'titleCase' }),
         }),
         [t],
     );

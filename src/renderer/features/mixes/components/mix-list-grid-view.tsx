@@ -7,8 +7,8 @@ import { controller } from '/@/renderer/api/controller';
 import { queryKeys } from '/@/renderer/api/query-keys';
 import {
     LibraryItem,
+    PublicSongListQuery,
     Song,
-    SongListQuery,
     SongListResponse,
     SongListSort,
 } from '/@/renderer/api/types';
@@ -24,7 +24,7 @@ import { useCurrentServer, useListStoreActions, useListStoreByKey } from '/@/ren
 import { CardRow, ListDisplayType } from '/@/renderer/types';
 import { useHandleFavorite } from '/@/renderer/features/shared/hooks/use-handle-favorite';
 
-export const SongListGridView = ({ gridRef, itemCount }: any) => {
+export const MixListGridView = ({ gridRef, itemCount }: any) => {
     const queryClient = useQueryClient();
     const server = useCurrentServer();
     const handlePlayQueueAdd = usePlayQueueAdd();
@@ -99,12 +99,12 @@ export const SongListGridView = ({ gridRef, itemCount }: any) => {
     );
 
     const fetchInitialData = useCallback(() => {
-        const query: SongListQuery = {
+        const query: PublicSongListQuery = {
             ...filter,
             ...customFilters,
         };
 
-        const queryKey = queryKeys.songs.list(server?.id || '', query, id);
+        const queryKey = queryKeys.publicSongs.list(server?.id || '', query, id);
 
         const queriesFromCache: [QueryKey, SongListResponse][] = queryClient.getQueriesData({
             exact: false,
@@ -140,7 +140,7 @@ export const SongListGridView = ({ gridRef, itemCount }: any) => {
                 return [];
             }
 
-            const query: SongListQuery = {
+            const query: PublicSongListQuery = {
                 imageSize: 250,
                 limit: take,
                 startIndex: skip,
@@ -148,10 +148,10 @@ export const SongListGridView = ({ gridRef, itemCount }: any) => {
                 ...customFilters,
             };
 
-            const queryKey = queryKeys.songs.list(server?.id || '', query, id);
+            const queryKey = queryKeys.publicSongs.list(server?.id || '', query, id);
 
             const songs = await queryClient.fetchQuery(queryKey, async ({ signal }) =>
-                controller.getSongList({
+                controller.getPublicSongList({
                     apiClientProps: {
                         server,
                         signal,

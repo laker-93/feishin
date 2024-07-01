@@ -53,12 +53,15 @@ import {
     DeleteSongResponse,
     GetBeetTrackArgs,
     GetBeetTrackResponse,
+    PublicSongListArgs,
+    PublicSongListResponse,
 } from '../types';
 import { VersionInfo, getFeatures, hasFeature } from '/@/renderer/api/utils';
 import { ServerFeature, ServerFeatures } from '/@/renderer/api/features-types';
 import { SubsonicExtensions } from '/@/renderer/api/subsonic/subsonic-types';
 import { NDSongListSort } from '/@/renderer/api/navidrome.types';
 import { ssNormalize } from '/@/renderer/api/subsonic/subsonic-normalize';
+import { query } from '/@/main/features/core/lyrics/genius';
 
 const authenticate = async (
     url: string,
@@ -111,7 +114,7 @@ const getUserList = async (args: UserListArgs): Promise<UserListResponse> => {
 
 const getBeetTrack = async (args: GetBeetTrackArgs): Promise<GetBeetTrackResponse> => {
     const { query, apiClientProps } = args;
-    const res = await ndApiClient(apiClientProps).getBeetTrack({
+    const res = await ndApiClient({...apiClientProps, publicNd: true}).getBeetTrack({
         query: {
             id: query.id,
             user: query.user,
@@ -279,6 +282,35 @@ const getSongList = async (args: SongListArgs): Promise<SongListResponse> => {
     const { query, apiClientProps } = args;
 
     const res = await ndApiClient(apiClientProps).getSongList({
+        query: {
+            _end: query.startIndex + (query.limit || -1),
+            _order: sortOrderMap.navidrome[query.sortOrder],
+            _sort: songListSortMap.navidrome[query.sortBy],
+            _start: query.startIndex,
+            album_artist_id: query.artistIds,
+            album_id: query.albumIds,
+            title: query.searchTerm,
+            ...query._custom?.navidrome,
+        },
+    });
+
+    if (res.status !== 200) {
+        throw new Error('Failed to get song list');
+    }
+
+    return {
+        items: res.body.data.map((song) =>
+            ndNormalize.song(song, apiClientProps.server, '', query.imageSize),
+        ),
+        startIndex: query?.startIndex || 0,
+        totalRecordCount: Number(res.body.headers.get('x-total-count') || 0),
+    };
+};
+
+const getPublicSongList = async (args: PublicSongListArgs): Promise<PublicSongListResponse> => {
+    const { query, apiClientProps } = args;
+
+    const res = await ndApiClient({...apiClientProps, publicNd: true}).getSongList({
         query: {
             _end: query.startIndex + (query.limit || -1),
             _order: sortOrderMap.navidrome[query.sortOrder],
@@ -660,6 +692,7 @@ export const ndController = {
     getSimilarSongs,
     getSongDetail,
     getSongList,
+    getPublicSongList,
     getUserList,
     removeFromPlaylist,
     shareItem,

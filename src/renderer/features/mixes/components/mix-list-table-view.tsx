@@ -1,7 +1,7 @@
 import { RowDoubleClickedEvent } from '@ag-grid-community/core';
 import type { AgGridReact as AgGridReactType } from '@ag-grid-community/react/lib/agGridReact';
 import { MutableRefObject } from 'react';
-import { LibraryItem, QueueSong, SongListQuery } from '/@/renderer/api/types';
+import { LibraryItem, PublicSongListQuery, QueueSong } from '/@/renderer/api/types';
 import { VirtualGridAutoSizerContainer } from '/@/renderer/components/virtual-grid';
 import { VirtualTable } from '/@/renderer/components/virtual-table';
 import { useCurrentSongRowStyles } from '/@/renderer/components/virtual-table/hooks/use-current-song-row-styles';
@@ -21,7 +21,7 @@ interface SongListTableViewProps {
     tableRef: MutableRefObject<AgGridReactType | null>;
 }
 
-export const SongListTableView = ({ tableRef, itemCount }: SongListTableViewProps) => {
+export const MixListTableView = ({ tableRef, itemCount }: SongListTableViewProps) => {
     const server = useCurrentServer();
     const { pageKey, id, handlePlay, customFilters } = useListContext();
     const isFocused = useAppFocus();
@@ -30,13 +30,13 @@ export const SongListTableView = ({ tableRef, itemCount }: SongListTableViewProp
 
     const { rowClassRules } = useCurrentSongRowStyles({ tableRef });
 
-    const tableProps = useVirtualTable<SongListQuery>({
+    const tableProps = useVirtualTable<PublicSongListQuery>({
         columnType: 'generic',
         contextMenu: SONG_CONTEXT_MENU_ITEMS,
         customFilters,
         isSearchParams: Boolean(id),
         itemCount,
-        itemType: LibraryItem.SONG,
+        itemType: LibraryItem.PUBLIC_SONG,
         pageKey,
         server,
         tableRef,

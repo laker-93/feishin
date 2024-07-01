@@ -11,7 +11,6 @@ import { useCurrentServer, useCurrentTime } from '/@/renderer/store';
 import { usePlayButtonBehavior } from '/@/renderer/store/settings.store';
 import { Play } from '/@/renderer/types';
 import { useTrackList } from '/@/renderer/features/songs/queries/track-list-query';
-import { useBeetTrack } from '/@/renderer/features/songs/queries/get-beet-id-query';
 import { useContainerQuery } from '/@/renderer/hooks';
 
 const ContentContainer = styled.div`

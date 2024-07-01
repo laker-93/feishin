@@ -8,13 +8,16 @@ import { LibraryItem } from '/@/renderer/api/types';
 import { useSongInfo } from '/@/renderer/features/songs/queries/song-info-query';
 import { SongInfoHeader } from '/@/renderer/features/mixes/components/song-info-header';
 import { MixInfoContent } from '/@/renderer/features/mixes/components/mix-info-content';
+import { useCurrentServer } from '/@/renderer/store';
 
 const MixInfoRoute = () => {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
 
     const { id } = useParams() as { id: string };
-    const detailQuery = useSongInfo({ query: { id } });
+
+    const server = useCurrentServer();
+    const detailQuery = useSongInfo({ query: { id: id }, serverId: server?.id });
 
     const handlePlayQueueAdd = usePlayQueueAdd();
     const playButtonBehavior = usePlayButtonBehavior();

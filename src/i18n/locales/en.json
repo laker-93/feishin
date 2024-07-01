@@ -415,6 +415,9 @@
             "artistTracks": "Tracks by {{artist}}",
             "genreTracks": "\"{{genre}}\" $t(entity.track_other)",
             "title": "$t(entity.track_other)"
+        },
+        "mixes": {
+            "title": "$t(entity.mixes)"
         }
     },
     "player": {
