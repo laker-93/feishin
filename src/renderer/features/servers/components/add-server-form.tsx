@@ -50,12 +50,10 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
             });
         }
 
-        console.log('lajp test');
         // for local testing
         const url = `http://localhost:4533`;
         // for production
-        // todo for production should try going via localhost as that should reduce latency
-        // will probably need to make a request to pymix to get the navidrome port for the user and then use that on localhost
+        // have to go via sub-box internet as this is going to be running from user's browser!
         // const url = `https://www.sub-box.net/navidrome${values.username}`;
 
         try {

@@ -111,21 +111,17 @@ const getUserList = async (args: UserListArgs): Promise<UserListResponse> => {
 
 const getBeetTrack = async (args: GetBeetTrackArgs): Promise<GetBeetTrackResponse> => {
     const { query, apiClientProps } = args;
-    console.log(`lajp get beet track api ${query}`);
     const res = await ndApiClient(apiClientProps).getBeetTrack({
         query: {
             id: query.id,
             user: query.user,
         },
     });
-    console.log(`lajp getbeet api resonse ${res}`);
 
     if (res.status !== 200) {
         throw new Error('Failed to get beet track');
     }
 
-    console.log(`lajp returning ${res.body.data}`);
-    console.log(`lajp returning id ${res.body.data.results[0].id}`);
     return res.body.data;
 };
 

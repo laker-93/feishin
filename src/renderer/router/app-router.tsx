@@ -9,6 +9,7 @@ import { BaseContextModal } from '/@/renderer/components';
 import { AddToPlaylistContextModal } from '/@/renderer/features/playlists';
 import { ShareItemContextModal } from '/@/renderer/features/sharing';
 import { DeleteSongContextModal } from '/@/renderer/features/songs/delete-song-context-modal';
+import MixListRoute from '/@/renderer/features/mixes/routes/mix-list-route';
 
 const NowPlayingRoute = lazy(
     () => import('/@/renderer/features/now-playing/routes/now-playing-route'),
@@ -63,7 +64,7 @@ const SongInfoRoute = lazy(
 );
 
 const MixInfoRoute = lazy(
-    () => import('/@/renderer/features/songs/routes/mix-info-route'),
+    () => import('/@/renderer/features/mixes/routes/mix-info-route'),
 );
 const DummyAlbumDetailRoute = lazy(
     () => import('/@/renderer/features/albums/routes/dummy-album-detail-route'),
@@ -169,11 +170,11 @@ export const AppRouter = () => {
                                     errorElement={<RouteErrorBoundary />}
                                     path={AppRoute.LIBRARY_SONG_INFO}
                                 />
-                                {/* <Route
+                                <Route
                                     element={<MixInfoRoute />}
                                     errorElement={<RouteErrorBoundary />}
                                     path={AppRoute.LIBRARY_MIX_INFO}
-                                /> */}
+                                />
                                 <Route
                                     element={<DummyAlbumDetailRoute />}
                                     errorElement={<RouteErrorBoundary />}
@@ -183,6 +184,11 @@ export const AppRouter = () => {
                                     element={<SongListRoute />}
                                     errorElement={<RouteErrorBoundary />}
                                     path={AppRoute.LIBRARY_SONGS}
+                                />
+                                <Route
+                                    element={<MixListRoute />}
+                                    errorElement={<RouteErrorBoundary />}
+                                    path={AppRoute.LIBRARY_MIXES}
                                 />
                                 <Route
                                     element={<PlaylistListRoute />}

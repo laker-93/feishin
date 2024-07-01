@@ -12,6 +12,8 @@ import { Text } from '/@/renderer/components/text';
 import { AppRoute } from '/@/renderer/router/routes';
 import { Skeleton } from '/@/renderer/components/skeleton';
 import { SEPARATOR_STRING } from '/@/renderer/api/utils';
+import { useCurrentServer } from '/@/renderer/store';
+import { useBeetTrack } from '/@/renderer/features/songs/queries/get-beet-id-query';
 
 const CellContainer = styled(motion.div)<{ height: number }>`
     display: grid;
@@ -49,12 +51,19 @@ const StyledImage = styled(SimpleImg)`
 `;
 
 export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams) => {
+
+
     const artists = useMemo(() => {
         if (!value) return null;
         return value.artists?.length ? value.artists : value.albumArtists;
     }, [value]);
+    const server = useCurrentServer();
+    const beetTrack = useBeetTrack({
+        query: { id: value?.songId, user: server?.username || '' },
+        serverId: server?.id,
+    });
 
-    if (value === undefined) {
+    if (value === undefined || beetTrack.isLoading || beetTrack?.data === undefined) {
         return (
             <CellContainer height={node.rowHeight || 40}>
                 <Skeleton>
@@ -74,11 +83,12 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
             </CellContainer>
         );
     }
-    console.log(`lajp value ${value}`);
 
-    console.log(`lajp song id ${value.songId}`);
+    const beetId = beetTrack.data?.results[0]?.id;
+    console.log(`lajp beetId ${beetId}`);
 
-    // todo: get beets id using navidrome songId using new navidrome endpoint.
+
+
 
     return (
         <CellContainer height={node.rowHeight || 40}>
@@ -109,19 +119,37 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
                 )}
             </ImageWrapper>
             <MetadataWrapper>
-                <Text
-                    // $link
-                    // $secondary
-                    // component={Link}
-                    // overflow="hidden"
-                    // size="md"
-                    // sx={{ width: 'fit-content' }}
-                    // to={generatePath(AppRoute.LIBRARY_MIX_INFO, {
-                    //     songId: value.songId,
-                    // })}
-                >
-                    {value.name}
-                </Text>
+                {/* {beetId ? (
+                  <Text
+                      $link
+                      $secondary
+                      component={Link}
+                      overflow="hidden"
+                      size="md"
+                      sx={{ width: 'fit-content' }}
+                      to={generatePath(AppRoute.LIBRARY_MIX_INFO, {
+                          beetId: beetId,
+                      })}
+                  >
+                      {value.name}
+                  </Text>
+                ) : (
+                  <Text
+                      className="current-song-child"
+                      overflow="hidden"
+                      size="md"
+                  >
+                      {value.name}
+                  </Text>
+                )} */}
+                  <Text
+                      className="current-song-child"
+                      overflow="hidden"
+                      size="md"
+                  >
+                      {value.name}
+                  </Text>
+
                 <Text
                     $secondary
                     overflow="hidden"

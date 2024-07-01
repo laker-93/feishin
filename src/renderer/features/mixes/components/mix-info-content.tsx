@@ -65,19 +65,11 @@ function getTrackNumber(curTime: number, startToTrackNumberMap: Map<number, numb
 }
 
 export const MixInfoContent = ({ background }: MixInfoContentProps) => {
-    const { songId } = useParams() as { songId: string };
+    const { beetId } = useParams() as { beetId: string };
     const server = useCurrentServer();
     const cq = useContainerQuery();
     const now = useCurrentTime();
 
-    const beetTrack = useBeetTrack({
-        options: {
-            enabled: !!server?.username,
-        },
-        query: { id: songId, user: server?.username || '' },
-        serverId: server?.id,
-    });
-    const beetId = beetTrack.data?.results[0].id;
     const detailQuery = useTrackList({
         options: {
             enabled: !!beetId,

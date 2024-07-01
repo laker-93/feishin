@@ -1,4 +1,5 @@
 import { Text, Box } from '@mantine/core';
+import { Link } from 'react-router-dom';
 
 export const AboutContent = () => {
     return (
@@ -6,7 +7,8 @@ export const AboutContent = () => {
             m={2}
             p={20}
         >
-            <Text>hello</Text>.{' '}
+            <Text>Sub-box is an app for DJs. </Text>.
+            <Text>Find out more here: <Link to="https://www.sub-box.net/">https://www.sub-box.net/</Link> </Text>
         </Box>
     );
 };

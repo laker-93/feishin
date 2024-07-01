@@ -147,6 +147,7 @@
         "song_other": "songs",
         "track_one": "track",
         "track_other": "tracks",
+        "mixes": "mixes",
         "trackWithCount_one": "{{count}} track",
         "trackWithCount_other": "{{count}} tracks"
     },
@@ -407,7 +408,8 @@
             "search": "$t(common.search)",
             "settings": "$t(common.setting_other)",
             "shared": "shared $t(entity.playlist_other)",
-            "tracks": "$t(entity.track_other)"
+            "tracks": "$t(entity.track_other)",
+            "mixes": "$t(entity.mixes)"
         },
         "trackList": {
             "artistTracks": "Tracks by {{artist}}",

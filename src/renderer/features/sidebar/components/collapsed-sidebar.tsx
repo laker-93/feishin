@@ -43,6 +43,7 @@ export const CollapsedSidebar = () => {
             Search: t('page.sidebar.search', { postProcess: 'titleCase' }),
             Settings: t('page.sidebar.settings', { postProcess: 'titleCase' }),
             Tracks: t('page.sidebar.tracks', { postProcess: 'titleCase' }),
+            Mixes: t('page.sidebar.mixes', { postProcess: 'titleCase' }),
         }),
         [t],
     );

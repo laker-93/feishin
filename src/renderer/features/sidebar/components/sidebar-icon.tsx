@@ -55,6 +55,9 @@ export const SidebarIcon = ({ active, route, size }: SidebarIconProps) => {
         case AppRoute.LIBRARY_SONGS:
             if (active) return <RiMusic2Fill size={size} />;
             return <RiMusic2Line size={size} />;
+        case AppRoute.LIBRARY_MIXES:
+            if (active) return <RiMusic2Fill size={size} />;
+            return <RiMusic2Line size={size} />;
         case AppRoute.LIBRARY_FOLDERS:
             if (active) return <RiFolder3Fill size={size} />;
             return <RiFolder3Line size={size} />;
