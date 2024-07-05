@@ -100,7 +100,7 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
                 url: url.replace(/\/$/, ''),
                 userId: data.userId,
                 username: data.username,
-                publicUrl: publicUrl.replace(/\/$/, ''),
+                isPublic: false
             };
 
             addServer(serverItem);
@@ -115,6 +115,7 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
                 url: publicUrl.replace(/\/$/, ''),
                 userId: publicData.userId,
                 username: publicData.username,
+                isPublic: true
             };
             addPublicServer(publicServerItem);
             closeAllModals();

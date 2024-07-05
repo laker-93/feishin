@@ -319,7 +319,21 @@ const getSongDetail = async (args: SongDetailArgs): Promise<SongDetailResponse> 
         throw new Error('Failed to get song detail');
     }
 
-    return ndNormalize.song(res.body.data, apiClientProps.server, '');
+    let beetId = undefined;
+    if (apiClientProps.server?.isPublic) {
+        const beetRes = await ndApiClient(apiClientProps).getBeetTrack({
+            query: {
+                id: query.id,
+                user: apiClientProps.server.username,
+            },
+        });
+        debugger
+        if (beetRes.status !== 200) {
+            throw new Error(`Failed to get beet track for song ${query.id} and user ${apiClientProps.server.username}`);
+        }
+        beetId = beetRes.body?.data.results[0].id;
+    }
+    return ndNormalize.song(res.body.data, apiClientProps.server, '', undefined, beetId);
 };
 
 const createPlaylist = async (args: CreatePlaylistArgs): Promise<CreatePlaylistResponse> => {

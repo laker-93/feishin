@@ -8,25 +8,29 @@ import { LibraryItem } from '/@/renderer/api/types';
 import { useSongInfo } from '/@/renderer/features/songs/queries/song-info-query';
 import { SongInfoHeader } from '/@/renderer/features/mixes/components/song-info-header';
 import { MixInfoContent } from '/@/renderer/features/mixes/components/mix-info-content';
-import { useCurrentServer } from '/@/renderer/store';
+import { getPublicServer } from '/@/renderer/store';
 
 const MixInfoRoute = () => {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
 
-    const { id } = useParams() as { id: string };
+    const { songId } = useParams() as { songId: string };
 
-    const server = useCurrentServer();
-    const detailQuery = useSongInfo({ query: { id: id }, serverId: server?.id });
+    const server = getPublicServer();
+    const detailQuery = useSongInfo({ query: { id: songId }, serverId: server?.id });
 
     const handlePlayQueueAdd = usePlayQueueAdd();
     const playButtonBehavior = usePlayButtonBehavior();
     const background = 'var(--modal-bg)';
+    if (detailQuery.isLoading || detailQuery.data === undefined) {
+        return
+    }
+    debugger
 
     const handlePlay = () => {
         handlePlayQueueAdd?.({
             byItemType: {
-                id: [id],
+                id: [songId],
                 type: LibraryItem.SONG,
             },
             playType: playButtonBehavior,
@@ -34,7 +38,7 @@ const MixInfoRoute = () => {
     };
 
     return (
-        <AnimatedPage key={`song-info-${id}`}>
+        <AnimatedPage key={`song-info-${songId}`}>
             <NativeScrollArea
                 ref={scrollAreaRef}
                 pageHeaderProps={{

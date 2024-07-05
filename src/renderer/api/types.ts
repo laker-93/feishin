@@ -68,6 +68,7 @@ export type ServerListItem = {
     userId: string | null;
     username: string;
     version?: string;
+    isPublic: boolean
 };
 
 
@@ -190,6 +191,7 @@ export type Song = {
     albumId: string;
     artistName: string;
     artists: RelatedArtist[];
+    beetId: number | null;
     bitRate: number;
     bpm: number | null;
     channels: number | null;
@@ -203,6 +205,7 @@ export type Song = {
     gain: GainInfo | null;
     genres: Genre[];
     id: string;
+    isPublic: boolean;
     imagePlaceholderUrl: string | null;
     imageUrl: string | null;
     itemType: LibraryItem.SONG;
