@@ -189,6 +189,7 @@ export type PlayQueueAddOptions = {
     initialSongId?: string;
     playType: Play;
     query?: Record<string, any>;
+    publicNd?: boolean;
 };
 
 export type GridCardData = {

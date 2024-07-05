@@ -23,6 +23,7 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
     const focusTrapRef = useFocusTrap(true);
     const [isLoading, setIsLoading] = useState(false);
     const { addServer, setCurrentServer } = useAuthStoreActions();
+    const { addPublicServer } = useAuthStoreActions();
 
     const form = useForm({
         initialValues: {
@@ -100,11 +101,22 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
                 userId: data.userId,
                 username: data.username,
                 publicUrl: publicUrl.replace(/\/$/, ''),
-                publicNdCredential: publicData.ndCredential
             };
 
             addServer(serverItem);
             setCurrentServer(serverItem);
+
+            const publicServerItem = {
+                credential: publicData.credential,
+                id: nanoid(),
+                name: publicData.username,
+                ndCredential: publicData.ndCredential,
+                type: values.type as ServerType,
+                url: publicUrl.replace(/\/$/, ''),
+                userId: publicData.userId,
+                username: publicData.username,
+            };
+            addPublicServer(publicServerItem);
             closeAllModals();
 
             toast.success({

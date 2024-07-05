@@ -77,7 +77,6 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
         );
     }
 
-
     return (
         <CellContainer height={node.rowHeight || 40}>
             <ImageWrapper>

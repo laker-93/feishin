@@ -8,10 +8,9 @@ import { ListContext } from '/@/renderer/context/list-context';
 import { useGenreList } from '/@/renderer/features/genres';
 import { usePlayQueueAdd } from '/@/renderer/features/player';
 import { AnimatedPage } from '/@/renderer/features/shared';
-import { SongListContent } from '/@/renderer/features/songs/components/song-list-content';
 import { SongListHeader } from '/@/renderer/features/songs/components/song-list-header';
 import { useSongList } from '/@/renderer/features/songs/queries/song-list-query';
-import { useCurrentServer, useListFilterByKey } from '/@/renderer/store';
+import { getPublicServer, useListFilterByKey } from '/@/renderer/store';
 import { Play } from '/@/renderer/types';
 import { titleCase } from '/@/renderer/utils';
 import { VirtualInfiniteGridRef } from '/@/renderer/components/virtual-grid';
@@ -21,7 +20,7 @@ const MixListRoute = () => {
     const { t } = useTranslation();
     const gridRef = useRef<VirtualInfiniteGridRef | null>(null);
     const tableRef = useRef<AgGridReactType | null>(null);
-    const server = useCurrentServer();
+    const server = getPublicServer()
     const [searchParams] = useSearchParams();
     const { albumArtistId, genreId } = useParams();
 
@@ -96,9 +95,9 @@ const MixListRoute = () => {
             : itemCountCheck.data?.totalRecordCount;
 
     const handlePlay = useCallback(
-        async (args: { initialSongId?: string; playType: Play }) => {
+        async (args: { initialSongId?: string; playType: Play, publicNd?: boolean }) => {
             if (!itemCount || itemCount === 0) return;
-            const { initialSongId, playType } = args;
+            const { initialSongId, playType, publicNd } = args;
             const query: SongListQuery = { startIndex: 0, ...songListFilter };
 
             if (albumArtistId) {
@@ -120,6 +119,7 @@ const MixListRoute = () => {
                     initialSongId,
                     playType,
                     query,
+                    publicNd,
                 });
             }
         },
@@ -163,3 +163,7 @@ const MixListRoute = () => {
 };
 
 export default MixListRoute;
+function usePublicServer() {
+    throw new Error('Function not implemented.');
+}
+

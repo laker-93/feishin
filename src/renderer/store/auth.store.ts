@@ -12,13 +12,16 @@ export interface AuthState {
     currentServer: ServerListItem | null;
     deviceId: string;
     serverList: Record<string, ServerListItem>;
+    publicServer: ServerListItem | null;
 }
 
 export interface AuthSlice extends AuthState {
     actions: {
         addServer: (args: ServerListItem) => void;
+        addPublicServer: (args: ServerListItem) => void;
         deleteServer: (id: string) => void;
         getServer: (id: string) => ServerListItem | null;
+        getPublicServer: () => ServerListItem | null;
         setCurrentServer: (server: ServerListItem | null) => void;
         updateServer: (id: string, args: Partial<ServerListItem>) => void;
     };
@@ -34,6 +37,12 @@ export const useAuthStore = create<AuthSlice>()(
                             state.serverList[args.id] = args;
                         });
                     },
+                    addPublicServer: (args) => {
+                        set((state) => {
+                            state.publicServer = args;
+                            state.serverList[args.id] = args;
+                        });
+                    },
                     deleteServer: (id) => {
                         set((state) => {
                             delete state.serverList[id];
@@ -45,6 +54,11 @@ export const useAuthStore = create<AuthSlice>()(
                     },
                     getServer: (id) => {
                         const server = get().serverList[id];
+                        if (server) return server;
+                        return null;
+                    },
+                    getPublicServer: () => {
+                        const server = get().publicServer;
                         if (server) return server;
                         return null;
                     },
@@ -75,6 +89,7 @@ export const useAuthStore = create<AuthSlice>()(
                     },
                 },
                 currentServer: null,
+                publicServer: null,
                 deviceId: nanoid(),
                 serverList: {},
             })),
@@ -103,3 +118,8 @@ export const getServerById = (id?: string) => {
 
     return useAuthStore.getState().actions.getServer(id);
 };
+
+export const getPublicServer = () => {
+    return useAuthStore.getState().actions.getPublicServer();
+};
+

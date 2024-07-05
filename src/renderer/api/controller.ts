@@ -59,7 +59,6 @@ import type {
     Song,
     ServerType,
     ShareItemResponse,
-    PublicSongListArgs,
 } from '/@/renderer/api/types';
 import { DeletePlaylistResponse, RandomSongListArgs } from './types';
 import { ndController } from '/@/renderer/api/navidrome/navidrome-controller';
@@ -101,7 +100,6 @@ export type ControllerEndpoint = Partial<{
     getSimilarSongs: (args: SimilarSongsArgs) => Promise<Song[]>;
     getSongDetail: (args: SongDetailArgs) => Promise<SongDetailResponse>;
     getSongList: (args: SongListArgs) => Promise<SongListResponse>;
-    getPublicSongList: (args: PublicSongListArgs) => Promise<SongListResponse>;
     getStructuredLyrics: (args: StructuredLyricsArgs) => Promise<StructuredLyric[]>;
     getTopSongs: (args: TopSongListArgs) => Promise<TopSongListResponse>;
     getUserList: (args: UserListArgs) => Promise<UserListResponse>;
@@ -191,7 +189,6 @@ const endpoints: ApiController = {
         getSimilarSongs: ndController.getSimilarSongs,
         getSongDetail: ndController.getSongDetail,
         getSongList: ndController.getSongList,
-        getPublicSongList: ndController.getPublicSongList,
         getStructuredLyrics: ssController.getStructuredLyrics,
         getTopSongs: ssController.getTopSongList,
         getUserList: ndController.getUserList,
@@ -229,7 +226,6 @@ const endpoints: ApiController = {
         getSimilarSongs: ssController.getSimilarSongs,
         getSongDetail: undefined,
         getSongList: undefined,
-        getPublicSongList: undefined,
         getStructuredLyrics: ssController.getStructuredLyrics,
         getTopSongs: ssController.getTopSongList,
         getUserList: undefined,
@@ -306,15 +302,6 @@ const getSongList = async (args: SongListArgs) => {
             'getSongList',
             args.apiClientProps.server?.type,
         ) as ControllerEndpoint['getSongList']
-    )?.(args);
-};
-
-const getPublicSongList = async (args: PublicSongListArgs) => {
-    return (
-        apiController(
-            'getPublicSongList',
-            args.apiClientProps.server?.type,
-        ) as ControllerEndpoint['getPublicSongList']
     )?.(args);
 };
 
@@ -591,7 +578,6 @@ export const controller = {
     getSimilarSongs,
     getSongDetail,
     getSongList,
-    getPublicSongList,
     getStructuredLyrics,
     getTopSongList,
     getUserList,

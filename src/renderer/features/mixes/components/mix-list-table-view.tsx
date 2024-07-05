@@ -1,7 +1,7 @@
 import { RowDoubleClickedEvent } from '@ag-grid-community/core';
 import type { AgGridReact as AgGridReactType } from '@ag-grid-community/react/lib/agGridReact';
 import { MutableRefObject } from 'react';
-import { LibraryItem, PublicSongListQuery, QueueSong } from '/@/renderer/api/types';
+import { LibraryItem, QueueSong, SongListQuery } from '/@/renderer/api/types';
 import { VirtualGridAutoSizerContainer } from '/@/renderer/components/virtual-grid';
 import { VirtualTable } from '/@/renderer/components/virtual-table';
 import { useCurrentSongRowStyles } from '/@/renderer/components/virtual-table/hooks/use-current-song-row-styles';
@@ -10,7 +10,7 @@ import { useListContext } from '/@/renderer/context/list-context';
 import { SONG_CONTEXT_MENU_ITEMS } from '/@/renderer/features/context-menu/context-menu-items';
 import { useAppFocus } from '/@/renderer/hooks';
 import {
-    useCurrentServer,
+    getPublicServer,
     useCurrentSong,
     useCurrentStatus,
     usePlayButtonBehavior,
@@ -22,7 +22,7 @@ interface SongListTableViewProps {
 }
 
 export const MixListTableView = ({ tableRef, itemCount }: SongListTableViewProps) => {
-    const server = useCurrentServer();
+    const server = getPublicServer();
     const { pageKey, id, handlePlay, customFilters } = useListContext();
     const isFocused = useAppFocus();
     const currentSong = useCurrentSong();
@@ -30,13 +30,13 @@ export const MixListTableView = ({ tableRef, itemCount }: SongListTableViewProps
 
     const { rowClassRules } = useCurrentSongRowStyles({ tableRef });
 
-    const tableProps = useVirtualTable<PublicSongListQuery>({
+    const tableProps = useVirtualTable<SongListQuery>({
         columnType: 'generic',
         contextMenu: SONG_CONTEXT_MENU_ITEMS,
         customFilters,
         isSearchParams: Boolean(id),
         itemCount,
-        itemType: LibraryItem.PUBLIC_SONG,
+        itemType: LibraryItem.SONG,
         pageKey,
         server,
         tableRef,
@@ -45,7 +45,7 @@ export const MixListTableView = ({ tableRef, itemCount }: SongListTableViewProps
     const playButtonBehavior = usePlayButtonBehavior();
     const handleRowDoubleClick = (e: RowDoubleClickedEvent<QueueSong>) => {
         if (!e.data) return;
-        handlePlay?.({ initialSongId: e.data.id, playType: playButtonBehavior });
+        handlePlay?.({ initialSongId: e.data.id, playType: playButtonBehavior, publicNd: true });
     };
 
     return (

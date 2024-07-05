@@ -255,8 +255,10 @@ axiosClient.interceptors.response.use(
     (response) => {
         const server = useAuthStore.getState().currentServer;
         const serverId = server?.id;
+        const publicServer = useAuthStore.getState().publicServer;
+        const publicServerId = publicServer?.id;
 
-        if (serverId) {
+        if (serverId && publicServerId) {
             const headerCredential = response.headers['x-nd-authorization'] as string | undefined;
 
             const url = response.request.responseURL;
@@ -265,9 +267,9 @@ axiosClient.interceptors.response.use(
                     useAuthStore.getState().actions.updateServer(serverId, {
                         ndCredential: headerCredential,
                     });
-                } else if (url == server.publicUrl) {
+                } else if (url == publicServer.url) {
                     useAuthStore.getState().actions.updateServer(serverId, {
-                        publicNdCredential: headerCredential,
+                        ndCredential: headerCredential,
                     });
                 }
             }
@@ -380,9 +382,8 @@ export const ndApiClient = (args: {
     server: ServerListItem | null;
     signal?: AbortSignal;
     url?: string;
-    publicNd?: boolean;
 }) => {
-    const { server, url, signal, publicNd } = args;
+    const { server, url, signal } = args;
 
     return initClient(contract, {
         api: async ({ path, method, headers, body }) => {
@@ -392,14 +393,8 @@ export const ndApiClient = (args: {
             const { params, path: api } = parsePath(path);
 
             if (server) {
-                if (publicNd) {
-                    baseUrl = `${server?.publicUrl}/api`;
-                    token = server?.publicNdCredential;
-                }
-                else {
-                    baseUrl = `${server?.url}/api`;
-                    token = server?.ndCredential;
-                }
+                baseUrl = `${server?.url}/api`;
+                token = server?.ndCredential;
             } else {
                 baseUrl = url;
             }
