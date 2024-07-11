@@ -1,4 +1,4 @@
-import { NativeScrollArea } from '/@/renderer/components';
+import { NativeScrollArea, Spinner } from '/@/renderer/components';
 import { AnimatedPage, LibraryHeaderBar } from '/@/renderer/features/shared';
 import { useRef } from 'react';
 import { useParams } from 'react-router';
@@ -22,9 +22,6 @@ const MixInfoRoute = () => {
     const handlePlayQueueAdd = usePlayQueueAdd();
     const playButtonBehavior = usePlayButtonBehavior();
     const background = 'var(--modal-bg)';
-    if (detailQuery.isLoading || detailQuery.data === undefined) {
-        return;
-    }
 
     const handlePlay = () => {
         handlePlayQueueAdd?.({
@@ -35,6 +32,10 @@ const MixInfoRoute = () => {
             playType: playButtonBehavior,
         });
     };
+
+    if (detailQuery.isLoading || detailQuery.data === undefined) {
+        return <Spinner container />;
+    }
 
     return (
         <AnimatedPage key={`song-info-${songId}`}>
