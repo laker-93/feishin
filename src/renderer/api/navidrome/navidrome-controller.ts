@@ -53,8 +53,6 @@ import {
     DeleteSongResponse,
     GetBeetTrackArgs,
     GetBeetTrackResponse,
-    PublicSongListArgs,
-    PublicSongListResponse,
 } from '../types';
 import { VersionInfo, getFeatures, hasFeature } from '/@/renderer/api/utils';
 import { ServerFeature, ServerFeatures } from '/@/renderer/api/features-types';
@@ -319,7 +317,7 @@ const getSongDetail = async (args: SongDetailArgs): Promise<SongDetailResponse> 
         throw new Error('Failed to get song detail');
     }
 
-    let beetId = undefined;
+    let beetId;
     if (apiClientProps.server?.isPublic) {
         const beetRes = await ndApiClient(apiClientProps).getBeetTrack({
             query: {
@@ -328,7 +326,9 @@ const getSongDetail = async (args: SongDetailArgs): Promise<SongDetailResponse> 
             },
         });
         if (beetRes.status !== 200) {
-            throw new Error(`Failed to get beet track for song ${query.id} and user ${apiClientProps.server.username}`);
+            throw new Error(
+                `Failed to get beet track for song ${query.id} and user ${apiClientProps.server.username}`,
+            );
         }
         beetId = beetRes.body?.data.results[0].id;
     }

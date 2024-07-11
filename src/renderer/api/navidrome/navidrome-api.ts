@@ -263,11 +263,11 @@ axiosClient.interceptors.response.use(
 
             const url = response.request.responseURL;
             if (headerCredential) {
-                if (url == server.url) {
+                if (url === server.url) {
                     useAuthStore.getState().actions.updateServer(serverId, {
                         ndCredential: headerCredential,
                     });
-                } else if (url == publicServer.url) {
+                } else if (url === publicServer.url) {
                     useAuthStore.getState().actions.updateServer(serverId, {
                         ndCredential: headerCredential,
                     });

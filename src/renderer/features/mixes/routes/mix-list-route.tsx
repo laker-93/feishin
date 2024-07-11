@@ -20,7 +20,7 @@ const MixListRoute = () => {
     const { t } = useTranslation();
     const gridRef = useRef<VirtualInfiniteGridRef | null>(null);
     const tableRef = useRef<AgGridReactType | null>(null);
-    const server = getPublicServer()
+    const server = getPublicServer();
     const [searchParams] = useSearchParams();
     const { albumArtistId, genreId } = useParams();
 
@@ -95,7 +95,7 @@ const MixListRoute = () => {
             : itemCountCheck.data?.totalRecordCount;
 
     const handlePlay = useCallback(
-        async (args: { initialSongId?: string; playType: Play, publicNd?: boolean }) => {
+        async (args: { initialSongId?: string; playType: Play; publicNd?: boolean }) => {
             if (!itemCount || itemCount === 0) return;
             const { initialSongId, playType, publicNd } = args;
             const query: SongListQuery = { startIndex: 0, ...songListFilter };
@@ -118,8 +118,8 @@ const MixListRoute = () => {
                     },
                     initialSongId,
                     playType,
-                    query,
                     publicNd,
+                    query,
                 });
             }
         },
@@ -163,7 +163,3 @@ const MixListRoute = () => {
 };
 
 export default MixListRoute;
-function usePublicServer() {
-    throw new Error('Function not implemented.');
-}
-

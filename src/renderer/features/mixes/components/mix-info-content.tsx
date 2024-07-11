@@ -91,7 +91,7 @@ export const MixInfoContent = ({ background }: MixInfoContentProps) => {
         });
     };
 
-    const isLoading = detailQuery?.isLoading
+    const isLoading = detailQuery?.isLoading;
     if (isLoading) return <ContentContainer ref={cq.ref} />;
     const trackList = tracklist ? tracklist.items : [];
 
@@ -114,7 +114,7 @@ export const MixInfoContent = ({ background }: MixInfoContentProps) => {
             startToTrackNumberMap.set(key, trackNumber - 1);
         }
     }
-    const t = getTrackNumber(now, startToTrackNumberMap);
+    // const t = getTrackNumber(now, startToTrackNumberMap);
 
     return (
         <ContentContainer ref={cq.ref}>

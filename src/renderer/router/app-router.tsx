@@ -60,13 +60,9 @@ const AlbumDetailRoute = lazy(
     () => import('/@/renderer/features/albums/routes/album-detail-route'),
 );
 
-const SongInfoRoute = lazy(
-    () => import('/@/renderer/features/songs/routes/song-info-route'),
-);
+const SongInfoRoute = lazy(() => import('/@/renderer/features/songs/routes/song-info-route'));
 
-const MixInfoRoute = lazy(
-    () => import('/@/renderer/features/mixes/routes/mix-info-route'),
-);
+const MixInfoRoute = lazy(() => import('/@/renderer/features/mixes/routes/mix-info-route'));
 const DummyAlbumDetailRoute = lazy(
     () => import('/@/renderer/features/albums/routes/dummy-album-detail-route'),
 );
@@ -99,8 +95,8 @@ export const AppRouter = () => {
                 }}
                 modals={{
                     addToPlaylist: AddToPlaylistContextModal,
-                    deleteSong: DeleteSongContextModal,
                     base: BaseContextModal,
+                    deleteSong: DeleteSongContextModal,
                     shareItem: ShareItemContextModal,
                 }}
             >

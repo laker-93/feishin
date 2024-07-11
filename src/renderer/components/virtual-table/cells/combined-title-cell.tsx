@@ -49,8 +49,6 @@ const StyledImage = styled(SimpleImg)`
 `;
 
 export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams) => {
-
-
     const artists = useMemo(() => {
         if (!value) return null;
         return value.artists?.length ? value.artists : value.albumArtists;
@@ -107,27 +105,27 @@ export const CombinedTitleCell = ({ value, rowIndex, node }: ICellRendererParams
             </ImageWrapper>
             <MetadataWrapper>
                 {value.isPublic ? (
-                  <Text
-                      $link
-                      $secondary
-                      component={Link}
-                      overflow="hidden"
-                      size="md"
-                      sx={{ width: 'fit-content' }}
-                      to={generatePath(AppRoute.LIBRARY_MIX_INFO, {
-                          songId: value.songId,
-                      })}
-                  >
-                      {value.name}
-                  </Text>
+                    <Text
+                        $link
+                        $secondary
+                        component={Link}
+                        overflow="hidden"
+                        size="md"
+                        sx={{ width: 'fit-content' }}
+                        to={generatePath(AppRoute.LIBRARY_MIX_INFO, {
+                            songId: value.songId,
+                        })}
+                    >
+                        {value.name}
+                    </Text>
                 ) : (
-                  <Text
-                      className="current-song-child"
-                      overflow="hidden"
-                      size="md"
-                  >
-                      {value.name}
-                  </Text>
+                    <Text
+                        className="current-song-child"
+                        overflow="hidden"
+                        size="md"
+                    >
+                        {value.name}
+                    </Text>
                 )}
                 <Text
                     $secondary

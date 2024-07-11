@@ -1,6 +1,11 @@
 import { useCallback, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { getPublicServer, useCurrentServer, usePlayerControls, usePlayerStore } from '/@/renderer/store';
+import {
+    getPublicServer,
+    useCurrentServer,
+    usePlayerControls,
+    usePlayerStore,
+} from '/@/renderer/store';
 import { usePlaybackType } from '/@/renderer/store/settings.store';
 import {
     PlayQueueAddOptions,
@@ -73,7 +78,8 @@ export const useHandlePlayQueueAdd = () => {
 
     const handlePlayQueueAdd = useCallback(
         async (options: PlayQueueAddOptions) => {
-            const { initialIndex, initialSongId, playType, byData, byItemType, query, publicNd } = options;
+            const { initialIndex, initialSongId, playType, byData, byItemType, query, publicNd } =
+                options;
             const server = publicNd ? publicServer : userServer;
             if (!server) return toast.error({ message: 'No server selected', type: 'error' });
             let songs: QueueSong[] | null = null;

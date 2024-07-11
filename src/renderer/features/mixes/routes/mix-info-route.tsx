@@ -23,7 +23,7 @@ const MixInfoRoute = () => {
     const playButtonBehavior = usePlayButtonBehavior();
     const background = 'var(--modal-bg)';
     if (detailQuery.isLoading || detailQuery.data === undefined) {
-        return
+        return;
     }
 
     const handlePlay = () => {

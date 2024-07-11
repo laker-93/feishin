@@ -6,7 +6,7 @@ import { getPublicServer } from '/@/renderer/store';
 
 export const useBeetTrack = (args: QueryHookArgs<GetBeetTrackQuery>) => {
     const { options, query, serverId } = args;
-    const server = getPublicServer()
+    const server = getPublicServer();
 
     return useQuery({
         queryFn: ({ signal }) => {

@@ -60,6 +60,7 @@ export type ServerListItem = {
     credential: string;
     features?: ServerFeatures;
     id: string;
+    isPublic: boolean;
     name: string;
     ndCredential?: string;
     savePassword?: boolean;
@@ -68,9 +69,7 @@ export type ServerListItem = {
     userId: string | null;
     username: string;
     version?: string;
-    isPublic: boolean
 };
-
 
 export enum ServerType {
     JELLYFIN = 'jellyfin',
@@ -205,9 +204,9 @@ export type Song = {
     gain: GainInfo | null;
     genres: Genre[];
     id: string;
-    isPublic: boolean;
     imagePlaceholderUrl: string | null;
     imageUrl: string | null;
+    isPublic: boolean;
     itemType: LibraryItem.SONG;
     lastPlayedAt: string | null;
     lyrics: string | null;

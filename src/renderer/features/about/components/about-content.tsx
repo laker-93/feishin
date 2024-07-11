@@ -8,7 +8,10 @@ export const AboutContent = () => {
             p={20}
         >
             <Text>Sub-box is an app for DJs. </Text>.
-            <Text>Find out more here: <Link to="https://www.sub-box.net/">https://www.sub-box.net/</Link> </Text>
+            <Text>
+                Find out more here:{' '}
+                <Link to="https://www.sub-box.net/">https://www.sub-box.net/</Link>{' '}
+            </Text>
         </Box>
     );
 };
