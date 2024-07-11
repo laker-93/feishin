@@ -199,7 +199,6 @@ export const getSongsByQuery = async (args: {
     };
 
     const queryKey = queryKeys.songs.list(server?.id, queryFilter);
-    debugger
 
     const res = await queryClient.fetchQuery(
         queryKey,
@@ -216,7 +215,6 @@ export const getSongsByQuery = async (args: {
             staleTime: 1000 * 60,
         },
     );
-    debugger
 
     return res;
 };

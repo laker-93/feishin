@@ -62,6 +62,7 @@ const SongInfoRoute = () => {
                 <SongInfoHeader
                     ref={headerRef}
                     background={background}
+                    serv={server}
                 />
                 <SongInfoContent background={background} />
             </NativeScrollArea>

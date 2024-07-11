@@ -153,7 +153,6 @@ export const useHandlePlayQueueAdd = () => {
 
                 songs =
                     songList?.items?.map((song: Song) => ({ ...song, uniqueId: nanoid() })) || null;
-                debugger
             } else if (byData) {
                 songs = byData.map((song) => ({ ...song, uniqueId: nanoid() })) || null;
             }

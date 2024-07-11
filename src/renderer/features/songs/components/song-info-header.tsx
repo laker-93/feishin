@@ -2,24 +2,25 @@ import { Group, Stack } from '@mantine/core';
 import { forwardRef, Fragment, Ref } from 'react';
 import { generatePath, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
-import { LibraryItem, ServerType } from '/@/renderer/api/types';
+import { LibraryItem, ServerListItem, ServerType } from '/@/renderer/api/types';
 import { Rating, Text } from '/@/renderer/components';
 import { LibraryHeader, useSetRating } from '/@/renderer/features/shared';
 import { useContainerQuery } from '/@/renderer/hooks';
 import { AppRoute } from '/@/renderer/router/routes';
-import { useCurrentServer } from '/@/renderer/store';
 import { formatDurationString } from '/@/renderer/utils';
 import { useSongInfo } from '/@/renderer/features/songs/queries/song-info-query';
+import { getPublicServer } from '/@/renderer/store';
 
 interface SongInfoHeaderProps {
     background: string;
+    serv: ServerListItem | null;
 }
 
 export const SongInfoHeader = forwardRef(
-    ({ background }: SongInfoHeaderProps, ref: Ref<HTMLDivElement>) => {
+    ({ background, serv }: SongInfoHeaderProps, ref: Ref<HTMLDivElement>) => {
         const { songId } = useParams() as { songId: string };
         console.log(`lajp songinfoheader id ${songId}`);
-        const server = useCurrentServer();
+        const server = serv ? serv : getPublicServer();
         const detailQuery = useSongInfo({ query: { id: songId }, serverId: server?.id });
         const cq = useContainerQuery();
 

@@ -327,7 +327,6 @@ const getSongDetail = async (args: SongDetailArgs): Promise<SongDetailResponse> 
                 user: apiClientProps.server.username,
             },
         });
-        debugger
         if (beetRes.status !== 200) {
             throw new Error(`Failed to get beet track for song ${query.id} and user ${apiClientProps.server.username}`);
         }

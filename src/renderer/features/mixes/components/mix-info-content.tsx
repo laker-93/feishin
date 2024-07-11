@@ -7,11 +7,12 @@ import { Button, Popover } from '/@/renderer/components';
 import { usePlayQueueAdd } from '/@/renderer/features/player';
 import { PlayButton } from '/@/renderer/features/shared';
 import { LibraryBackgroundOverlay } from '/@/renderer/features/shared/components/library-background-overlay';
-import { useCurrentServer, useCurrentTime } from '/@/renderer/store';
+import { getPublicServer, useCurrentTime } from '/@/renderer/store';
 import { usePlayButtonBehavior } from '/@/renderer/store/settings.store';
 import { Play } from '/@/renderer/types';
 import { useTrackList } from '/@/renderer/features/songs/queries/track-list-query';
 import { useContainerQuery } from '/@/renderer/hooks';
+import { useSongInfo } from '/@/renderer/features/songs/queries/song-info-query';
 
 const ContentContainer = styled.div`
     position: relative;
@@ -64,16 +65,17 @@ function getTrackNumber(curTime: number, startToTrackNumberMap: Map<number, numb
 }
 
 export const MixInfoContent = ({ background }: MixInfoContentProps) => {
-    const { beetId } = useParams() as { beetId: string };
-    const server = useCurrentServer();
+    const { songId } = useParams() as { songId: string };
+    const server = getPublicServer();
+    const songDetailQuery = useSongInfo({ query: { id: songId }, serverId: server?.id });
     const cq = useContainerQuery();
     const now = useCurrentTime();
 
     const detailQuery = useTrackList({
         options: {
-            enabled: !!beetId,
+            enabled: !!songDetailQuery?.data?.beetId,
         },
-        query: { track_id: beetId || 0 },
+        query: { track_id: songDetailQuery?.data?.beetId || 0 },
         serverId: server?.id,
     });
     const tracklist = detailQuery.data;
@@ -89,9 +91,9 @@ export const MixInfoContent = ({ background }: MixInfoContentProps) => {
         });
     };
 
-    const isLoading = detailQuery?.isLoading || beetTrack?.isLoading;
+    const isLoading = detailQuery?.isLoading
     if (isLoading) return <ContentContainer ref={cq.ref} />;
-    const trackList = tracklist!.items;
+    const trackList = tracklist ? tracklist.items : [];
 
     const startToIdsMap: Map<number, string> = new Map();
 
@@ -113,7 +115,6 @@ export const MixInfoContent = ({ background }: MixInfoContentProps) => {
         }
     }
     const t = getTrackNumber(now, startToTrackNumberMap);
-    console.log(`lajp track number ${t}`);
 
     return (
         <ContentContainer ref={cq.ref}>

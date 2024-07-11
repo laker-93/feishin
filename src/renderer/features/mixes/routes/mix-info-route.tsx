@@ -6,9 +6,9 @@ import { usePlayQueueAdd } from '/@/renderer/features/player';
 import { usePlayButtonBehavior } from '/@/renderer/store/settings.store';
 import { LibraryItem } from '/@/renderer/api/types';
 import { useSongInfo } from '/@/renderer/features/songs/queries/song-info-query';
-import { SongInfoHeader } from '/@/renderer/features/mixes/components/song-info-header';
 import { MixInfoContent } from '/@/renderer/features/mixes/components/mix-info-content';
 import { getPublicServer } from '/@/renderer/store';
+import { SongInfoHeader } from '/@/renderer/features/songs/components/song-info-header';
 
 const MixInfoRoute = () => {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -25,7 +25,6 @@ const MixInfoRoute = () => {
     if (detailQuery.isLoading || detailQuery.data === undefined) {
         return
     }
-    debugger
 
     const handlePlay = () => {
         handlePlayQueueAdd?.({
@@ -58,6 +57,7 @@ const MixInfoRoute = () => {
                 <SongInfoHeader
                     ref={headerRef}
                     background={background}
+                    serv={server}
                 />
                 <MixInfoContent background={background} />
             </NativeScrollArea>

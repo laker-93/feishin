@@ -106,7 +106,6 @@ const HomeRoute = () => {
         serverId: server?.id,
     });
 
-    debugger
     const mostPlayedSongs = useSongList(
         {
             options: {
