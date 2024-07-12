@@ -76,6 +76,7 @@ export type ServerListItem = {
     credential: string;
     features?: ServerFeatures;
     id: string;
+    isPublic: boolean;
     name: string;
     ndCredential?: string;
     savePassword?: boolean;

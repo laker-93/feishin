@@ -88,6 +88,7 @@ export const MixInfoContent = ({ background }: MixInfoContentProps) => {
         handlePlayQueueAdd?.({
             byItemType: { id: [songId], type: LibraryItem.SONG },
             playType: playType || playButtonBehavior,
+            publicNd: true,
         });
     };
 
