@@ -141,7 +141,6 @@ export const useVirtualTable = <TFilter extends BaseQuery<any>>({
             if (itemType === LibraryItem.GENRE) {
                 return api.controller.getGenreList;
             }
-
             return null;
         }, [itemType]);
 

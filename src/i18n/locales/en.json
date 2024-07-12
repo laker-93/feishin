@@ -118,6 +118,7 @@
         "yes": "yes"
     },
     "entity": {
+        "about": "about",
         "album_one": "album",
         "album_other": "albums",
         "albumArtist_one": "album artist",
@@ -147,9 +148,9 @@
         "playlistWithCount_one": "{{count}} playlist",
         "playlistWithCount_other": "{{count}} playlists",
         "smartPlaylist": "smart $t(entity.playlist_one)",
-        "song_other": "songs",
         "track_one": "track",
         "track_other": "tracks",
+        "mixes": "mixes",
         "song_one": "song",
         "song_other": "songs",
         "trackWithCount_one": "{{count}} track",
@@ -288,6 +289,9 @@
         }
     },
     "page": {
+        "about": {
+            "title": "$t(entity.about)"
+        },
         "albumArtistDetail": {
             "about": "About {{artist}}",
             "appearsOn": "appears on",
@@ -419,6 +423,7 @@
             "windowTab": "window"
         },
         "sidebar": {
+            "about": "$t(entity.about)",
             "albumArtists": "$t(entity.albumArtist_other)",
             "albums": "$t(entity.album_other)",
             "artists": "$t(entity.artist_other)",
@@ -430,12 +435,16 @@
             "search": "$t(common.search)",
             "settings": "$t(common.setting_other)",
             "shared": "shared $t(entity.playlist_other)",
-            "tracks": "$t(entity.track_other)"
+            "tracks": "$t(entity.track_other)",
+            "mixes": "$t(entity.mixes)"
         },
         "trackList": {
             "artistTracks": "tracks by {{artist}}",
             "genreTracks": "\"{{genre}}\" $t(entity.track_other)",
             "title": "$t(entity.track_other)"
+        },
+        "mixes": {
+            "title": "$t(entity.mixes)"
         }
     },
     "player": {

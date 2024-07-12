@@ -80,6 +80,7 @@ export type ServerListItem = {
     credential: string;
     features?: ServerFeatures;
     id: string;
+    isPublic: boolean;
     name: string;
     ndCredential?: string;
     savePassword?: boolean;
@@ -193,6 +194,7 @@ export type PlayQueueAddOptions = {
     initialIndex?: number;
     initialSongId?: string;
     playType: Play;
+    publicNd?: boolean;
     query?: Record<string, any>;
 };
 

@@ -62,7 +62,8 @@ export const useHandlePlayQueueAdd = () => {
     const { t } = useTranslation();
     const queryClient = useQueryClient();
     const playbackType = usePlaybackType();
-    const server = useCurrentServer();
+    const userServer = useCurrentServer();
+    const publicServer = getPublicServer();
     const { play } = usePlayerControls();
     const timeoutIds = useRef<Record<string, ReturnType<typeof setTimeout>> | null>({});
 
@@ -70,8 +71,10 @@ export const useHandlePlayQueueAdd = () => {
 
     const handlePlayQueueAdd = useCallback(
         async (options: PlayQueueAddOptions) => {
+            const { initialIndex, initialSongId, playType, byData, byItemType, query, publicNd } =
+                options;
+            const server = publicNd ? publicServer : userServer;
             if (!server) return toast.error({ message: 'No server selected', type: 'error' });
-            const { initialIndex, initialSongId, playType, byData, byItemType, query } = options;
             let songs: QueueSong[] | null = null;
             let initialSongIndex = 0;
 

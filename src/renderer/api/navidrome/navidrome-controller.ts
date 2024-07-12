@@ -15,6 +15,10 @@ import {
     genreListSortMap,
     Song,
     ControllerEndpoint,
+    DeleteSongArgs,
+    DeleteSongResponse,
+    GetBeetTrackArgs,
+    GetBeetTrackResponse,
 } from '../types';
 import { VersionInfo, getFeatures, hasFeature } from '/@/renderer/api/utils';
 import { ServerFeature, ServerFeatures } from '/@/renderer/api/features-types';
