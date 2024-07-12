@@ -46,7 +46,6 @@ const normalizeSong = (
             size: 100,
         }) || null;
 
-
     let isPublic = false;
     const publicServer = getPublicServer();
     if (server) {
@@ -110,8 +109,8 @@ const normalizeSong = (
         itemType: LibraryItem.SONG,
         lastPlayedAt: null,
         lyrics: null,
-        name: item.title,
         mbzId: null,
+        name: item.title,
         path: item.path,
         peak:
             item.replayGain && (item.replayGain.albumPeak || item.replayGain.trackPeak)

@@ -13,7 +13,6 @@ import {
     ServerListItem,
     ServerType,
 } from '/@/renderer/api/types';
-import { FaSlidersH } from 'react-icons/fa';
 
 const getStreamUrl = (args: {
     container?: string;
@@ -173,8 +172,8 @@ const normalizeSong = (
         itemType: LibraryItem.SONG,
         lastPlayedAt: null,
         lyrics: null,
-        name: item.Name,
         mbzId: null,
+        name: item.Name,
         path: (item.MediaSources && item.MediaSources[0]?.Path) || null,
         peak: null,
         playCount: (item.UserData && item.UserData.PlayCount) || 0,
