@@ -13,6 +13,7 @@ import {
     ServerListItem,
     ServerType,
 } from '/@/renderer/api/types';
+import { FaSlidersH } from 'react-icons/fa';
 
 const getStreamUrl = (args: {
     container?: string;
@@ -141,6 +142,7 @@ const normalizeSong = (
             imageUrl: null,
             name: entry.Name,
         })),
+        beetId: null,
         bitRate:
             item.MediaSources?.[0].Bitrate &&
             Number(Math.trunc(item.MediaSources[0].Bitrate / 1000)),
@@ -167,10 +169,12 @@ const normalizeSong = (
         id: item.Id,
         imagePlaceholderUrl: null,
         imageUrl: getSongCoverArtUrl({ baseUrl: server?.url || '', item, size: imageSize || 100 }),
+        isPublic: false,
         itemType: LibraryItem.SONG,
         lastPlayedAt: null,
         lyrics: null,
         name: item.Name,
+        mbzId: null,
         path: (item.MediaSources && item.MediaSources[0]?.Path) || null,
         peak: null,
         playCount: (item.UserData && item.UserData.PlayCount) || 0,
