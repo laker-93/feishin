@@ -33,7 +33,7 @@ import { useContainerQuery } from '/@/renderer/hooks';
 import { useListFilterRefresh } from '/@/renderer/hooks/use-list-filter-refresh';
 import { queryClient } from '/@/renderer/lib/react-query';
 import { SongListFilter, useCurrentServer, useListStoreActions } from '/@/renderer/store';
-import { ListDisplayType, Play, TableColumn } from '/@/renderer/types';
+import { ListDisplayType, Play, ServerListItem, TableColumn } from '/@/renderer/types';
 import i18n from '/@/i18n/i18n';
 import { SubsonicSongFilters } from '/@/renderer/features/songs/components/subsonic-song-filter';
 
@@ -193,7 +193,8 @@ export const SongListHeaderFilters = ({
     tableRef,
 }: SongListHeaderFiltersProps) => {
     const { t } = useTranslation();
-    const server = useCurrentServer();
+    const curServer = useCurrentServer();
+    const server = serv || curServer;
     const { pageKey, handlePlay, customFilters } = useListContext();
     const { display, table, filter, grid } = useListStoreByKey<SongListQuery>({
         filter: customFilters,

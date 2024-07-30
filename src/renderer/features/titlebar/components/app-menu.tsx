@@ -9,12 +9,12 @@ import {
     RiArrowRightSLine,
     RiLayoutRightLine,
     RiLayoutLeftLine,
-    RiEdit2Line,
     RiSettings3Line,
     RiServerLine,
     RiGithubLine,
     RiExternalLinkLine,
     RiCloseCircleLine,
+    RiLoginBoxLine,
 } from 'react-icons/ri';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -134,10 +134,10 @@ export const AppMenu = () => {
                 {t('page.appMenu.settings', { postProcess: 'sentenceCase' })}
             </DropdownMenu.Item>
             <DropdownMenu.Item
-                icon={<RiEdit2Line />}
+                icon={<RiLoginBoxLine />}
                 onClick={handleManageServersModal}
             >
-                {t('page.appMenu.manageServers', { postProcess: 'sentenceCase' })}
+                {t('page.appMenu.logon', { postProcess: 'sentenceCase' })}
             </DropdownMenu.Item>
 
             <DropdownMenu.Divider />

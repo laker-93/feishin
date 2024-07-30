@@ -149,6 +149,7 @@ const MixListRoute = () => {
                     genreId={genreId}
                     gridRef={gridRef}
                     itemCount={itemCount}
+                    serv={server}
                     tableRef={tableRef}
                     title={title}
                 />

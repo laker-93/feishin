@@ -17,6 +17,7 @@ interface SongListHeaderProps {
     genreId?: string;
     gridRef: MutableRefObject<VirtualInfiniteGridRef | null>;
     itemCount?: number;
+    serv?: ServerListItem | null;
     tableRef: MutableRefObject<AgGridReactType | null>;
     title?: string;
 }
@@ -24,12 +25,14 @@ interface SongListHeaderProps {
 export const SongListHeader = ({
     genreId,
     gridRef,
+    serv,
     title,
     itemCount,
     tableRef,
 }: SongListHeaderProps) => {
     const { t } = useTranslation();
-    const server = useCurrentServer();
+    const curServer = useCurrentServer();
+    const server = serv || curServer;
     const cq = useContainerQuery();
     const genreRef = useRef<string>();
 
