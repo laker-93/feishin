@@ -3,7 +3,7 @@ import type { AgGridReact as AgGridReactType } from '@ag-grid-community/react/li
 import { Flex, Group, Stack } from '@mantine/core';
 import debounce from 'lodash/debounce';
 import { useTranslation } from 'react-i18next';
-import { LibraryItem } from '/@/renderer/api/types';
+import { LibraryItem, ServerListItem } from '/@/renderer/api/types';
 import { PageHeader, SearchInput } from '/@/renderer/components';
 import { FilterBar, LibraryHeaderBar } from '/@/renderer/features/shared';
 import { SongListHeaderFilters } from '/@/renderer/features/songs/components/song-list-header-filters';
@@ -17,6 +17,7 @@ interface SongListHeaderProps {
     genreId?: string;
     gridRef: MutableRefObject<VirtualInfiniteGridRef | null>;
     itemCount?: number;
+    serv?: ServerListItem | null;
     tableRef: MutableRefObject<AgGridReactType | null>;
     title?: string;
 }
@@ -24,12 +25,14 @@ interface SongListHeaderProps {
 export const SongListHeader = ({
     genreId,
     gridRef,
+    serv,
     title,
     itemCount,
     tableRef,
 }: SongListHeaderProps) => {
     const { t } = useTranslation();
-    const server = useCurrentServer();
+    const curServer = useCurrentServer();
+    const server = serv || curServer;
     const cq = useContainerQuery();
     const genreRef = useRef<string>();
 
@@ -96,6 +99,7 @@ export const SongListHeader = ({
             <FilterBar>
                 <SongListHeaderFilters
                     gridRef={gridRef}
+                    serv={server}
                     tableRef={tableRef}
                 />
             </FilterBar>

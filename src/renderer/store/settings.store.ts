@@ -31,6 +31,7 @@ export type SidebarItemType = {
     disabled: boolean;
     id: string;
     label: string;
+    requiresUserAccount: boolean;
     route: AppRoute | string;
 };
 
@@ -39,62 +40,84 @@ export const sidebarItems = [
         disabled: true,
         id: 'Now Playing',
         label: i18n.t('page.sidebar.nowPlaying'),
+        requiresUserAccount: false,
         route: AppRoute.NOW_PLAYING,
     },
     {
         disabled: true,
         id: 'Search',
         label: i18n.t('page.sidebar.search'),
+        requiresUserAccount: false,
         route: generatePath(AppRoute.SEARCH, { itemType: LibraryItem.SONG }),
     },
-    { disabled: false, id: 'About', label: i18n.t('page.sidebar.about'), route: AppRoute.ABOUT },
-    { disabled: false, id: 'Home', label: i18n.t('page.sidebar.home'), route: AppRoute.HOME },
+    {
+        disabled: false,
+        id: 'About',
+        label: i18n.t('page.sidebar.about'),
+        requiresUserAccount: false,
+        route: AppRoute.ABOUT,
+    },
+    {
+        disabled: false,
+        id: 'Home',
+        label: i18n.t('page.sidebar.home'),
+        requiresUserAccount: false,
+        route: AppRoute.HOME,
+    },
     {
         disabled: false,
         id: 'Albums',
         label: i18n.t('page.sidebar.albums'),
+        requiresUserAccount: true,
         route: AppRoute.LIBRARY_ALBUMS,
     },
     {
         disabled: false,
         id: 'Tracks',
         label: i18n.t('page.sidebar.tracks'),
+        requiresUserAccount: true,
         route: AppRoute.LIBRARY_SONGS,
     },
     {
         disabled: false,
         id: 'Mixes',
         label: i18n.t('page.sidebar.mixes'),
+        requiresUserAccount: false,
         route: AppRoute.LIBRARY_MIXES,
     },
     {
         disabled: false,
         id: 'Artists',
         label: i18n.t('page.sidebar.artists'),
+        requiresUserAccount: true,
         route: AppRoute.LIBRARY_ALBUM_ARTISTS,
     },
     {
         disabled: false,
         id: 'Genres',
         label: i18n.t('page.sidebar.genres'),
+        requiresUserAccount: true,
         route: AppRoute.LIBRARY_GENRES,
     },
     {
         disabled: true,
         id: 'Folders',
         label: i18n.t('page.sidebar.folders'),
+        requiresUserAccount: true,
         route: AppRoute.LIBRARY_FOLDERS,
     },
     {
         disabled: true,
         id: 'Playlists',
         label: i18n.t('page.sidebar.playlists'),
+        requiresUserAccount: true,
         route: AppRoute.PLAYLISTS,
     },
     {
         disabled: true,
         id: 'Settings',
         label: i18n.t('page.sidebar.settings'),
+        requiresUserAccount: true,
         route: AppRoute.SETTINGS,
     },
 ];
@@ -106,9 +129,13 @@ export type SortableItem<T> = {
 
 export enum HomeItem {
     MOST_PLAYED = 'mostPlayed',
+    MOST_PLAYED_MIXES = 'mostPlayedMixes',
     RANDOM = 'random',
+    RANDOM_MIXES = 'randomMixes',
     RECENTLY_ADDED = 'recentlyAdded',
+    RECENTLY_ADDED_MIXES = 'recentlyAddedMixes',
     RECENTLY_PLAYED = 'recentlyPlayed',
+    RECENTLY_PLAYED_MIXES = 'recentlyPlayedMixes',
 }
 
 export const homeItems = Object.values(HomeItem).map((item) => ({

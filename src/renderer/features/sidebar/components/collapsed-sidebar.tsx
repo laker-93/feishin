@@ -10,8 +10,14 @@ import { CollapsedSidebarButton } from '/@/renderer/features/sidebar/components/
 import { CollapsedSidebarItem } from '/@/renderer/features/sidebar/components/collapsed-sidebar-item';
 import { SidebarIcon } from '/@/renderer/features/sidebar/components/sidebar-icon';
 import { AppMenu } from '/@/renderer/features/titlebar/components/app-menu';
-import { SidebarItemType, useGeneralSettings, useWindowSettings } from '/@/renderer/store';
+import {
+    SidebarItemType,
+    useCurrentServer,
+    useGeneralSettings,
+    useWindowSettings,
+} from '/@/renderer/store';
 import { Platform } from '/@/renderer/types';
+import { enableSideBarItem } from '/@/renderer/api/utils';
 
 const SidebarContainer = styled(motion.div)<{ $windowBarStyle: Platform }>`
     display: flex;
@@ -48,11 +54,12 @@ export const CollapsedSidebar = () => {
         [t],
     );
 
+    const server = useCurrentServer();
     const sidebarItemsWithRoute: SidebarItemType[] = useMemo(() => {
         if (!sidebarItems) return [];
 
         const items = sidebarItems
-            .filter((item) => !item.disabled)
+            .filter((item) => enableSideBarItem(server, item.disabled, item.requiresUserAccount))
             .map((item) => ({
                 ...item,
                 label:
@@ -61,7 +68,7 @@ export const CollapsedSidebar = () => {
             }));
 
         return items;
-    }, [sidebarItems, translatedSidebarItemMap]);
+    }, [sidebarItems, translatedSidebarItemMap, server]);
 
     return (
         <SidebarContainer $windowBarStyle={windowBarStyle}>
