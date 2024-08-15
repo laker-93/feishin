@@ -1,6 +1,8 @@
 import {
     RiAlbumFill,
     RiAlbumLine,
+    RiDownloadFill,
+    RiDownloadLine,
     RiFlag2Fill,
     RiFlag2Line,
     RiFolder3Fill,
@@ -21,6 +23,8 @@ import {
     RiSettings2Line,
     RiUserVoiceFill,
     RiUserVoiceLine,
+    RiUploadFill,
+    RiUploadLine,
 } from 'react-icons/ri';
 import { AppRoute } from '/@/renderer/router/routes';
 import { generatePath } from 'react-router';
@@ -40,6 +44,9 @@ export const SidebarIcon = ({ active, route, size }: SidebarIconProps) => {
         case AppRoute.ABOUT:
             if (active) return <RiInformationFill size={size} />;
             return <RiInformationLine size={size} />;
+        case AppRoute.DOWNLOAD:
+            if (active) return <RiDownloadFill size={size} />;
+            return <RiDownloadLine size={size} />;
         case AppRoute.LIBRARY_ALBUMS:
             if (active) return <RiAlbumFill size={size} />;
             return <RiAlbumLine size={size} />;
@@ -73,6 +80,9 @@ export const SidebarIcon = ({ active, route, size }: SidebarIconProps) => {
         case AppRoute.NOW_PLAYING:
             if (active) return <RiPlayFill size={size} />;
             return <RiPlayLine size={size} />;
+        case AppRoute.UPLOAD:
+            if (active) return <RiUploadFill size={size} />;
+            return <RiUploadLine size={size} />;
         default:
             return <RiHome6Line size={size} />;
     }

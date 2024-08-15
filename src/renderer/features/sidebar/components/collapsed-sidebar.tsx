@@ -50,6 +50,8 @@ export const CollapsedSidebar = () => {
             Search: t('page.sidebar.search', { postProcess: 'titleCase' }),
             Settings: t('page.sidebar.settings', { postProcess: 'titleCase' }),
             Tracks: t('page.sidebar.tracks', { postProcess: 'titleCase' }),
+            Upload: t('page.sidebar.upload', { postProcess: 'titleCase' }),
+            Download: t('page.sidebar.download', { postProcess: 'titleCase' }),
         }),
         [t],
     );

@@ -29,4 +29,6 @@ export enum AppRoute {
     SEARCH = '/search/:itemType',
     SERVERS = '/servers',
     SETTINGS = '/settings',
+    UPLOAD = '/upload',
+    DOWNLOAD = '/download',
 }
