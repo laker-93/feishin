@@ -10,6 +10,7 @@ import { LocalSettings } from '/@/main/preload/local-settings';
 import { Ipc } from '/@/main/preload/ipc';
 import { DiscordRpc } from '/@/main/preload/discord-rpc';
 import { Browser } from '/@/main/preload/browser';
+import { UserFS } from '/@/main/preload/user-fs';
 
 declare global {
     interface Window {
@@ -81,6 +82,7 @@ declare global {
             mpvPlayer?: MpvPLayer;
             mpvPlayerListener?: MpvPlayerListener;
             remote?: Remote;
+            userFs?: UserFS;
             utils?: Utils;
         };
         queryLocalFonts?: () => Promise<FontData[]>;

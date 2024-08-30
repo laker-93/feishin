@@ -13,6 +13,7 @@ import { api } from '/@/renderer/api';
 import { useTranslation } from 'react-i18next';
 
 const localSettings = isElectron() ? window.electron.localSettings : null;
+const userFS = isElectron() ? window.electron.userFs : null;
 
 interface AddServerFormProps {
     onCancel: () => void;
@@ -73,9 +74,21 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
                     message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
                 });
             }
+            let fbToken = null;
+            if (userFS) {
+                console.log('attempting to autheticate with userFS');
+                fbToken = await userFS.authenticate(values.username, values.password);
+                if (!fbToken) {
+                    toast.error({
+                        message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
+                    });
+                }
+                console.log(`fbData: ${fbToken}`);
+            }
 
             const serverItem = {
                 credential: data.credential,
+                fbToken,
                 id: nanoid(),
                 isPublic: false,
                 name: data.username,
