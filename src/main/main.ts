@@ -724,9 +724,10 @@ ipcMain.handle(
         );
 
         console.log('clientTracks:', clientTracks);
+        const fbUrl = 'https://browser.sub-box.net/browser';
 
         const response = await axios.post(
-            'http://localhost:8002/sync',
+            `${fbUrl}/sync`,
             {
                 tracks: clientTracks,
             },

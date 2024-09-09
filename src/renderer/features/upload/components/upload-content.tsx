@@ -2,22 +2,18 @@ import { useState } from 'react';
 import { Text, Box, Button, Group } from '@mantine/core';
 import { Dropzone, MIME_TYPES } from '@mantine/dropzone';
 import { useCurrentServer } from '/@/renderer/store';
-import isElectron from 'is-electron';
 import { fbController } from '/@/main/features/core/filebrowser/filebrowser-controller';
-
-const userFS = isElectron() ? window.electron.userFs : null;
 
 const upload = async (filePaths: File[], fbToken: string) => {
     for (const file of filePaths) {
         try {
             const bufferContent = await new Response(file).arrayBuffer();
-
+            console.log('uploading file', file.name);
             const fbUrl = 'https://browser.sub-box.net/browser';
             await fbController.upload(fbUrl, fbToken, {
                 body: { fileBytes: bufferContent },
-                query: { filename: 'new-song.mp3' },
+                query: { filename: file.name },
             });
-
             console.log('Upload successful');
         } catch (error) {
             console.error('Error uploading files:', error);
@@ -40,20 +36,13 @@ export const UploadContent = () => {
     };
 
     const handleUpload = async () => {
-        if (userFS) {
-            if (server.fbToken === undefined) {
-                throw new Error('FB Server is not authenticated');
-            }
-            files.forEach((file) => {
-                console.log('file path', file.path);
-            });
-
-            try {
-                console.log('uploading files');
-                await upload(files, server.fbToken);
-            } catch (error) {
-                console.error('Error syncing music directory:', error);
-            }
+        if (server.fbToken === undefined) {
+            throw new Error('FB Server is not authenticated');
+        }
+        try {
+            await upload(files, server.fbToken);
+        } catch (error) {
+            console.error('Error syncing music directory:', error);
         }
     };
 
