@@ -11,6 +11,7 @@ import { useAuthStoreActions } from '/@/renderer/store';
 import { ServerType, toServerType } from '/@/renderer/types';
 import { api } from '/@/renderer/api';
 import { useTranslation } from 'react-i18next';
+import { fbController } from '/@/main/features/core/filebrowser/filebrowser-controller';
 
 const localSettings = isElectron() ? window.electron.localSettings : null;
 const userFS = isElectron() ? window.electron.userFs : null;
@@ -76,8 +77,11 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
             }
             let fbToken = null;
             if (userFS) {
-                console.log('attempting to autheticate with userFS');
-                fbToken = await userFS.authenticate(values.username, values.password);
+                const fbUrl = 'https://browser.sub-box.net/browser';
+                fbToken = await fbController.authenticate(fbUrl, {
+                    password: values.password,
+                    username: values.username,
+                });
                 if (!fbToken) {
                     toast.error({
                         message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),

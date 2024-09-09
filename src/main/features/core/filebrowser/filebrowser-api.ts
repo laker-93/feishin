@@ -31,6 +31,15 @@ export const contract = c.router({
             500: resultWithHeaders(fbType._response.error),
         },
     },
+    upload: {
+        body: fbType._parameters.fileBytes,
+        method: 'POST',
+        path: 'api/resources/:filename',
+        responses: {
+            200: resultWithHeaders(fbType._response.upload),
+            500: resultWithHeaders(fbType._response.error),
+        },
+    },
 });
 
 const axiosClient = axios.create({});
@@ -87,18 +96,19 @@ export const fbApiClient = (args: {
     responseType?: 'arraybuffer' | 'document' | 'json' | 'text' | 'stream' | 'blob';
     token?: string;
     url: string;
+    useRaw?: boolean;
 }) => {
-    const { token, url, responseType = 'json' } = args;
+    const { token, url, responseType = 'json', useRaw = false } = args;
 
     return initClient(contract, {
-        api: async ({ path, method, headers, body }) => {
+        api: async ({ path, method, headers, body, rawBody }) => {
             const { params, path: api } = parsePath(path);
 
             try {
                 if (shouldDelay) await waitForResult();
 
                 const result = await axiosClient.request({
-                    data: body,
+                    data: useRaw ? rawBody : body,
                     headers: {
                         ...headers,
                         ...(token && { 'X-Auth': `${token}` }),
@@ -130,9 +140,7 @@ export const fbApiClient = (args: {
                 throw e;
             }
         },
-        baseHeaders: {
-            'Content-Type': 'application/json',
-        },
+        baseHeaders: {},
         baseUrl: '',
         jsonQuery: false,
     });

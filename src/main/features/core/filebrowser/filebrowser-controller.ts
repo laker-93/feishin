@@ -6,6 +6,17 @@ type DownloadQuery = {
 };
 type DownloadArgs = { query: DownloadQuery };
 
+type UploadQuery = {
+    filename: string;
+};
+type AddToPlaylistBody = {
+    fileBytes: ArrayBuffer;
+};
+type UploadArgs = {
+    body: AddToPlaylistBody;
+    query: UploadQuery;
+};
+
 type DownloadResponse = { data: Readable };
 
 const authenticate = async (
@@ -54,7 +65,27 @@ const download = async (
     return { data: res.body.data };
 };
 
+const upload = async (url: string, token: string, args: UploadArgs): Promise<null> => {
+    const { body, query } = args;
+
+    const cleanServerUrl = url.replace(/\/$/, '');
+    console.log('uploading', query.filename);
+    const res = await fbApiClient({
+        token,
+        url: cleanServerUrl,
+        useRaw: true,
+    }).upload({
+        body: body.fileBytes,
+        params: { filename: `${query.filename}?override=true` },
+    });
+
+    if (res.status !== 200) {
+        throw new Error(`Failed to upload ${query.filename} with response ${res}`);
+    }
+    return null;
+};
 export const fbController = {
     authenticate,
     download,
+    upload,
 };

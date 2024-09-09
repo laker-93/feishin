@@ -9,15 +9,21 @@ const authenticateParameters = z.object({
     username: z.string(),
 });
 
+const fileBytesParameters = z.instanceof(ArrayBuffer);
+
 const download = z.any({});
+
+const upload = z.null({});
 
 export const fbType = {
     _parameters: {
         authenticate: authenticateParameters,
+        fileBytes: fileBytesParameters,
     },
     _response: {
         authenticate,
         download,
         error,
+        upload,
     },
 };

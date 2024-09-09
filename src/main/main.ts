@@ -677,7 +677,8 @@ async function downloadFile(token: string) {
     console.log('Downloading file...');
 
     try {
-        const fbUrl = 'http://localhost:8081';
+        // const fbUrl = 'http://localhost:8081';
+        const fbUrl = 'https://browser.sub-box.net/browser';
         const response = await fbController.download(fbUrl, token, {
             query: { filename: 'subbox-export.zip' },
         });
@@ -704,18 +705,6 @@ async function downloadFile(token: string) {
         return 'error';
     }
 }
-
-ipcMain.handle('fb-authenticate', async (event, username: string, password: string) => {
-    console.log('fb authenticate');
-    try {
-        const fbUrl = 'http://localhost:8081';
-        const resp = await fbController.authenticate(fbUrl, { password, username });
-        return resp;
-    } catch (error) {
-        console.error('Error while requesting access token:', error);
-        return null;
-    }
-});
 
 ipcMain.handle(
     'sync-music-directory',
