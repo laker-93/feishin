@@ -31,6 +31,7 @@ export type SidebarItemType = {
     disabled: boolean;
     id: string;
     label: string;
+    requiresElectron: boolean;
     requiresUserAccount: boolean;
     route: AppRoute | string;
 };
@@ -40,6 +41,7 @@ export const sidebarItems = [
         disabled: true,
         id: 'Now Playing',
         label: i18n.t('page.sidebar.nowPlaying'),
+        requiresElectron: false,
         requiresUserAccount: false,
         route: AppRoute.NOW_PLAYING,
     },
@@ -47,6 +49,7 @@ export const sidebarItems = [
         disabled: true,
         id: 'Search',
         label: i18n.t('page.sidebar.search'),
+        requiresElectron: false,
         requiresUserAccount: false,
         route: generatePath(AppRoute.SEARCH, { itemType: LibraryItem.SONG }),
     },
@@ -54,6 +57,7 @@ export const sidebarItems = [
         disabled: false,
         id: 'About',
         label: i18n.t('page.sidebar.about'),
+        requiresElectron: false,
         requiresUserAccount: false,
         route: AppRoute.ABOUT,
     },
@@ -61,6 +65,7 @@ export const sidebarItems = [
         disabled: false,
         id: 'Home',
         label: i18n.t('page.sidebar.home'),
+        requiresElectron: false,
         requiresUserAccount: false,
         route: AppRoute.HOME,
     },
@@ -68,13 +73,23 @@ export const sidebarItems = [
         disabled: false,
         id: 'Albums',
         label: i18n.t('page.sidebar.albums'),
+        requiresElectron: false,
         requiresUserAccount: true,
         route: AppRoute.LIBRARY_ALBUMS,
     },
     {
         disabled: false,
+        id: 'Download',
+        label: i18n.t('page.sidebar.download'),
+        requiresElectron: true,
+        requiresUserAccount: true,
+        route: AppRoute.DOWNLOAD,
+    },
+    {
+        disabled: false,
         id: 'Tracks',
         label: i18n.t('page.sidebar.tracks'),
+        requiresElectron: false,
         requiresUserAccount: true,
         route: AppRoute.LIBRARY_SONGS,
     },
@@ -82,6 +97,7 @@ export const sidebarItems = [
         disabled: false,
         id: 'Mixes',
         label: i18n.t('page.sidebar.mixes'),
+        requiresElectron: false,
         requiresUserAccount: false,
         route: AppRoute.LIBRARY_MIXES,
     },
@@ -89,6 +105,7 @@ export const sidebarItems = [
         disabled: false,
         id: 'Artists',
         label: i18n.t('page.sidebar.artists'),
+        requiresElectron: false,
         requiresUserAccount: true,
         route: AppRoute.LIBRARY_ALBUM_ARTISTS,
     },
@@ -96,6 +113,7 @@ export const sidebarItems = [
         disabled: false,
         id: 'Genres',
         label: i18n.t('page.sidebar.genres'),
+        requiresElectron: false,
         requiresUserAccount: true,
         route: AppRoute.LIBRARY_GENRES,
     },
@@ -103,6 +121,7 @@ export const sidebarItems = [
         disabled: true,
         id: 'Folders',
         label: i18n.t('page.sidebar.folders'),
+        requiresElectron: false,
         requiresUserAccount: true,
         route: AppRoute.LIBRARY_FOLDERS,
     },
@@ -110,6 +129,7 @@ export const sidebarItems = [
         disabled: true,
         id: 'Playlists',
         label: i18n.t('page.sidebar.playlists'),
+        requiresElectron: false,
         requiresUserAccount: true,
         route: AppRoute.PLAYLISTS,
     },
@@ -117,8 +137,17 @@ export const sidebarItems = [
         disabled: true,
         id: 'Settings',
         label: i18n.t('page.sidebar.settings'),
+        requiresElectron: false,
         requiresUserAccount: true,
         route: AppRoute.SETTINGS,
+    },
+    {
+        disabled: false,
+        id: 'Upload',
+        label: i18n.t('page.sidebar.upload'),
+        requiresElectron: true,
+        requiresUserAccount: true,
+        route: AppRoute.UPLOAD,
     },
 ];
 

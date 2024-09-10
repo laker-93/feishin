@@ -8,9 +8,10 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { access, constants, readFile, writeFile } from 'fs';
+import { access, constants, readFile, writeFile, createWriteStream, promises } from 'fs';
 import path, { join } from 'path';
 import { deflate, inflate } from 'zlib';
+import axios from 'axios';
 import {
     app,
     BrowserWindow,
@@ -30,6 +31,8 @@ import {
 import electronLocalShortcut from 'electron-localshortcut';
 import log from 'electron-log/main';
 import { autoUpdater } from 'electron-updater';
+import musicMetadata from 'music-metadata';
+import { fbController } from './features/core/filebrowser/filebrowser-controller';
 import { disableMediaKeys, enableMediaKeys } from './features/core/player/media-keys';
 import { store } from './features/core/settings/index';
 import MenuBuilder from './menu';
@@ -668,3 +671,77 @@ if (!singleInstance) {
         })
         .catch(console.log);
 }
+
+// todo put this in main/features/core/filebrowser
+async function downloadFile(token: string) {
+    console.log('Downloading file...');
+
+    try {
+        // const fbUrl = 'http://localhost:8081';
+        const fbUrl = 'https://browser.sub-box.net/browser';
+        const response = await fbController.download(fbUrl, token, {
+            query: { filename: 'subbox-export.zip' },
+        });
+
+        // todo set this in settings and default to sensible values for different OS
+        const writer = createWriteStream(
+            '/Users/lukepurnell/Library/Application Support/subbox/subbox-export.zip',
+        );
+
+        response.data.pipe(writer);
+
+        return new Promise<void>((resolve, reject) => {
+            writer.on('finish', () => {
+                console.log('File downloaded successfully.');
+                resolve();
+            });
+            writer.on('error', (error) => {
+                console.error('Error while downloading file:', error);
+                reject(error);
+            });
+        });
+    } catch (error) {
+        console.error('Error while requesting file download:', error);
+        return 'error';
+    }
+}
+
+ipcMain.handle(
+    'sync-music-directory',
+    async (event, directoryPath: string, username: string, fbToken: string) => {
+        console.log('Syncing music directory:', directoryPath);
+        const files = await promises.readdir(directoryPath);
+        const musicFiles = files.filter((file) => path.extname(file) === '.mp3');
+
+        const clientTracks = await Promise.all(
+            musicFiles.map(async (file) => {
+                const metadata = await musicMetadata.parseFile(path.join(directoryPath, file));
+                return {
+                    artist: metadata.common.artist,
+                    title: metadata.common.title,
+                };
+            }),
+        );
+
+        console.log('clientTracks:', clientTracks);
+
+        const pymixUrl = 'http://localhost:8002';
+        const response = await axios.post(
+            `${pymixUrl}/sync`,
+            {
+                tracks: clientTracks,
+            },
+            {
+                params: {
+                    username,
+                },
+            },
+        );
+        console.log('Sync response:', response.data);
+        if (response.data.success) {
+            console.log('Sync successful. Download file');
+            return downloadFile(fbToken);
+        }
+        return null;
+    },
+);
