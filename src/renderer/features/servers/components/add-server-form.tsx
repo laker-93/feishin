@@ -14,7 +14,6 @@ import { useTranslation } from 'react-i18next';
 import { fbController } from '/@/main/features/core/filebrowser/filebrowser-controller';
 
 const localSettings = isElectron() ? window.electron.localSettings : null;
-const userFS = isElectron() ? window.electron.userFs : null;
 
 interface AddServerFormProps {
     onCancel: () => void;
@@ -76,19 +75,18 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
                 });
             }
             let fbToken = null;
-            if (userFS) {
-                const fbUrl = 'https://browser.sub-box.net/browser';
-                fbToken = await fbController.authenticate(fbUrl, {
-                    password: values.password,
-                    username: values.username,
+            // todo this is only valid once the user has created an account.
+            const fbUrl = 'https://browser.sub-box.net/browser';
+            fbToken = await fbController.authenticate(fbUrl, {
+                password: values.password,
+                username: values.username,
+            });
+            if (!fbToken) {
+                toast.error({
+                    message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
                 });
-                if (!fbToken) {
-                    toast.error({
-                        message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
-                    });
-                }
-                console.log(`fbData: ${fbToken}`);
             }
+            console.log(`fbData: ${fbToken}`);
 
             const serverItem = {
                 credential: data.credential,

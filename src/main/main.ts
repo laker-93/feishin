@@ -724,10 +724,10 @@ ipcMain.handle(
         );
 
         console.log('clientTracks:', clientTracks);
-        const fbUrl = 'https://browser.sub-box.net/browser';
 
+        const pymixUrl = 'http://localhost:8002';
         const response = await axios.post(
-            `${fbUrl}/sync`,
+            `${pymixUrl}/sync`,
             {
                 tracks: clientTracks,
             },
