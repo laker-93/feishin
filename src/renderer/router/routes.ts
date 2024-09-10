@@ -1,6 +1,7 @@
 export enum AppRoute {
     ABOUT = '/about',
     ACTION_REQUIRED = '/action-required',
+    DOWNLOAD = '/download',
     EXPLORE = '/explore',
     FAKE_LIBRARY_ALBUM_DETAILS = '/library/albums/dummy/:albumId',
     HOME = '/',
@@ -28,4 +29,5 @@ export enum AppRoute {
     SEARCH = '/search/:itemType',
     SERVERS = '/servers',
     SETTINGS = '/settings',
+    UPLOAD = '/upload',
 }

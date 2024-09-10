@@ -41,6 +41,8 @@ const InvalidRoute = lazy(
 );
 
 const AboutRoute = lazy(() => import('/@/renderer/features/about/routes/about-route'));
+const DownloadRoute = lazy(() => import('/@/renderer/features/download/routes/download-route'));
+const UploadRoute = lazy(() => import('/@/renderer/features/upload/routes/upload-route'));
 
 const HomeRoute = lazy(() => import('/@/renderer/features/home/routes/home-route'));
 
@@ -119,6 +121,16 @@ export const AppRouter = () => {
                                     element={<AboutRoute />}
                                     errorElement={<RouteErrorBoundary />}
                                     path={AppRoute.ABOUT}
+                                />
+                                <Route
+                                    element={<DownloadRoute />}
+                                    errorElement={<RouteErrorBoundary />}
+                                    path={AppRoute.DOWNLOAD}
+                                />
+                                <Route
+                                    element={<UploadRoute />}
+                                    errorElement={<RouteErrorBoundary />}
+                                    path={AppRoute.UPLOAD}
                                 />
                                 <Route
                                     element={<SearchRoute />}

@@ -78,6 +78,7 @@ export const toServerType = (value?: string): ServerType | null => {
 
 export type ServerListItem = {
     credential: string;
+    fbToken?: string;
     features?: ServerFeatures;
     id: string;
     isPublic: boolean;

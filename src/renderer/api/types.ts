@@ -61,6 +61,7 @@ export type User = {
 
 export type ServerListItem = {
     credential: string;
+    fbToken?: string;
     features?: ServerFeatures;
     id: string;
     isPublic: boolean;

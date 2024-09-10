@@ -11,6 +11,7 @@ import { useAuthStoreActions } from '/@/renderer/store';
 import { ServerType, toServerType } from '/@/renderer/types';
 import { api } from '/@/renderer/api';
 import { useTranslation } from 'react-i18next';
+import { fbController } from '/@/main/features/core/filebrowser/filebrowser-controller';
 
 const localSettings = isElectron() ? window.electron.localSettings : null;
 
@@ -79,9 +80,23 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
                     message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
                 });
             }
+            let fbToken = null;
+            // todo this is only valid once the user has created an account.
+            const fbUrl = 'https://browser.sub-box.net/browser';
+            fbToken = await fbController.authenticate(fbUrl, {
+                password: values.password,
+                username: values.username,
+            });
+            if (!fbToken) {
+                toast.error({
+                    message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
+                });
+            }
+            console.log(`fbData: ${fbToken}`);
 
             const serverItem = {
                 credential: data.credential,
+                fbToken,
                 id: nanoid(),
                 isPublic: false,
                 name: data.username,

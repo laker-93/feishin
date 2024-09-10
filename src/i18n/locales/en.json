@@ -131,6 +131,7 @@
         "artist_other": "artists",
         "artistWithCount_one": "{{count}} artist",
         "artistWithCount_other": "{{count}} artists",
+        "download": "download",
         "favorite_one": "favorite",
         "favorite_other": "favorites",
         "folder_one": "folder",
@@ -154,7 +155,8 @@
         "song_one": "song",
         "song_other": "songs",
         "trackWithCount_one": "{{count}} track",
-        "trackWithCount_other": "{{count}} tracks"
+        "trackWithCount_other": "{{count}} tracks",
+        "upload": "upload"
     },
     "error": {
         "apiRouteError": "unable to route request",
@@ -362,6 +364,9 @@
             "shareItem": "share item",
             "showDetails": "get info"
         },
+        "download": {
+            "title": "$t(entity.download)"
+        },
         "fullscreenPlayer": {
             "config": {
                 "dynamicBackground": "dynamic background",
@@ -432,6 +437,7 @@
             "albumArtists": "$t(entity.albumArtist_other)",
             "albums": "$t(entity.album_other)",
             "artists": "$t(entity.artist_other)",
+            "download": "$t(entity.download)",
             "folders": "$t(entity.folder_other)",
             "genres": "$t(entity.genre_other)",
             "home": "$t(common.home)",
@@ -441,6 +447,7 @@
             "settings": "$t(common.setting_other)",
             "shared": "shared $t(entity.playlist_other)",
             "tracks": "$t(entity.track_other)",
+            "upload": "$t(entity.upload)",
             "mixes": "$t(entity.mixes)"
         },
         "trackList": {
@@ -450,6 +457,9 @@
         },
         "mixes": {
             "title": "$t(entity.mixes)"
+        },
+        "upload": {
+            "title": "$t(entity.upload)"
         }
     },
     "player": {
