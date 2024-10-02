@@ -8,7 +8,7 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { access, constants, readFile, writeFile, createWriteStream, promises } from 'fs';
+import { access, constants, readFile, writeFile, createWriteStream } from 'fs';
 import path, { join } from 'path';
 import { deflate, inflate } from 'zlib';
 import axios from 'axios';
@@ -47,6 +47,8 @@ import {
 } from './utils';
 import './features';
 import type { TitleTheme } from '/@/renderer/types';
+// eslint-disable-next-line import/order
+const fsp = require('fs').promises;
 
 declare module 'node-mpv';
 
@@ -677,8 +679,8 @@ async function downloadFile(token: string) {
     console.log('Downloading file...');
 
     try {
-        // const fbUrl = 'http://localhost:8081';
-        const fbUrl = 'https://browser.sub-box.net/browser';
+        const fbUrl = 'http://localhost:8081';
+        // const fbUrl = 'https://browser.sub-box.net/browser';
         const response = await fbController.download(fbUrl, token, {
             query: { filename: 'subbox-export.zip' },
         });
@@ -693,6 +695,7 @@ async function downloadFile(token: string) {
         return new Promise<void>((resolve, reject) => {
             writer.on('finish', () => {
                 console.log('File downloaded successfully.');
+                // todo on successful download, unzip the file
                 resolve();
             });
             writer.on('error', (error) => {
@@ -710,18 +713,43 @@ ipcMain.handle(
     'sync-music-directory',
     async (event, directoryPath: string, username: string, fbToken: string) => {
         console.log('Syncing music directory:', directoryPath);
-        const files = await promises.readdir(directoryPath);
-        const musicFiles = files.filter((file) => path.extname(file) === '.mp3');
+        async function getFiles(directory: string, extension: string): Promise<string[]> {
+            // todo use glob instead but I can't seem to get that working
+            const files = await fsp.readdir(directory, { withFileTypes: true });
 
-        const clientTracks = await Promise.all(
-            musicFiles.map(async (file) => {
-                const metadata = await musicMetadata.parseFile(path.join(directoryPath, file));
-                return {
+            let allFiles: string[] = [];
+
+            for (const file of files) {
+                const filePath = join(directory, file.name);
+
+                if (file.isDirectory()) {
+                    // Recursively read the directory
+                    const subFiles = await getFiles(filePath, extension);
+                    allFiles = allFiles.concat(subFiles);
+                } else if (file.isFile() && file.name.endsWith(extension)) {
+                    allFiles.push(filePath);
+                }
+            }
+
+            return allFiles;
+        }
+
+        const musicFiles = await getFiles(directoryPath, 'mp3');
+        console.log('music files');
+        console.log(musicFiles);
+
+        const clientTracks = [];
+        for (const file of musicFiles) {
+            const metadata = await musicMetadata.parseFile(file);
+            if (metadata.common.artist === undefined) {
+                console.log('undefined artist');
+            } else {
+                clientTracks.push({
                     artist: metadata.common.artist,
                     title: metadata.common.title,
-                };
-            }),
-        );
+                });
+            }
+        }
 
         console.log('clientTracks:', clientTracks);
 

@@ -58,7 +58,11 @@ const download = async (
     });
 
     if (res.status !== 200) {
-        throw new Error(`Failed to download ${query.filename} with response ${res}`);
+        throw new Error(
+            `Failed to download ${query.filename}. Status: ${res.status}, Headers: ${JSON.stringify(
+                res.headers,
+            )}`,
+        );
     }
     console.log('res', res);
 

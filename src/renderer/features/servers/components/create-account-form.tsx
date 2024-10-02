@@ -11,15 +11,16 @@ import { useAuthStoreActions } from '/@/renderer/store';
 import { ServerType, toServerType } from '/@/renderer/types';
 import { api } from '/@/renderer/api';
 import { useTranslation } from 'react-i18next';
+import { fbController } from '/@/main/features/core/filebrowser/filebrowser-controller';
 import { pymixController } from '/@/renderer/api/pymix/pymix-controller';
 
 const localSettings = isElectron() ? window.electron.localSettings : null;
 
-interface AddServerFormProps {
+interface CreateAccountFormProps {
     onCancel: () => void;
 }
 
-export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
+export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
     const { t } = useTranslation();
     const focusTrapRef = useFocusTrap(true);
     const [isLoading, setIsLoading] = useState(false);
@@ -27,6 +28,7 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
 
     const form = useForm({
         initialValues: {
+            email: '',
             legacyAuth: false,
             name: (localSettings ? localSettings.env.SERVER_NAME : window.SERVER_NAME) ?? '',
             password: '',
@@ -43,6 +45,13 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
     const isSubmitDisabled = !form.values.username;
 
     const handleSubmit = form.onSubmit(async (values) => {
+        await pymixController.create({
+            body: {
+                email: values.email,
+                password: values.password,
+                username: values.username,
+            },
+        });
         const authFunction = api.controller.authenticate;
 
         if (!authFunction) {
@@ -74,28 +83,18 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
                     message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
                 });
             }
-            await pymixController.login({
-                body: {
-                    password: values.password,
-                    username: values.username,
-                },
+            let fbToken = null;
+            // todo this is only valid once the user has created an account.
+            const fbUrl = 'https://browser.sub-box.net/browser';
+            fbToken = await fbController.authenticate(fbUrl, {
+                password: values.password,
+                username: values.username,
             });
-            console.log('user logged in!');
-            const fbToken = 'foo';
-            // let fbToken = null;
-            // // todo this is only valid once the user has created an account.
-            // const fbUrl = 'https://browser.sub-box.net/browser';
-            // // cannot test with localhost due to cors limitations. todo put local filebrowser behind traefik with cors proxy to allow for local testing
-            // // const fbUrl = `http://localhost:8081`;
-            // fbToken = await fbController.authenticate(fbUrl, {
-            //     password: values.password,
-            //     username: values.username,
-            // });
-            // if (!fbToken) {
-            //     toast.error({
-            //         message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
-            //     });
-            // }
+            if (!fbToken) {
+                toast.error({
+                    message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
+                });
+            }
             console.log(`fbData: ${fbToken}`);
 
             const serverItem = {
@@ -117,14 +116,14 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
             closeAllModals();
 
             toast.success({
-                message: t('form.logon.success', { postProcess: 'sentenceCase' }),
+                message: t('form.createAccount.success', { postProcess: 'sentenceCase' }),
             });
 
             if (localSettings && values.savePassword) {
                 const saved = await localSettings.passwordSet(values.password, serverItem.id);
                 if (!saved) {
                     toast.error({
-                        message: t('form.logon.error', {
+                        message: t('form.createAccount.error', {
                             context: 'savePassword',
                             postProcess: 'sentenceCase',
                         }),
@@ -146,22 +145,29 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
                 m={5}
             >
                 <TextInput
-                    label={t('form.logon.input', {
+                    label={t('form.createAccount.input', {
                         context: 'username',
                         postProcess: 'titleCase',
                     })}
                     {...form.getInputProps('username')}
                 />
                 <PasswordInput
-                    label={t('form.logon.input', {
+                    label={t('form.createAccount.input', {
                         context: 'password',
                         postProcess: 'titleCase',
                     })}
                     {...form.getInputProps('password')}
                 />
+                <TextInput
+                    label={t('form.createAccount.input', {
+                        context: 'email',
+                        postProcess: 'titleCase',
+                    })}
+                    {...form.getInputProps('email')}
+                />
                 {localSettings && form.values.type === ServerType.NAVIDROME && (
                     <Checkbox
-                        label={t('form.logon.input', {
+                        label={t('form.createAccount.input', {
                             context: 'savePassword',
                             postProcess: 'titleCase',
                         })}

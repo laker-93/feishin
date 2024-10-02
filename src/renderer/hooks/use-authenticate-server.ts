@@ -12,7 +12,7 @@ export const useAuthenticateServer = () => {
     const { t } = useTranslation();
     const [ready, setReady] = useState(AuthState.LOADING);
 
-    const { addPublicServer } = useAuthStoreActions();
+    const { addPublicServer, getPublicServer } = useAuthStoreActions();
     const authenticateNavidrome = useCallback(async () => {
         // This trick works because navidrome-api.ts will internally check for authentication
         // failures and try to log in again (where available). So, all that's necessary is
@@ -34,18 +34,21 @@ export const useAuthenticateServer = () => {
                     message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
                 });
             } else {
-                const publicServerItem = {
-                    credential: publicData.credential,
-                    id: nanoid(),
-                    isPublic: true,
-                    name: publicData.username,
-                    ndCredential: publicData.ndCredential,
-                    type: ServerType.NAVIDROME,
-                    url: publicUrl.replace(/\/$/, ''),
-                    userId: publicData.userId,
-                    username: publicData.username,
-                };
-                addPublicServer(publicServerItem);
+                const publicServer = getPublicServer();
+                if (!publicServer) {
+                    const publicServerItem = {
+                        credential: publicData.credential,
+                        id: nanoid(),
+                        isPublic: true,
+                        name: publicData.username,
+                        ndCredential: publicData.ndCredential,
+                        type: ServerType.NAVIDROME,
+                        url: publicUrl.replace(/\/$/, ''),
+                        userId: publicData.userId,
+                        username: publicData.username,
+                    };
+                    addPublicServer(publicServerItem);
+                }
 
                 setReady(AuthState.VALID);
             }
@@ -53,11 +56,11 @@ export const useAuthenticateServer = () => {
             toast.error({ message: (error as Error).message });
             setReady(AuthState.INVALID);
         }
-    }, [addPublicServer, t]);
+    }, [addPublicServer, getPublicServer, t]);
 
     const debouncedAuth = debounce(() => {
         authenticateNavidrome().catch(console.error);
-    }, 300);
+    }, 1000);
 
     useEffect(() => {
         setReady(AuthState.LOADING);
