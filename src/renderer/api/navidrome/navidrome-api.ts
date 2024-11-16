@@ -309,6 +309,7 @@ axiosClient.interceptors.response.use(
                         shouldDelay = true;
 
                         // Do not use axiosClient. Instead, manually make a post
+                        console.log('login with password to server', password, currentServer);
                         const res = await axios.post(`${currentServer.url}/auth/login`, {
                             password,
                             username: currentServer.username,
@@ -325,6 +326,7 @@ axiosClient.interceptors.response.use(
                             });
 
                             const serverId = currentServer.id;
+                            console.log('setting credentials to undefined');
                             useAuthStore.getState().actions.updateServer(serverId, {
                                 credential: undefined,
                                 ndCredential: undefined,
@@ -402,6 +404,7 @@ export const ndApiClient = (args: {
             try {
                 if (shouldDelay) await waitForResult();
 
+                console.log(`url: ${baseUrl}/${api}`);
                 const result = await axiosClient.request({
                     data: body,
                     headers: {

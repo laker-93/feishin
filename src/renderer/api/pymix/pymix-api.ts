@@ -4,7 +4,6 @@ import omitBy from 'lodash/omitBy';
 import qs from 'qs';
 import { pymixType } from './pymix-types';
 import { resultWithHeaders } from '/@/renderer/api/utils';
-import { ServerListItem } from '/@/renderer/api/types';
 import i18n from '/@/i18n/i18n';
 
 const c = initContract();
@@ -20,11 +19,20 @@ export const contract = c.router({
         },
     },
     import: {
-        body: {},
+        body: pymixType._parameters.import,
         method: 'POST',
-        path: 'beets/import/:public',
+        path: 'beets/import',
         responses: {
             200: resultWithHeaders(pymixType._response.beetsImport),
+            500: resultWithHeaders(pymixType._response.error),
+        },
+    },
+    importProgress: {
+        method: 'GET',
+        path: 'beets/import/progress',
+        query: pymixType._parameters.importProgress,
+        responses: {
+            200: resultWithHeaders(pymixType._response.beetsImportProgress),
             500: resultWithHeaders(pymixType._response.error),
         },
     },
@@ -79,6 +87,7 @@ const axiosClient = axios.create({
     withCredentials: true, // Enable sending and receiving cookies
 });
 
+axiosClient.defaults.withCredentials = true;
 axiosClient.defaults.paramsSerializer = (params) => {
     return qs.stringify(params, { arrayFormat: 'repeat' });
 };
@@ -127,20 +136,14 @@ const waitForResult = async (count = 0): Promise<void> => {
     });
 };
 
-export const pymixApiClient = (args: { server: ServerListItem | null; url?: string }) => {
-    const { server, url } = args;
+export const pymixApiClient = () => {
+    // const baseUrl = 'http://localhost:8002'
+    // const baseUrl = 'https://pymix.sub-box.net'
+    const baseUrl = 'https://pymix.docker.localhost';
 
     return initClient(contract, {
         api: async ({ path, method, headers, body }) => {
-            let baseUrl: string | undefined;
-
             const { params, path: api } = parsePath(path);
-
-            if (server) {
-                baseUrl = `${server?.url}/api`;
-            } else {
-                baseUrl = url;
-            }
 
             try {
                 if (shouldDelay) await waitForResult();

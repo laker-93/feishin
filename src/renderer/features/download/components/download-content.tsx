@@ -29,14 +29,18 @@ export const DownloadContent = () => {
     const [isSyncing, setIsSyncing] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    if (!server) {
+    if (!server || !userFS) {
         return null;
     }
-    const handleRBDownload = () => {
+    const handleRBDownload = async () => {
         setIsSyncing(true);
-        return pymixController
+
+        // todo user can enter their local path so pymix prepares the download and stores on filebrowser
+        // then the user can download directly from filebrowser for webapp support.
+        const appPath = await userFS.getAppPath();
+        pymixController
             .rbDownload({
-                body: { user_root: '/Users/lukepurnell/Library/Application Support/subbox' },
+                body: { user_root: appPath },
             })
             .catch((error) => {
                 toast.error({
@@ -51,15 +55,20 @@ export const DownloadContent = () => {
                 setIsSyncing(false);
                 setIsModalOpen(true);
             });
+        if (userFS) {
+            if (server.fbToken === undefined) {
+                throw new Error('FB Server is not authenticated');
+            }
+            await userFS.downloadRBXML(server.fbToken);
+        }
     };
 
-    const handleSync = () => {
+    const handleSync = async () => {
         setIsSyncing(true);
-        console.log('start syncing');
-        return syncMusicDirectory(
-            '/Users/lukepurnell/Library/Application Support/subbox/music',
-            server,
-        )
+        const appPath = await userFS.getAppPath();
+        const musicPath = `${appPath}/music`;
+        console.log('start syncing', musicPath);
+        return syncMusicDirectory(musicPath, server)
             .catch((error) => {
                 toast.error({
                     message: (error as Error).message,
@@ -80,7 +89,7 @@ export const DownloadContent = () => {
             m={2}
             p={20}
         >
-            <Text>Download rekordbox. </Text>
+            <Text>Download rekordbox xml. </Text>
             <Button
                 color={isSyncing ? 'gray' : 'blue'}
                 disabled={isSyncing}
@@ -97,11 +106,11 @@ export const DownloadContent = () => {
                     download complete.{' '}
                     <Button
                         variant="link"
-                        onClick={() => {
+                        onClick={async () => {
                             if (util) {
-                                util.openItem(
-                                    '/Users/lukepurnell/Library/Application Support/subbox/rb-export.xml',
-                                ).catch((error) => {
+                                const appPath = await userFS.getAppPath();
+                                const rbXmlPath = `${appPath}/rb-export.xml`;
+                                util.openItem(rbXmlPath).catch((error) => {
                                     toast.error({
                                         message: (error as Error).message,
                                         title: t('error.openError', {
@@ -117,13 +126,13 @@ export const DownloadContent = () => {
                 </Text>
             </Modal>
 
-            <Text>Download. </Text>
+            <Text>Download any tracks on subbox that are missing on your local machine.</Text>
             <Button
                 color={isSyncing ? 'gray' : 'blue'}
                 disabled={isSyncing}
                 onClick={handleSync}
             >
-                {isSyncing ? 'Syncing...' : 'Sync Music Directory'}
+                {isSyncing ? 'Downloading...' : 'Download'}
             </Button>
             <Modal
                 opened={isModalOpen}
@@ -134,11 +143,11 @@ export const DownloadContent = () => {
                     download complete.{' '}
                     <Button
                         variant="link"
-                        onClick={() => {
+                        onClick={async () => {
                             if (util) {
-                                util.openItem(
-                                    '/Users/lukepurnell/Library/Application Support/subbox/subbox-export.zip',
-                                ).catch((error) => {
+                                const appPath = await userFS.getAppPath();
+                                const exportZipPath = `${appPath}/subbox-export.zip`;
+                                util.openItem(exportZipPath).catch((error) => {
                                     toast.error({
                                         message: (error as Error).message,
                                         title: t('error.openError', {

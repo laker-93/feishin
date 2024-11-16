@@ -11,7 +11,7 @@ import { useAuthStoreActions } from '/@/renderer/store';
 import { ServerType, toServerType } from '/@/renderer/types';
 import { api } from '/@/renderer/api';
 import { useTranslation } from 'react-i18next';
-import { fbController } from '/@/main/features/core/filebrowser/filebrowser-controller';
+import { fbController } from '../../../api/filebrowser/filebrowser-controller';
 import { pymixController } from '/@/renderer/api/pymix/pymix-controller';
 
 const localSettings = isElectron() ? window.electron.localSettings : null;
@@ -61,10 +61,10 @@ export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
         }
 
         // for local testing
-        const url = `http://localhost:4533`;
+        // const url = `http://localhost:4533`;
         // for production
-        // have to go via sub-box internet as this is going to be running from user's browser!
         // const url = `https://www.sub-box.net/navidrome${values.username}`;
+        const url = `https://docker.localhost/navidrome${values.username}`;
 
         try {
             setIsLoading(true);
@@ -85,7 +85,8 @@ export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
             }
             let fbToken = null;
             // todo this is only valid once the user has created an account.
-            const fbUrl = 'https://browser.sub-box.net/browser';
+            // const fbUrl = 'https://browser.sub-box.net/browser';
+            const fbUrl = 'https://browser.docker.localhost/browser';
             fbToken = await fbController.authenticate(fbUrl, {
                 password: values.password,
                 username: values.username,

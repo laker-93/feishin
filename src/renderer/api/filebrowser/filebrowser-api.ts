@@ -34,7 +34,7 @@ export const contract = c.router({
     upload: {
         body: fbType._parameters.fileBytes,
         method: 'POST',
-        path: 'api/resources/:filename',
+        path: 'api/resources/uploads/:filename',
         responses: {
             200: resultWithHeaders(fbType._response.upload),
             500: resultWithHeaders(fbType._response.error),

@@ -1,4 +1,5 @@
 import fs from 'fs';
+import https from 'https';
 import axios from 'axios';
 
 // Function to get the access token from the FileBrowser server
@@ -8,8 +9,8 @@ async function getToken() {
     try {
         const response = await axios.post('http://localhost:8081/api/login', {
             // CHANGE THIS IN THE FRONTEND
-            password: 'admin',
-            username: 'admin', // CHANGE THIS IN THE FRONTEND
+            password: 'test031124',
+            username: 'test031124', // CHANGE THIS IN THE FRONTEND
         });
         console.log('Access token received.');
         return response.data;
@@ -24,12 +25,12 @@ async function uploadFile(token) {
     console.log('Uploading file...');
 
     // Read the file into a string
-    const fileContents = fs.readFileSync('test.txt', 'utf8');
+    const fileContents = fs.readFileSync('src/scratch/test.txt', 'utf8');
 
     try {
         // Send a POST request to the FileBrowser server
         const res = await axios.post(
-            'http://localhost:8081/api/resources/document.txt?override=true',
+            'http://localhost:8081/api/resources/downloads/test.txt?override=true',
             fileContents,
             {
                 headers: {
@@ -49,19 +50,36 @@ async function uploadFile(token) {
 async function downloadFile(token) {
     console.log('Downloading file...');
 
-    const url = 'http://localhost:8081/api/raw/document.txt'; // WHY USE DIFFERENT ENDPOINTS TO UPLOAD AND DOWNLOAD? (resources vs raw)
+    const url = 'https://browser.docker.localhost/browser/api/raw/downloads/subbox_rb_export.xml'; // WHY USE DIFFERENT ENDPOINTS TO UPLOAD AND DOWNLOAD? (resources vs raw)
+    // const url = 'http://localhost:8081/api/raw/downloads/test.txt'; // WHY USE DIFFERENT ENDPOINTS TO UPLOAD AND DOWNLOAD? (resources vs raw)
 
     try {
-        const response = await axios({
+        const response = await axios.get(url, {
             headers: {
                 'X-Auth': `${token}`,
             },
-            method: 'GET',
+            // todo remove this in prod. This is only needed for dev testing
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false,
+            }),
+
             responseType: 'stream',
-            url,
         });
 
-        const writer = fs.createWriteStream('DownloadedTextFile.txt');
+        // const response = await axios({
+        //    headers: {
+        //        'X-Auth': `${token}`,
+        //    },
+        //    method: 'GET',
+        //    responseType: 'stream',
+        //    url,
+        //    // todo remove this in prod. This is only needed for dev testing
+        //    httpsAgent: new https.Agent({
+        //      rejectUnauthorized: false
+        //    }),
+        // });
+
+        const writer = fs.createWriteStream('subbox_rb_export.xml');
 
         response.data.pipe(writer);
 
@@ -86,7 +104,7 @@ async function main() {
     const token = await getToken();
 
     if (token) {
-        await uploadFile(token);
+        // await uploadFile(token);
         await downloadFile(token);
     } else {
         console.log('No access token received. Aborting.');

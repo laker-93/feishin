@@ -70,6 +70,9 @@ export const MixInfoContent = ({ background }: MixInfoContentProps) => {
     const songDetailQuery = useSongInfo({ query: { id: songId }, serverId: server?.id });
     const cq = useContainerQuery();
     const now = useCurrentTime();
+    if (!server) {
+        throw new Error('Public Server not found');
+    }
 
     const detailQuery = useTrackList({
         options: {

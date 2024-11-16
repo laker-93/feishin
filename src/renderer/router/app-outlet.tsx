@@ -16,7 +16,6 @@ export const AppOutlet = () => {
     const authState = useAuthenticateServer();
 
     const setFallback = useSetPlayerFallback();
-    // const authState = useServerAuthenticated();
 
     useEffect(() => {
         utils?.mainMessageListener((_event, data) => {
@@ -45,12 +44,7 @@ export const AppOutlet = () => {
     }
 
     if (authState === AuthState.INVALID) {
-        return (
-            <Navigate
-                replace
-                to={AppRoute.ACTION_REQUIRED}
-            />
-        );
+        throw new Error('Could not authenticate with public navidrome');
     }
 
     return <Outlet />;

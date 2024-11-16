@@ -1,4 +1,5 @@
 import { Readable } from 'stream';
+import * as tus from 'tus-js-client';
 import { fbApiClient } from './filebrowser-api';
 
 type DownloadQuery = {
@@ -88,8 +89,63 @@ const upload = async (url: string, token: string, args: UploadArgs): Promise<nul
     }
     return null;
 };
+
+const tusUpload = async (
+    url: string,
+    token: string,
+    file: File,
+    progressCallback: (progress: number) => void = () => {},
+): Promise<null> => {
+    const fileName = file.name;
+    console.log('uploading from the browser', fileName);
+
+    // const baseUrl = 'https://browser.sub-box.net/browser'
+    const baseUrl = 'https://browser.docker.localhost/browser';
+    const resourcePath = `${baseUrl}/api/tus/uploads/${fileName}?override=true`;
+
+    const resp = await fetch(resourcePath, {
+        headers: {
+            'X-Auth': `${token}`,
+        },
+        method: 'POST',
+    });
+    if (resp.status !== 201) {
+        throw new Error(`Failed to create an upload: ${resp.status} ${resp.statusText}`);
+    }
+    return new Promise((resolve, reject) => {
+        console.log('uploading', fileName);
+        console.log('tus object:', tus);
+        const uploader = new tus.Upload(file, {
+            chunkSize: 10485760 * 2,
+
+            // endpoint: resourcePath,
+            headers: {
+                'X-Auth': `${token}`,
+            },
+            // uploadSize: fileSize,
+            onError: (error) => {
+                console.error('Error while uploading file:', error);
+                reject(error);
+            },
+
+            onProgress: (bytesUploaded, bytesTotal) => {
+                const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
+                console.log(`Uploaded ${bytesUploaded} of ${bytesTotal} bytes (${percentage}%)`);
+                progressCallback(parseFloat(percentage));
+            },
+            onSuccess: () => {
+                console.log('File uploaded successfully.');
+                resolve(uploader.url);
+            },
+            uploadUrl: resourcePath,
+        });
+        uploader.start();
+    });
+};
+
 export const fbController = {
     authenticate,
     download,
+    tusUpload,
     upload,
 };

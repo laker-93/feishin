@@ -3,22 +3,27 @@ import { useAuthStoreActions } from '/@/renderer/store';
 import { AuthState, ServerType } from '/@/renderer/types';
 import { api } from '/@/renderer/api';
 import { AuthenticationResponse } from '/@/renderer/api/types';
-import { debounce } from 'lodash';
 import { toast } from '/@/renderer/components';
 import { nanoid } from 'nanoid';
 import { useTranslation } from 'react-i18next';
 
 export const useAuthenticateServer = () => {
     const { t } = useTranslation();
-    const [ready, setReady] = useState(AuthState.LOADING);
+    const { addPublicServer, getPublicServer, updateServer } = useAuthStoreActions();
+    const publicServer = getPublicServer();
+    const [ready, setReady] = useState(
+        publicServer?.type === ServerType.NAVIDROME ? AuthState.LOADING : AuthState.VALID,
+    );
 
-    const { addPublicServer, getPublicServer } = useAuthStoreActions();
     const authenticateNavidrome = useCallback(async () => {
         // This trick works because navidrome-api.ts will internally check for authentication
         // failures and try to log in again (where available). So, all that's necessary is
         // making one request first
         try {
-            const publicUrl = `http://localhost:4534`;
+            // const publicUrl = `http://localhost:4534`;
+            // const publicUrl = `https://www.sub-box.net/navidromelajp`;
+            const publicUrl = `https://docker.localhost/navidromepublic`;
+            console.log('authenticate public navidrome');
             const publicData: AuthenticationResponse | undefined =
                 await api.controller.authenticate(
                     publicUrl,
@@ -34,8 +39,9 @@ export const useAuthenticateServer = () => {
                     message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
                 });
             } else {
-                const publicServer = getPublicServer();
-                if (!publicServer) {
+                console.log('got public server', publicServer);
+                console.log('authentication response', publicData);
+                if (!publicServer && publicData.credential) {
                     const publicServerItem = {
                         credential: publicData.credential,
                         id: nanoid(),
@@ -47,26 +53,26 @@ export const useAuthenticateServer = () => {
                         userId: publicData.userId,
                         username: publicData.username,
                     };
+                    console.log('adding public server', publicServerItem);
                     addPublicServer(publicServerItem);
+                } else {
+                    console.log('updating public server with credential', publicData.credential);
+                    // updateServer(publicServer.id, { credential: publicData.credential })
                 }
 
                 setReady(AuthState.VALID);
             }
         } catch (error) {
+            console.log('error');
             toast.error({ message: (error as Error).message });
             setReady(AuthState.INVALID);
         }
-    }, [addPublicServer, getPublicServer, t]);
-
-    const debouncedAuth = debounce(() => {
-        authenticateNavidrome().catch(console.error);
-    }, 1000);
+    }, [addPublicServer, getPublicServer, t, publicServer]);
 
     useEffect(() => {
         setReady(AuthState.LOADING);
-        debouncedAuth();
-        setReady(AuthState.VALID);
-    }, [debouncedAuth]);
+        authenticateNavidrome().catch(console.error);
+    }, [authenticateNavidrome]);
 
     return ready;
 };
