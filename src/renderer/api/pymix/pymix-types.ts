@@ -18,6 +18,7 @@ const beetsImportProgress = z.object({
     n_tracks_to_process: z.number(),
     percentage_complete: z.number(),
     reason: z.string(),
+    result: z.boolean(),
 });
 
 const rbImport = z.object({
@@ -71,7 +72,7 @@ const importParameters = z.object({
 });
 
 const importProgressParameters = z.object({
-    jobId: z.string(),
+    job_id: z.string(),
     public: z.boolean(),
 });
 

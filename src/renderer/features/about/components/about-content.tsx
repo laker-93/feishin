@@ -1,37 +1,17 @@
-import { Text, Box, Button } from '@mantine/core';
-import { openContextModal } from '@mantine/modals';
-import { t } from 'i18next';
+import { Box, Text, Button, Group } from '@mantine/core';
 import { RiAccountBoxLine, RiLoginBoxLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
-import { ContextModalVars } from '/@/renderer/components';
-import { CreateAccountForm } from '/@/renderer/features/servers/components/create-account-form';
-import { AddServerForm } from '/@/renderer/features/servers';
+// import { useCurrentServer } from '/@/renderer/store';
 
 export const AboutContent = () => {
-    const handleLogOnModal = () => {
-        openContextModal({
-            innerProps: {
-                // eslint-disable-next-line react/no-unstable-nested-components
-                modalBody: (vars: ContextModalVars) => (
-                    <AddServerForm onCancel={() => vars.context.closeModal(vars.id)} />
-                ),
-            },
-            modal: 'base',
-            title: t('form.logon.title', { postProcess: 'titleCase' }),
-        });
+    // const server = useCurrentServer();
+    // todo use current server to determine if user logged in, if so show a different view.
+    const handleCreateAccountModal = () => {
+        // Handle create account modal logic
     };
 
-    const handleCreateAccountModal = () => {
-        openContextModal({
-            innerProps: {
-                // eslint-disable-next-line react/no-unstable-nested-components
-                modalBody: (vars: ContextModalVars) => (
-                    <CreateAccountForm onCancel={() => vars.context.closeModal(vars.id)} />
-                ),
-            },
-            modal: 'base',
-            title: t('form.createAccount.title', { postProcess: 'titleCase' }),
-        });
+    const handleLogOnModal = () => {
+        // Handle log on modal logic
     };
 
     return (
@@ -39,31 +19,59 @@ export const AboutContent = () => {
             m={2}
             p={20}
         >
-            <Text>Sub-box is a music player with tools for DJs. </Text>
-            <Text>
-                Users can browse mixes <Link to="/library/mixes"> here</Link>.{' '}
-            </Text>
-            <Text>
-                To upload your own music collection or use the DJ tools, you will need to create an
-                account
-            </Text>
-            <Button
-                p="0.5rem"
-                size="md"
-                variant="default"
-                onClick={handleCreateAccountModal}
+            <Text
+                align="center"
+                mb={20}
+                size="xl"
+                weight={700}
             >
-                <RiAccountBoxLine size="1.5rem" />
-            </Button>
-            <Text>or if you already have an account, logon</Text>
-            <Button
-                p="0.5rem"
+                Sub-box is a music player with tools for DJs.
+            </Text>
+            <Text
+                align="center"
+                mb={20}
                 size="md"
-                variant="default"
-                onClick={handleLogOnModal}
             >
-                <RiLoginBoxLine size="1.5rem" />
-            </Button>
+                Users can browse mixes <Link to="/library/mixes">here</Link>.
+            </Text>
+            <Text
+                align="center"
+                mb={20}
+                size="md"
+            >
+                To upload your own music collection and use the DJ tools, you will need to create an
+                account.
+            </Text>
+            <Group
+                mb={20}
+                position="center"
+            >
+                <Button
+                    size="md"
+                    variant="default"
+                    onClick={handleCreateAccountModal}
+                >
+                    <RiAccountBoxLine size="1.5rem" />
+                    <Text ml={10}>Create Account</Text>
+                </Button>
+            </Group>
+            <Text
+                align="center"
+                mb={20}
+                size="md"
+            >
+                or if you already have an account, login
+            </Text>
+            <Group position="center">
+                <Button
+                    size="md"
+                    variant="default"
+                    onClick={handleLogOnModal}
+                >
+                    <RiLoginBoxLine size="1.5rem" />
+                    <Text ml={10}>Login</Text>
+                </Button>
+            </Group>
         </Box>
     );
 };

@@ -104,7 +104,7 @@ async function main() {
     const token = await getToken();
 
     if (token) {
-        // await uploadFile(token);
+        await uploadFile(token);
         await downloadFile(token);
     } else {
         console.log('No access token received. Aborting.');

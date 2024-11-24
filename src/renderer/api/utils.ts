@@ -29,6 +29,7 @@ export const resultSubsonicBaseResponse = <ItemType extends z.ZodRawShape>(
 };
 
 export const authenticationFailure = (currentServer: ServerListItem | null) => {
+    // todo if this is triggered for publicNavidrome, then trigger a re login with the public credentials.
     toast.error({
         message: 'Your session has expired.',
     });
@@ -36,7 +37,7 @@ export const authenticationFailure = (currentServer: ServerListItem | null) => {
     if (currentServer) {
         const serverId = currentServer.id;
         const token = currentServer.ndCredential;
-        console.log(`token is expired: ${token}`);
+        console.log(`token is expired: ${token} for server ${currentServer}`);
         useAuthStore.getState().actions.updateServer(serverId, { ndCredential: undefined });
         useAuthStore.getState().actions.setCurrentServer(null);
     }

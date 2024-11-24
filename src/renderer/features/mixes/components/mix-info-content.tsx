@@ -67,6 +67,7 @@ function getTrackNumber(curTime: number, startToTrackNumberMap: Map<number, numb
 export const MixInfoContent = ({ background }: MixInfoContentProps) => {
     const { songId } = useParams() as { songId: string };
     const server = getPublicServer();
+    console.log('song info on songId', songId);
     const songDetailQuery = useSongInfo({ query: { id: songId }, serverId: server?.id });
     const cq = useContainerQuery();
     const now = useCurrentTime();

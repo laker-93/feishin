@@ -322,6 +322,7 @@
         "fast-average-color": "^9.3.0",
         "format-duration": "^2.0.0",
         "framer-motion": "^11.0.0",
+        "fs-extra": "^11.2.0",
         "fuse.js": "^6.6.2",
         "history": "^5.3.0",
         "i18next": "^21.10.0",
@@ -355,6 +356,7 @@
         "styled-components": "^6.0.8",
         "swiper": "^9.3.1",
         "tus-js-client": "^4.2.3",
+        "unzipper": "^0.12.3",
         "zod": "^3.22.3",
         "zustand": "^4.3.9"
     },

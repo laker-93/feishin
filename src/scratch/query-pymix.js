@@ -1,11 +1,12 @@
-import fs from 'fs';
+// import fs from 'fs';
 import https from 'https';
 import axios from 'axios';
-import sslRootCAs from 'ssl-root-cas';
+// import sslRootCAs from 'ssl-root-cas';
 // sslRootCAs.inject()
 // .addFile(__dirname + '/comodohigh-assurancesecureserverca.crt');
 
 async function syncMusicDirectory(directoryPath) {
+    console.log(directoryPath);
     const url = 'https://pymix.docker.localhost/pymix/sync';
     // const url = 'https://pymix.docker.localhost/pymix/healthcheck'
     console.log('url:', url);

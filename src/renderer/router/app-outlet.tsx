@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { Center } from '@mantine/core';
 import isElectron from 'is-electron';
-import { Navigate, Outlet } from 'react-router-dom';
-import { AppRoute } from '/@/renderer/router/routes';
+import { Outlet } from 'react-router-dom';
 import { useSetPlayerFallback } from '/@/renderer/store';
 import { Spinner, toast } from '/@/renderer/components';
 import { AuthState } from '/@/renderer/types';

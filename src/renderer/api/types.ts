@@ -1255,4 +1255,5 @@ export type GetBeetTrackResponse = BeetResults;
 export type BeetImportProgress = {
     inProgress: boolean;
     percentageComplete: number;
+    result: boolean;
 };

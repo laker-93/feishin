@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 export const useAuthenticateServer = () => {
     const { t } = useTranslation();
-    const { addPublicServer, getPublicServer, updateServer } = useAuthStoreActions();
+    const { addPublicServer, getPublicServer } = useAuthStoreActions();
     const publicServer = getPublicServer();
     const [ready, setReady] = useState(
         publicServer?.type === ServerType.NAVIDROME ? AuthState.LOADING : AuthState.VALID,
@@ -48,6 +48,7 @@ export const useAuthenticateServer = () => {
                         isPublic: true,
                         name: publicData.username,
                         ndCredential: publicData.ndCredential,
+                        savePassword: true,
                         type: ServerType.NAVIDROME,
                         url: publicUrl.replace(/\/$/, ''),
                         userId: publicData.userId,
@@ -67,7 +68,7 @@ export const useAuthenticateServer = () => {
             toast.error({ message: (error as Error).message });
             setReady(AuthState.INVALID);
         }
-    }, [addPublicServer, getPublicServer, t, publicServer]);
+    }, [addPublicServer, t, publicServer]);
 
     useEffect(() => {
         setReady(AuthState.LOADING);

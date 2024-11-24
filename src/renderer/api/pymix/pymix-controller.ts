@@ -104,7 +104,7 @@ const beetsImportProgress = async (args: ImportProgressArgs): Promise<BeetImport
     const { query } = args;
 
     const res = await pymixApiClient().importProgress({
-        query: { jobId: query.jobId, public: query.public },
+        query: { job_id: query.jobId, public: query.public },
     });
 
     if (res.status !== 200) {
@@ -114,6 +114,7 @@ const beetsImportProgress = async (args: ImportProgressArgs): Promise<BeetImport
     return {
         inProgress: res.body.data.in_progress,
         percentageComplete: res.body.data.percentage_complete,
+        result: res.body.data.result,
     };
 };
 

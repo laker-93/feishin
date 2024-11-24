@@ -77,7 +77,7 @@ async function uploadFile(token) {
 async function downloadFile(token) {
     console.log('Downloading file...');
 
-    const url = `${url}/api/raw/document.txt`; // WHY USE DIFFERENT ENDPOINTS TO UPLOAD AND DOWNLOAD? (resources vs raw)
+    // const url = `${url}/api/raw/document.txt`; // WHY USE DIFFERENT ENDPOINTS TO UPLOAD AND DOWNLOAD? (resources vs raw)
 
     try {
         const response = await axios({
@@ -115,7 +115,7 @@ async function main() {
 
     if (token) {
         await uploadFile(token);
-        // await downloadFile(token);
+        await downloadFile(token);
     } else {
         console.log('No access token received. Aborting.');
     }

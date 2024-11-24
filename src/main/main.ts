@@ -32,8 +32,10 @@ import {
 import electronLocalShortcut from 'electron-localshortcut';
 import log from 'electron-log/main';
 import { autoUpdater } from 'electron-updater';
+import fs from 'fs-extra';
 import musicMetadata from 'music-metadata';
 import * as tus from 'tus-js-client';
+import unzipper from 'unzipper';
 import { disableMediaKeys, enableMediaKeys } from './features/core/player/media-keys';
 import { store } from './features/core/settings/index';
 import MenuBuilder from './menu';
@@ -685,7 +687,7 @@ function getAppPath(): string {
     return appPath;
 }
 
-ipcMain.handle('get-app-path', async (_event) => {
+ipcMain.handle('get-app-path', async () => {
     return getAppPath();
 });
 
@@ -737,6 +739,24 @@ async function downloadFile(token: string, fileName: string) {
         return 'error';
     }
 }
+
+const unzipAndMerge = async (zipFilePath: string, targetDirPath: string) => {
+    await fs
+        .createReadStream(zipFilePath)
+        .pipe(unzipper.Parse())
+        .on('entry', async (entry: unzipper.Entry) => {
+            const filePath = path.join(targetDirPath, entry.path);
+            await fs.ensureDir(path.dirname(filePath));
+            if (await fs.pathExists(filePath)) {
+                console.error(`File already exists: ${filePath}`);
+                entry.autodrain();
+            } else {
+                entry.pipe(fs.createWriteStream(filePath));
+            }
+        })
+        .promise();
+    console.log('Unzip and merge completed.');
+};
 
 ipcMain.handle(
     'sync-music-directory',
@@ -803,9 +823,13 @@ ipcMain.handle(
         console.log('Sync response:', response.data);
         if (response.data.success) {
             console.log('Sync successful. Download file');
-            return downloadFile(fbToken, 'music.zip');
+            await downloadFile(fbToken, 'music.zip');
+            // Unzip the file and merge with the existing 'music' directory
+            const appPath = getAppPath();
+            const zipFilePath = path.join(appPath, 'music.zip');
+            const musicDirPath = path.join(appPath);
+            await unzipAndMerge(zipFilePath, musicDirPath);
         }
-        return null;
     },
 );
 
