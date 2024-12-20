@@ -118,13 +118,13 @@ const beetsImportProgress = async (args: ImportProgressArgs): Promise<BeetImport
     };
 };
 
-const rbImport = async (): Promise<null> => {
-    const res = await pymixApiClient().rbImport();
+const rbImport = async (): Promise<string> => {
+    const res = await pymixApiClient().rbImport({});
     if (res.status !== 200) {
         throw new Error('Failed to sync');
     }
 
-    return null;
+    return res.body.data.job_id;
 };
 
 const seratoImport = async (): Promise<null> => {
@@ -136,10 +136,22 @@ const seratoImport = async (): Promise<null> => {
 
     return null;
 };
+
+const deleteDuplicates = async (): Promise<Array<string>> => {
+    const res = await pymixApiClient().deleteDuplicates();
+
+    if (res.status !== 200) {
+        throw new Error('Failed to sync');
+    }
+
+    return res.body.data.duplicates_removed;
+};
+
 export const pymixController = {
     beetsImport,
     beetsImportProgress,
     create,
+    deleteDuplicates,
     login,
     rbDownload,
     rbImport,

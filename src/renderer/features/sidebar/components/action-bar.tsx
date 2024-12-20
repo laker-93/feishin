@@ -35,6 +35,7 @@ export const ActionBar = () => {
     const navigate = useNavigate();
     const { open } = useCommandPalette();
     const currentServer = useCurrentServer();
+    const isLoggedOn = currentServer && currentServer.credential;
     const handleLogOnModal = () => {
         openContextModal({
             innerProps: {
@@ -122,6 +123,7 @@ export const ActionBar = () => {
                                     <RiArrowRightSLine size="1.5rem" />
                                 </Button>
                                 <Button
+                                    disabled={!!isLoggedOn}
                                     p="0.5rem"
                                     size="md"
                                     variant="default"
@@ -130,6 +132,7 @@ export const ActionBar = () => {
                                     <RiAccountBoxLine size="1.5rem" />
                                 </Button>
                                 <Button
+                                    disabled={!!isLoggedOn}
                                     p="0.5rem"
                                     size="md"
                                     variant="default"

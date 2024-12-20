@@ -20,16 +20,19 @@ import { ContextModalVars, DropdownMenu } from '/@/renderer/components';
 import { AddServerForm } from '/@/renderer/features/servers';
 import { CreateAccountForm } from '/@/renderer/features/servers/components/create-account-form';
 import { AppRoute } from '/@/renderer/router/routes';
-import { useSidebarStore, useAppStoreActions } from '/@/renderer/store';
+import { useSidebarStore, useAppStoreActions, useCurrentServer } from '/@/renderer/store';
 import packageJson from '../../../../../package.json';
 
 const browser = isElectron() ? window.electron.browser : null;
 
 export const AppMenu = () => {
+    const currentServer = useCurrentServer();
+    const isLoggedOn = currentServer && currentServer.credential;
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { collapsed } = useSidebarStore();
     const { setSideBar } = useAppStoreActions();
+    console.log('currentServer', currentServer);
 
     const handleCreateAccountModal = () => {
         openContextModal({
@@ -111,6 +114,7 @@ export const AppMenu = () => {
                 {t('page.appMenu.settings', { postProcess: 'sentenceCase' })}
             </DropdownMenu.Item>
             <DropdownMenu.Item
+                disabled={!!isLoggedOn}
                 icon={<RiAccountBoxLine />}
                 onClick={handleCreateAccountModal}
             >
@@ -118,6 +122,7 @@ export const AppMenu = () => {
             </DropdownMenu.Item>
 
             <DropdownMenu.Item
+                disabled={!!isLoggedOn}
                 icon={<RiLoginBoxLine />}
                 onClick={handleLogOnModal}
             >

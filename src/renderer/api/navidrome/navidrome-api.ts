@@ -255,8 +255,8 @@ axiosClient.interceptors.response.use(
     (response) => {
         const server = useAuthStore.getState().currentServer;
         const serverId = server?.id;
-        const publicServer = useAuthStore.getState().publicServer;
-        const publicServerId = publicServer?.id;
+        // const publicServer = useAuthStore.getState().publicServer;
+        // const publicServerId = publicServer?.id;
 
         if (serverId) {
             const headerCredential = response.headers['x-nd-authorization'] as string | undefined;
@@ -271,19 +271,19 @@ axiosClient.interceptors.response.use(
                 }
             }
         }
-        if (publicServerId) {
-            const headerCredential = response.headers['x-nd-authorization'] as string | undefined;
+        // if (publicServerId) {
+        //    const headerCredential = response.headers['x-nd-authorization'] as string | undefined;
 
-            const url = response.request.responseURL;
-            if (headerCredential) {
-                if (url === publicServer.url) {
-                    console.log('updating public server token');
-                    useAuthStore.getState().actions.updateServer(publicServerId, {
-                        ndCredential: headerCredential,
-                    });
-                }
-            }
-        }
+        //    const url = response.request.responseURL;
+        //    if (headerCredential) {
+        //        if (url === publicServer.url) {
+        //            console.log('updating public server token');
+        //            useAuthStore.getState().actions.updateServer(publicServerId, {
+        //                ndCredential: headerCredential,
+        //            });
+        //        }
+        //    }
+        // }
 
         authSuccess = true;
 
@@ -291,27 +291,28 @@ axiosClient.interceptors.response.use(
     },
     (error) => {
         if (error.response && error.response.status === 401) {
-            let currentServer = useAuthStore.getState().currentServer;
-            const publicServer = useAuthStore.getState().publicServer;
-            const publicPassword = 'lajp';
-            const url = error.response.request.responseURL;
+            const currentServer = useAuthStore.getState().currentServer;
+            // const publicServer = useAuthStore.getState().publicServer;
+            // const publicPassword = 'lajp';
+            // const url = error.response.request.responseURL;
 
-            if (!currentServer) {
-                if (publicServer && url.includes(publicServer.url)) {
-                    currentServer = publicServer;
-                }
-            }
+            // if (!currentServer) {
+            //    if (publicServer && url.includes(publicServer.url)) {
+            //        currentServer = publicServer;
+            //    }
+            // }
             if (localSettings && currentServer?.savePassword) {
-                console.log('attempting relogin');
                 // eslint-disable-next-line promise/no-promise-in-callback
                 return localSettings
                     .passwordGet(currentServer.id)
                     .then(async (password: string | null) => {
                         authSuccess = false;
-                        let serverPassword = password;
-                        if (publicServer && url.includes(publicServer.url)) {
-                            serverPassword = publicPassword;
-                        }
+                        const serverPassword = password;
+                        console.log('serverPassword', serverPassword);
+                        // if (publicServer && url.includes(publicServer.url)) {
+                        //    serverPassword = publicPassword;
+                        //    console.log('set serverPassword to publicPassword', serverPassword);
+                        // }
                         if (shouldDelay) {
                             await waitForResult();
 
@@ -327,8 +328,13 @@ axiosClient.interceptors.response.use(
                         shouldDelay = true;
 
                         // Do not use axiosClient. Instead, manually make a post
-                        const res = await axios.post(`${currentServer.url}/auth/login`, {
-                            serverPassword,
+                        console.log('username: ', currentServer.username);
+                        console.log('serverPassword: ', serverPassword);
+                        console.log('url: ', currentServer.url);
+
+                        const cleanServerUrl = currentServer.url.replace(/\/$/, '');
+                        const res = await axios.post(`${cleanServerUrl}/auth/login`, {
+                            password: serverPassword,
                             username: currentServer.username,
                         });
 
@@ -355,6 +361,13 @@ axiosClient.interceptors.response.use(
                             throw TIMEOUT_ERROR;
                         }
                         if (res.status !== 200) {
+                            const serverId = currentServer.id;
+                            useAuthStore.getState().actions.updateServer(serverId, {
+                                credential: undefined,
+                                ndCredential: undefined,
+                            });
+                            useAuthStore.getState().actions.setCurrentServer(null);
+
                             throw new Error(
                                 i18n.t('error.authenticatedFailed', {
                                     postProcess: 'sentenceCase',

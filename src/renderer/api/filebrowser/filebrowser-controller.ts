@@ -70,6 +70,19 @@ const download = async (
     return { data: res.body.data };
 };
 
+const listUploads = async (url: string, token: string): Promise<Array<String>> => {
+    const cleanServerUrl = url.replace(/\/$/, '');
+    const res = await fbApiClient({
+        token,
+        url: cleanServerUrl,
+        useRaw: true,
+    }).listUploads({});
+    if (res.status !== 200) {
+        throw new Error(`Failed to list uploads with response ${res}`);
+    }
+    return res.body.data.items.map((item: any) => item.path);
+};
+
 const upload = async (url: string, token: string, args: UploadArgs): Promise<null> => {
     const { body, query } = args;
 
@@ -146,6 +159,7 @@ const tusUpload = async (
 export const fbController = {
     authenticate,
     download,
+    listUploads,
     tusUpload,
     upload,
 };

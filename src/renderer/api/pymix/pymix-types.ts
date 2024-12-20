@@ -5,7 +5,13 @@ const error = z.string();
 const create = z.null({});
 const login = z.null({});
 const sync = z.null({});
-const beetsImport = z.object({
+
+const deleteDuplicates = z.object({
+    duplicates_removed: z.array(z.string()),
+    reason: z.string(),
+    success: z.boolean(),
+});
+const importJob = z.object({
     job_id: z.string(),
     n_tracks_for_import: z.number(),
     reason: z.string(),
@@ -71,25 +77,36 @@ const importParameters = z.object({
     public: z.boolean(),
 });
 
+const rbImportParameters = z.object({
+    username: z.string(),
+});
+
 const importProgressParameters = z.object({
     job_id: z.string(),
+    public: z.boolean(),
+});
+
+const deleteParameters = z.object({
     public: z.boolean(),
 });
 
 export const pymixType = {
     _parameters: {
         create: createParameters,
+        deleteDuplicates: deleteParameters,
         import: importParameters,
         importProgress: importProgressParameters,
         login: loginParameters,
         rbExport: rbExportParameters,
+        rbImport: rbImportParameters,
         sync: syncParameters,
     },
     _response: {
-        beetsImport,
         beetsImportProgress,
         create,
+        deleteDuplicates,
         error,
+        importJob,
         login,
         rbExport,
         rbImport,

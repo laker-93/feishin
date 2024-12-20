@@ -21,11 +21,24 @@ import { v4 as uuidv4 } from 'uuid';
 import RBBackup from '../../../../../assets/RB-backup.png';
 import { fbController } from '../../../api/filebrowser/filebrowser-controller';
 
+type UploadHistoryEntry = {
+    createdTime: string;
+    fileName: string;
+    id: string;
+    processProgress: number;
+    status: string;
+    updatedTime: string;
+    uploadProgress: number;
+};
+
+const delay = (ms: number) =>
+    new Promise<void>((resolve) => {
+        setTimeout(resolve, ms);
+    });
+
 const upload = async (
     filePaths: { file: File; id: string }[],
     isPublic: boolean,
-    isRBImport: boolean,
-    isSeratoImport: boolean,
     fbToken: string,
     updateUploadStatus: (
         id: string,
@@ -45,15 +58,29 @@ const upload = async (
             await fbController.tusUpload(fbUrl, fbToken, file, (progress) => {
                 updateUploadStatus(id, 'Uploading', progress, 0);
             });
+            updateUploadStatus(id, 'Uploaded', 100, 0);
         } catch (error) {
             console.error('Error uploading files:', error);
-            updateUploadStatus(id, 'Failed', 0, 0);
+            updateUploadStatus(id, 'Upload Failed', 0, 0);
         }
     }
+};
+
+const processImport = async (
+    isPublic: boolean,
+    isRBImport: boolean,
+    isSeratoImport: boolean,
+    updateUploadStatus: (
+        id: string,
+        status: string,
+        uploadProgress: number,
+        processProgress: number,
+    ) => void,
+) => {
     let jobId = '';
     try {
         if (isRBImport) {
-            await pymixController.rbImport();
+            jobId = await pymixController.rbImport();
         } else if (isSeratoImport) {
             await pymixController.seratoImport();
         } else {
@@ -63,16 +90,18 @@ const upload = async (
         console.error('Error during import:', error);
     }
 
+    if (!jobId) {
+        return;
+    }
+
     let percentageComplete = 0;
     let rounds = 0;
     let inProgress = true;
     let result = false;
+    const processedFiles = [];
 
-    const delay = (ms: number) =>
-        new Promise((resolve) => {
-            setTimeout(resolve, ms);
-        });
-
+    const savedHistory = localStorage.getItem('uploadHistory');
+    const uploadHistory: UploadHistoryEntry[] = savedHistory ? JSON.parse(savedHistory) : [];
     while (inProgress) {
         try {
             const importProgress = await pymixController.beetsImportProgress({
@@ -84,11 +113,16 @@ const upload = async (
             console.log(
                 `progress ${percentageComplete} in progress ${inProgress} result ${result} on round ${rounds}`,
             );
-            // cannot use forEach anonymous function in this case for some reason
-            // https://stackoverflow.com/questions/58816244/debugging-eslint-warning-function-declared-in-a-loop-contains-unsafe-reference
-            for (let i = 0; i < filePaths.length; i += 1) {
-                const { id } = filePaths[i];
+
+            // Get entries by id from uploadHistory and filter out anything with status not equal to 'Uploaded' or 'Processing'
+            const filteredFileIds = uploadHistory.filter(
+                (entry) => entry && (entry.status === 'Uploaded' || entry.status === 'Processing'),
+            );
+
+            for (let i = 0; i < filteredFileIds.length; i += 1) {
+                const { id } = filteredFileIds[i];
                 updateUploadStatus(id, 'Processing', 100, percentageComplete);
+                processedFiles.push({ id });
             }
 
             await delay(2000); // Poll every 2 seconds
@@ -98,8 +132,8 @@ const upload = async (
         }
         rounds += 1;
     }
-    const outcome = result ? 'Success' : 'Failed';
-    filePaths.forEach(({ id }) => {
+    const outcome = result ? 'Success' : 'Processing Failed';
+    processedFiles.forEach(({ id }) => {
         updateUploadStatus(id, outcome, 100, 100);
     });
 };
@@ -108,27 +142,16 @@ export const UploadContent = () => {
     const server = useCurrentServer();
     const [files, setFiles] = useState<File[]>([]);
     const [selectedDropZoneFiles, setSelectedDropZoneFiles] = useState<Set<number>>(new Set());
-    const [uploadHistory, setUploadHistory] = useState<
-        {
-            createdTime: string;
-            fileName: string;
-            id: string;
-            processProgress: number;
-            status: string;
-            updatedTime: string;
-            uploadProgress: number;
-        }[]
-    >(() => {
+    const [uploadHistory, setUploadHistory] = useState<UploadHistoryEntry[]>(() => {
         const savedHistory = localStorage.getItem('uploadHistory');
         return savedHistory ? JSON.parse(savedHistory) : [];
     });
-    const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
     const [isRBImport, setIsRBImport] = useState(false);
     const [rowsToShow, setRowsToShow] = useState(20);
-    const [selectAll, setSelectAll] = useState(false);
     const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         localStorage.setItem('uploadHistory', JSON.stringify(uploadHistory));
@@ -172,6 +195,17 @@ export const UploadContent = () => {
         if (server.fbToken === undefined) {
             throw new Error('FB Server is not authenticated');
         }
+        // Check for Rekordbox files
+        const isRekordboxImport = files.some(
+            (file) =>
+                file.name === 'rekordbox-backup.xml' ||
+                file.name === 'rekordbox_bak.zip' ||
+                file.name === 'rekordbox_bak',
+        );
+        if (isRekordboxImport && !isRBImport) {
+            setIsModalOpen(true);
+            return;
+        }
         const currentTime = new Date().toISOString();
         const newUploadHistory = files.map((file) => ({
             createdTime: currentTime,
@@ -189,14 +223,14 @@ export const UploadContent = () => {
                     file: files.find((f) => f.name === fileName)!,
                     id,
                 })),
-                false,
                 isRBImport,
-                false,
                 server.fbToken,
                 updateUploadStatus,
             );
+            console.log('upload history', uploadHistory);
+            await processImport(false, isRBImport, false, updateUploadStatus);
         } catch (error) {
-            console.error('Error syncing music directory:', error);
+            console.error('Error uploading files:', error);
         }
         setFiles([]); // Clear the files after upload
         setSelectedDropZoneFiles(new Set()); // Clear selected files after upload
@@ -219,39 +253,16 @@ export const UploadContent = () => {
         setSelectedDropZoneFiles(new Set());
     };
 
-    const handleFileSelect = (id: string) => {
-        setSelectedFiles((prevSelectedFiles) => {
-            const newSelectedFiles = new Set(prevSelectedFiles);
-            if (newSelectedFiles.has(id)) {
-                newSelectedFiles.delete(id);
-            } else {
-                newSelectedFiles.add(id);
-            }
-            return newSelectedFiles;
-        });
-    };
-
-    const handleSelectAll = () => {
-        if (selectAll) {
-            setSelectedFiles(new Set());
-        } else {
-            setSelectedFiles(new Set(uploadHistory.map(({ id }) => id)));
-        }
-        setSelectAll(!selectAll);
-    };
-
-    const handleRemoveSelectedFiles = () => {
-        setUploadHistory((prevHistory) => prevHistory.filter(({ id }) => !selectedFiles.has(id)));
-        setSelectedFiles(new Set());
-        setSelectAll(false);
-    };
-
     const formatTime = (time: string) => {
         return new Date(time).toLocaleString('en-US', { hour12: false, timeStyle: 'medium' });
     };
     const handleImageClick = (imageSrc: string) => {
         setSelectedImage(imageSrc);
         setIsImageModalOpen(true);
+    };
+
+    const handleReprocessFailedFiles = async () => {
+        await processImport(false, isRBImport, false, updateUploadStatus);
     };
 
     return (
@@ -261,12 +272,11 @@ export const UploadContent = () => {
         >
             <Text
                 align="center"
-                mb={20}
-                size="md"
+                mb={10}
+                size="sm"
             >
-                Drag and drop music files here to upload to sub box.
+                Upload music files to subbox.
             </Text>
-
             <Dropzone
                 multiple
                 accept={[MIME_TYPES.mp3, MIME_TYPES.wav, MIME_TYPES.ogg, MIME_TYPES.flac]}
@@ -280,16 +290,17 @@ export const UploadContent = () => {
             >
                 <Text>Drag and drop audio files here, or click to select files</Text>
             </Dropzone>
-
+            <Text
+                align="center"
+                mb={10}
+                size="sm"
+            >
+                To import your collection from DJ software follow the steps below.
+            </Text>
             <Box mt={2}>
                 {files.length > 0 && (
                     <Box>
-                        <Text
-                            mb={20}
-                            size="md"
-                        >
-                            Files to be uploaded:
-                        </Text>
+                        <Text>Files to be uploaded:</Text>
                         <ul>
                             {files.map((file, index) => (
                                 <li
@@ -332,22 +343,11 @@ export const UploadContent = () => {
             {uploadHistory.length > 0 && (
                 <Box mt={2}>
                     <Text>Upload History:</Text>
-                    <Select
-                        data={['10', '20', '30', '40', '50']}
-                        label="Rows to show"
-                        value={rowsToShow.toString()}
-                        onChange={(value) => setRowsToShow(Number(value))}
-                    />
+
                     <Box style={{ maxHeight: '400px', overflowY: 'auto' }}>
                         <Table>
                             <thead>
                                 <tr>
-                                    <th>
-                                        <Checkbox
-                                            checked={selectAll}
-                                            onChange={handleSelectAll}
-                                        />
-                                    </th>
                                     <th>File Name</th>
                                     <th>Upload</th>
                                     <th>Process</th>
@@ -366,12 +366,6 @@ export const UploadContent = () => {
                                     .slice(0, rowsToShow)
                                     .map((entry) => (
                                         <tr key={entry.id}>
-                                            <td>
-                                                <Checkbox
-                                                    checked={selectedFiles.has(entry.id)}
-                                                    onChange={() => handleFileSelect(entry.id)}
-                                                />
-                                            </td>
                                             <td>{entry.fileName}</td>
                                             <td>
                                                 <Progress value={entry.uploadProgress || 0} />
@@ -387,12 +381,24 @@ export const UploadContent = () => {
                             </tbody>
                         </Table>
                     </Box>
-                    <Button
+                    <Box
                         mt="md"
-                        onClick={handleRemoveSelectedFiles}
+                        style={{ display: 'flex', justifyContent: 'flex-start' }}
                     >
-                        Remove Selected
-                    </Button>
+                        <Select
+                            data={['10', '20', '30', '40', '50']}
+                            label="Rows to show"
+                            size="xs"
+                            value={rowsToShow.toString()}
+                            onChange={(value) => setRowsToShow(Number(value))}
+                        />
+                    </Box>
+                    <Group
+                        mt="md"
+                        position="center"
+                    >
+                        <Button onClick={handleReprocessFailedFiles}>Re-process Failed</Button>
+                    </Group>
                 </Box>
             )}
             <Divider my="lg" />
@@ -485,6 +491,17 @@ export const UploadContent = () => {
                     alt="Full Screen Image"
                     src={selectedImage}
                 />
+            </Modal>
+            <Modal
+                centered
+                opened={isModalOpen}
+                size="auto"
+                onClose={() => setIsModalOpen(false)}
+            >
+                <Text>
+                    Seems like you are attempting to upload a Rekordbox export. If so, please check
+                    the Rekordbox import check box.
+                </Text>
             </Modal>
         </Box>
     );

@@ -18,12 +18,21 @@ export const contract = c.router({
             500: resultWithHeaders(pymixType._response.error),
         },
     },
+    deleteDuplicates: {
+        body: {},
+        method: 'DELETE',
+        path: 'beets/duplicates',
+        responses: {
+            200: resultWithHeaders(pymixType._response.deleteDuplicates),
+            500: resultWithHeaders(pymixType._response.error),
+        },
+    },
     import: {
         body: pymixType._parameters.import,
         method: 'POST',
         path: 'beets/import',
         responses: {
-            200: resultWithHeaders(pymixType._response.beetsImport),
+            200: resultWithHeaders(pymixType._response.importJob),
             500: resultWithHeaders(pymixType._response.error),
         },
     },
@@ -59,7 +68,7 @@ export const contract = c.router({
         method: 'POST',
         path: 'rekordbox/import',
         responses: {
-            200: resultWithHeaders(pymixType._response.rbImport),
+            200: resultWithHeaders(pymixType._response.importJob),
             500: resultWithHeaders(pymixType._response.error),
         },
     },
@@ -147,10 +156,6 @@ export const pymixApiClient = () => {
 
             try {
                 if (shouldDelay) await waitForResult();
-                console.log('baseUrl', baseUrl);
-                console.log('data', body);
-                console.log('params', params);
-                console.log('json base headers');
 
                 const result = await axiosClient.request({
                     data: body,
