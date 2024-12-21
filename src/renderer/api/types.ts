@@ -1287,6 +1287,12 @@ export type TranscodingArgs = {
     query: TranscodingQuery;
 } & BaseEndpointArgs;
 
+export type BeetImportProgress = {
+    inProgress: boolean;
+    percentageComplete: number;
+    result: boolean;
+};
+
 export type ControllerEndpoint = {
     addToPlaylist: (args: AddToPlaylistArgs) => Promise<AddToPlaylistResponse>;
     authenticate: (

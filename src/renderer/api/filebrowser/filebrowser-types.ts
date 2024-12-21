@@ -15,6 +15,8 @@ const download = z.any({});
 
 const upload = z.null({});
 
+const listUploads = z.object({ items: z.array(z.object({ path: z.string() })) });
+
 export const fbType = {
     _parameters: {
         authenticate: authenticateParameters,
@@ -24,6 +26,7 @@ export const fbType = {
         authenticate,
         download,
         error,
+        listUploads,
         upload,
     },
 };

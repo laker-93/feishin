@@ -4,6 +4,7 @@ import omitBy from 'lodash/omitBy';
 import qs from 'qs';
 import { z } from 'zod';
 import { fbType } from './filebrowser-types';
+import { useAuthStore } from '/@/renderer/store';
 
 const c = initContract();
 const resultWithHeaders = <ItemType extends z.ZodTypeAny>(itemSchema: ItemType) => {
@@ -31,10 +32,18 @@ export const contract = c.router({
             500: resultWithHeaders(fbType._response.error),
         },
     },
+    listUploads: {
+        method: 'GET',
+        path: 'api/resources/uploads',
+        responses: {
+            200: resultWithHeaders(fbType._response.listUploads),
+            500: resultWithHeaders(fbType._response.error),
+        },
+    },
     upload: {
         body: fbType._parameters.fileBytes,
         method: 'POST',
-        path: 'api/resources/:filename',
+        path: 'api/resources/uploads/:filename',
         responses: {
             200: resultWithHeaders(fbType._response.upload),
             500: resultWithHeaders(fbType._response.error),
@@ -125,6 +134,15 @@ export const fbApiClient = (args: {
                 };
             } catch (e: Error | AxiosError | any) {
                 if (isAxiosError(e)) {
+                    if (e.response?.status === 401) {
+                        const currentServer = useAuthStore.getState().currentServer;
+                        useAuthStore.getState().actions.updateServer(currentServer!.id, {
+                            credential: undefined,
+                            fbToken: undefined,
+                            ndCredential: undefined,
+                        });
+                        useAuthStore.getState().actions.setCurrentServer(null);
+                    }
                     if (e.code === 'ERR_NETWORK') {
                         throw new Error('network error with filebrowser');
                     }

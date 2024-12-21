@@ -184,6 +184,7 @@ const song = z.object({
     hasCoverArt: z.boolean(),
     id: z.string(),
     imageFiles: z.string().optional(),
+    is_duplicate: z.boolean(),
     largeImageUrl: z.string().optional(),
     lyrics: z.string().optional(),
     mbzAlbumArtistId: z.string().optional(),

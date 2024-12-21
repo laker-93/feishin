@@ -67,7 +67,7 @@ export const sidebarItems = [
         id: 'Home',
         label: i18n.t('page.sidebar.home'),
         requiresElectron: false,
-        requiresUserAccount: false,
+        requiresUserAccount: true,
         route: AppRoute.HOME,
     },
     {
@@ -94,14 +94,14 @@ export const sidebarItems = [
         requiresUserAccount: true,
         route: AppRoute.LIBRARY_SONGS,
     },
-    {
-        disabled: false,
-        id: 'Mixes',
-        label: i18n.t('page.sidebar.mixes'),
-        requiresElectron: false,
-        requiresUserAccount: false,
-        route: AppRoute.LIBRARY_MIXES,
-    },
+    // {
+    //    disabled: false,
+    //    id: 'Mixes',
+    //    label: i18n.t('page.sidebar.mixes'),
+    //    requiresElectron: false,
+    //    requiresUserAccount: false,
+    //    route: AppRoute.LIBRARY_MIXES,
+    // },
     {
         disabled: false,
         id: 'Artists',

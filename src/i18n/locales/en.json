@@ -51,6 +51,7 @@
         "currentSong": "current $t(entity.track_one)",
         "decrease": "decrease",
         "delete": "delete",
+        "deleteDuplicates": "delete duplicates",
         "descending": "descending",
         "description": "description",
         "disable": "disable",
@@ -118,6 +119,7 @@
         "yes": "yes"
     },
     "entity": {
+        "account": "account",
         "about": "about",
         "album_one": "album",
         "album_other": "albums",
@@ -202,6 +204,7 @@
         "genre": "$t(entity.genre_one)",
         "id": "id",
         "isCompilation": "is compilation",
+        "isDuplicate": "is duplicate",
         "isFavorited": "is favorited",
         "isPublic": "is public",
         "isRated": "is rated",
@@ -245,6 +248,16 @@
             "input_skipDuplicates": "skip duplicates",
             "success": "added $t(entity.trackWithCount, {\"count\": {{message}} }) to $t(entity.playlistWithCount, {\"count\": {{numOfPlaylists}} })",
             "title": "add to $t(entity.playlist_one)"
+        },
+        "createAccount": {
+            "error_savePassword": "an error occurred when trying to save the password",
+            "input_password": "password",
+            "input_savePassword": "save password",
+            "input_url": "url",
+            "input_username": "username",
+            "input_email": "email",
+            "success": "success",
+            "title": "create $t(entity.account)"
         },
         "createPlaylist": {
             "input_description": "$t(common.description)",
@@ -319,6 +332,8 @@
             "title": "$t(entity.album_other)"
         },
         "appMenu": {
+            "createAccount": "create account",
+            "logon": "log on",
             "collapseSidebar": "collapse sidebar",
             "expandSidebar": "expand sidebar",
             "goBack": "go back",

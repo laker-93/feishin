@@ -7,10 +7,10 @@ import {
     RiAddBoxFill,
     RiAddCircleFill,
     RiFilterFill,
-    RiFolder2Fill,
     RiMoreFill,
     RiPlayFill,
     RiRefreshLine,
+    RiDeleteBin2Line,
     RiSettings3Fill,
 } from 'react-icons/ri';
 import { useListStoreByKey } from '../../../store/list.store';
@@ -26,7 +26,7 @@ import { Button, DropdownMenu, MultiSelect, Slider, Switch, Text } from '/@/rend
 import { VirtualInfiniteGridRef } from '/@/renderer/components/virtual-grid';
 import { SONG_TABLE_COLUMNS } from '/@/renderer/components/virtual-table';
 import { useListContext } from '/@/renderer/context/list-context';
-import { OrderToggleButton, useMusicFolders } from '/@/renderer/features/shared';
+import { OrderToggleButton } from '/@/renderer/features/shared';
 import { JellyfinSongFilters } from '/@/renderer/features/songs/components/jellyfin-song-filters';
 import { NavidromeSongFilters } from '/@/renderer/features/songs/components/navidrome-song-filters';
 import { useContainerQuery } from '/@/renderer/hooks';
@@ -36,6 +36,7 @@ import { SongListFilter, useCurrentServer, useListStoreActions } from '/@/render
 import { ListDisplayType, Play, ServerListItem, TableColumn } from '/@/renderer/types';
 import i18n from '/@/i18n/i18n';
 import { SubsonicSongFilters } from '/@/renderer/features/songs/components/subsonic-song-filter';
+import { pymixController } from '/@/renderer/api/pymix/pymix-controller';
 
 const FILTERS = {
     jellyfin: [
@@ -212,8 +213,6 @@ export const SongListHeaderFilters = ({
 
     const cq = useContainerQuery();
 
-    const musicFoldersQuery = useMusicFolders({ query: null, serverId: server?.id });
-
     const sortByLabel =
         (server?.type &&
             (
@@ -255,46 +254,6 @@ export const SongListHeaderFilters = ({
             pageKey,
             server?.type,
             setFilter,
-            tableRef,
-        ],
-    );
-
-    const handleSetMusicFolder = useCallback(
-        (e: MouseEvent<HTMLButtonElement>) => {
-            if (!e.currentTarget?.value) return;
-
-            let updatedFilters = null;
-            if (e.currentTarget.value === String(filter.musicFolderId)) {
-                updatedFilters = setFilter({
-                    customFilters,
-                    data: { musicFolderId: undefined },
-                    itemType: LibraryItem.SONG,
-                    key: pageKey,
-                }) as SongListFilter;
-            } else {
-                updatedFilters = setFilter({
-                    customFilters,
-                    data: { musicFolderId: e.currentTarget.value },
-                    itemType: LibraryItem.SONG,
-                    key: pageKey,
-                }) as SongListFilter;
-            }
-
-            if (isGrid) {
-                handleRefreshGrid(gridRef, updatedFilters);
-            } else {
-                handleRefreshTable(tableRef, updatedFilters);
-            }
-        },
-        [
-            filter.musicFolderId,
-            isGrid,
-            setFilter,
-            customFilters,
-            pageKey,
-            handleRefreshGrid,
-            gridRef,
-            handleRefreshTable,
             tableRef,
         ],
     );
@@ -390,6 +349,16 @@ export const SongListHeaderFilters = ({
 
     const handleItemGap = (e: number) => {
         setGrid({ data: { itemGap: e }, key: pageKey });
+    };
+
+    const handleDeleteDuplicates = async () => {
+        await pymixController.deleteDuplicates();
+        queryClient.invalidateQueries(queryKeys.songs.list(server?.id || ''));
+        if (isGrid) {
+            handleRefreshGrid(gridRef, filter);
+        } else {
+            handleRefreshTable(tableRef, filter);
+        }
     };
 
     const handleRefresh = () => {
@@ -573,6 +542,16 @@ export const SongListHeaderFilters = ({
                     onClick={handleRefresh}
                 >
                     <RiRefreshLine size="1.3rem" />
+                </Button>
+                <Divider orientation="vertical" />
+                <Button
+                    compact
+                    size="md"
+                    tooltip={{ label: t('common.deleteDuplicates', { postProcess: 'titleCase' }) }}
+                    variant="subtle"
+                    onClick={handleDeleteDuplicates}
+                >
+                    <RiDeleteBin2Line size="1.3rem" />
                 </Button>
                 <Divider orientation="vertical" />
                 <DropdownMenu position="bottom-start">

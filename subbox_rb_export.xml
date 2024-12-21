@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DJ_PLAYLISTS Version="1.0.0">
+    <PRODUCT Name="rekordbox" Version="5.8.7" Company="Pioneer DJ"/>
+    <COLLECTION Entries="11">
+        <TRACK Location="file://localhost//Users/lukepurnell/Library/Application%20Support/subbox/music/Russian%20Circles/Gnosis/05%20-%20%C3%93%20Braon%C3%A1in.mp3" Name="Ó Braonáin" Artist="Russian Circles" Album="Gnosis" Rating="0" Genre="Post-Metal" TrackID="1"/>
+        <TRACK Location="file://localhost//Users/lukepurnell/Library/Application%20Support/subbox/music/Russian%20Circles/Gnosis/07%20-%20Bloom.mp3" Name="Bloom" Artist="Russian Circles" Album="Gnosis" Rating="0" Genre="Post-Metal" TrackID="2"/>
+        <TRACK Location="file://localhost//Users/lukepurnell/Library/Application%20Support/subbox/music/Russian%20Circles/Gnosis/04%20-%20Vlastimil.mp3" Name="Vlastimil" Artist="Russian Circles" Album="Gnosis" Rating="0" Genre="Post-Metal" TrackID="3"/>
+        <TRACK Location="file://localhost//Users/lukepurnell/Library/Application%20Support/subbox/music/Russian%20Circles/Gnosis/06%20-%20Betrayal.mp3" Name="Betrayal" Artist="Russian Circles" Album="Gnosis" Rating="0" Genre="Post-Metal" TrackID="4"/>
+        <TRACK Location="file://localhost//Users/lukepurnell/Library/Application%20Support/subbox/music/Skee%20Mask/C/03%20-%20Keygruv.mp3" Name="Keygruv" Artist="Skee Mask" Album="C" Rating="0" Genre="Ambient" TrackID="5"/>
+        <TRACK Location="file://localhost//Users/lukepurnell/Library/Application%20Support/subbox/music/Skee%20Mask/C/02%20-%20Bassline%20Dub.mp3" Name="Bassline Dub" Artist="Skee Mask" Album="C" Rating="0" Genre="Ambient" TrackID="6"/>
+        <TRACK Location="file://localhost//Users/lukepurnell/Library/Application%20Support/subbox/music/Skee%20Mask/C/04%20-%20Aktif%20Garbon.mp3" Name="Aktif Garbon" Artist="Skee Mask" Album="C" Rating="0" Genre="Ambient" TrackID="7"/>
+        <TRACK Location="file://localhost//Users/lukepurnell/Library/Application%20Support/subbox/music/Laker/Noise%20From%20The%20Ruliad/07%20-%20To%20Compose%20To%20Decompose.mp3" Name="To Compose To Decompose" Artist="Laker" Album="Noise From The Ruliad" Rating="0" Genre="None" TrackID="8"/>
+        <TRACK Location="file://localhost//Users/lukepurnell/Library/Application%20Support/subbox/music/Skee%20Mask/C/05%20-%20FFB7%20Dub.mp3" Name="FFB7 Dub" Artist="Skee Mask" Album="C" Rating="0" Genre="Ambient" TrackID="9"/>
+        <TRACK Location="file://localhost//Users/lukepurnell/Library/Application%20Support/subbox/music/Laker/Noise%20From%20The%20Ruliad/06%20-%20Of%20That%20Nature.mp3" Name="Of That Nature" Artist="Laker" Album="Noise From The Ruliad" Rating="0" Genre="None" TrackID="10"/>
+        <TRACK Location="file://localhost//Users/lukepurnell/Library/Application%20Support/subbox/music/Laker/Noise%20From%20The%20Ruliad/05%20-%20Cloud%20Formation.mp3" Name="Cloud Formation" Artist="Laker" Album="Noise From The Ruliad" Rating="0" Genre="None" TrackID="11"/>
+    </COLLECTION>
+    <PLAYLISTS>
+        <NODE Type="0" Name="ROOT" Count="3">
+            <NODE Name="playlist2" Type="1" KeyType="0" Entries="1">
+                <TRACK Key="1"/>
+            </NODE>
+            <NODE Name="test" Type="0" Count="1">
+                <NODE Name="041124" Type="0" Count="1">
+                    <NODE Name="playlist1" Type="1" KeyType="0" Entries="1">
+                        <TRACK Key="2"/>
+                    </NODE>
+                </NODE>
+            </NODE>
+            <NODE Name="NOPLAYLIST" Type="1" KeyType="0" Entries="9">
+                <TRACK Key="3"/>
+                <TRACK Key="4"/>
+                <TRACK Key="5"/>
+                <TRACK Key="6"/>
+                <TRACK Key="7"/>
+                <TRACK Key="8"/>
+                <TRACK Key="9"/>
+                <TRACK Key="10"/>
+                <TRACK Key="11"/>
+            </NODE>
+        </NODE>
+    </PLAYLISTS>
+</DJ_PLAYLISTS>

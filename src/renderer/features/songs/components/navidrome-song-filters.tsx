@@ -75,6 +75,27 @@ export const NavidromeSongFilters = ({
             },
             value: filter.favorite,
         },
+        {
+            label: t('filter.isDuplicate', { postProcess: 'sentenceCase' }),
+            onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                const updatedFilters = setFilter({
+                    customFilters,
+                    data: {
+                        _custom: {
+                            ...filter._custom,
+                            navidrome: {
+                                is_duplicate: e.currentTarget.checked ? true : undefined,
+                            },
+                        },
+                    },
+                    itemType: LibraryItem.SONG,
+                    key: pageKey,
+                }) as SongListFilter;
+
+                onFilterChange(updatedFilters);
+            },
+            value: filter._custom?.navidrome?.is_duplicate,
+        },
     ];
 
     const handleYearFilter = debounce((e: number | string) => {

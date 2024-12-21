@@ -9,7 +9,6 @@ import { GoToCommands } from './go-to-commands';
 import { Command, CommandPalettePages } from '/@/renderer/features/search/components/command';
 import { Button, Modal, Paper, Spinner, TextInput } from '/@/renderer/components';
 import { HomeCommands } from './home-commands';
-import { ServerCommands } from '/@/renderer/features/search/components/server-commands';
 import { useSearch } from '/@/renderer/features/search/queries/search-query';
 import { useCurrentServer } from '/@/renderer/store';
 import { AppRoute } from '/@/renderer/router/routes';
@@ -243,13 +242,6 @@ export const CommandPalette = ({ modalProps }: CommandPaletteProps) => {
                     )}
                     {activePage === CommandPalettePages.GO_TO && (
                         <GoToCommands
-                            handleClose={modalProps.handlers.close}
-                            setPages={setPages}
-                            setQuery={setQuery}
-                        />
-                    )}
-                    {activePage === CommandPalettePages.MANAGE_SERVERS && (
-                        <ServerCommands
                             handleClose={modalProps.handlers.close}
                             setPages={setPages}
                             setQuery={setQuery}
