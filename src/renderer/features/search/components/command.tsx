@@ -4,7 +4,6 @@ import styled from 'styled-components';
 export enum CommandPalettePages {
     GO_TO = 'go',
     HOME = 'home',
-    MANAGE_SERVERS = 'servers',
 }
 
 export const Command = styled(Cmdk)`

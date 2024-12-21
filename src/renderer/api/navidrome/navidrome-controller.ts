@@ -66,6 +66,7 @@ const authenticate = async (
 ): Promise<AuthenticationResponse> => {
     const cleanServerUrl = url.replace(/\/$/, '');
 
+    console.log(`authenticate public navidrome ${cleanServerUrl}`);
     const res = await ndApiClient({ server: null, url: cleanServerUrl }).authenticate({
         body: {
             password: body.password,
@@ -330,7 +331,8 @@ const getSongDetail = async (args: SongDetailArgs): Promise<SongDetailResponse> 
                 `Failed to get beet track for song ${query.id} and user ${apiClientProps.server.username}`,
             );
         }
-        beetId = beetRes.body?.data.results[0].id;
+        beetId =
+            beetRes.body?.data.results.length > 0 ? beetRes.body.data.results[0].id : undefined;
     }
     return ndNormalize.song(res.body.data, apiClientProps.server, '', undefined, beetId);
 };

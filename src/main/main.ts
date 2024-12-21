@@ -8,7 +8,8 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { access, constants, readFile, writeFile, createWriteStream, promises } from 'fs';
+import { access, constants, readFile, writeFile, createWriteStream } from 'fs';
+import https from 'https';
 import path, { join } from 'path';
 import { deflate, inflate } from 'zlib';
 import axios from 'axios';
@@ -31,8 +32,10 @@ import {
 import electronLocalShortcut from 'electron-localshortcut';
 import log from 'electron-log/main';
 import { autoUpdater } from 'electron-updater';
+import fs from 'fs-extra';
 import musicMetadata from 'music-metadata';
-import { fbController } from './features/core/filebrowser/filebrowser-controller';
+import * as tus from 'tus-js-client';
+import unzipper from 'unzipper';
 import { disableMediaKeys, enableMediaKeys } from './features/core/player/media-keys';
 import { store } from './features/core/settings/index';
 import MenuBuilder from './menu';
@@ -47,6 +50,8 @@ import {
 } from './utils';
 import './features';
 import type { TitleTheme } from '/@/renderer/types';
+// eslint-disable-next-line import/order
+const fsp = require('fs').promises;
 
 declare module 'node-mpv';
 
@@ -64,6 +69,7 @@ process.on('uncaughtException', (error: any) => {
     console.log('Error in main process', error);
 });
 
+app.commandLine.appendSwitch('ignore-certificate-errors');
 if (store.get('ignore_ssl')) {
     app.commandLine.appendSwitch('ignore-certificate-errors');
 }
@@ -506,6 +512,9 @@ const createWindow = async (first = true) => {
 };
 
 app.commandLine.appendSwitch('disable-features', 'HardwareMediaKeyHandling,MediaSessionService');
+// app.commandLine.appendSwitch('disable-web-security');
+// app.commandLine.appendSwitch('disable-features', 'BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessSendPreflights');
+// app.commandLine.appendSwitch('ignore-certificate-errors')
 
 // Must duplicate with the one in renderer process settings.store.ts
 enum BindingActions {
@@ -672,27 +681,52 @@ if (!singleInstance) {
         .catch(console.log);
 }
 
+function getAppPath(): string {
+    const userPath = app.getPath('userData');
+    const appPath = path.join(path.dirname(userPath), 'subbox');
+    return appPath;
+}
+
+ipcMain.handle('get-app-path', async () => {
+    return getAppPath();
+});
+
 // todo put this in main/features/core/filebrowser
-async function downloadFile(token: string) {
+async function downloadFile(token: string, fileName: string) {
     console.log('Downloading file...');
 
     try {
         // const fbUrl = 'http://localhost:8081';
-        const fbUrl = 'https://browser.sub-box.net/browser';
-        const response = await fbController.download(fbUrl, token, {
-            query: { filename: 'subbox-export.zip' },
+        // const fbUrl = 'https://browser.sub-box.net/browser';
+        const fbUrl = `https://browser.docker.localhost/browser/api/raw/downloads/${fileName}`;
+        // rejectUnauthorized disable workaround for dev
+        const response = await axios.get(fbUrl, {
+            headers: {
+                'X-Auth': `${token}`,
+            },
+            // todo remove this in prod. This is only needed for dev testing
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false,
+            }),
+
+            responseType: 'stream',
         });
 
-        // todo set this in settings and default to sensible values for different OS
-        const writer = createWriteStream(
-            '/Users/lukepurnell/Library/Application Support/subbox/subbox-export.zip',
-        );
+        // can be used in prod
+        // const response = await fbController.download(fbUrl, token, {
+        //    query: { filename: 'music.zip' },
+        // });
+
+        const appPath = getAppPath();
+        const exportPath = path.join(appPath, fileName);
+        const writer = createWriteStream(exportPath);
 
         response.data.pipe(writer);
 
         return new Promise<void>((resolve, reject) => {
             writer.on('finish', () => {
                 console.log('File downloaded successfully.');
+                // todo on successful download, unzip the file
                 resolve();
             });
             writer.on('error', (error) => {
@@ -706,32 +740,81 @@ async function downloadFile(token: string) {
     }
 }
 
+const unzipAndMerge = async (zipFilePath: string, targetDirPath: string) => {
+    await fs
+        .createReadStream(zipFilePath)
+        .pipe(unzipper.Parse())
+        .on('entry', async (entry: unzipper.Entry) => {
+            const filePath = path.join(targetDirPath, entry.path);
+            await fs.ensureDir(path.dirname(filePath));
+            if (await fs.pathExists(filePath)) {
+                console.error(`File already exists: ${filePath}`);
+                entry.autodrain();
+            } else {
+                entry.pipe(fs.createWriteStream(filePath));
+            }
+        })
+        .promise();
+    console.log('Unzip and merge completed.');
+};
+
 ipcMain.handle(
     'sync-music-directory',
     async (event, directoryPath: string, username: string, fbToken: string) => {
         console.log('Syncing music directory:', directoryPath);
-        const files = await promises.readdir(directoryPath);
-        const musicFiles = files.filter((file) => path.extname(file) === '.mp3');
+        async function getFiles(directory: string, extension: string): Promise<string[]> {
+            // todo use glob instead but I can't seem to get that working
+            const files = await fsp.readdir(directory, { withFileTypes: true });
 
-        const clientTracks = await Promise.all(
-            musicFiles.map(async (file) => {
-                const metadata = await musicMetadata.parseFile(path.join(directoryPath, file));
-                return {
+            let allFiles: string[] = [];
+
+            for (const file of files) {
+                const filePath = join(directory, file.name);
+
+                if (file.isDirectory()) {
+                    // Recursively read the directory
+                    const subFiles = await getFiles(filePath, extension);
+                    allFiles = allFiles.concat(subFiles);
+                } else if (file.isFile() && file.name.endsWith(extension)) {
+                    allFiles.push(filePath);
+                }
+            }
+
+            return allFiles;
+        }
+
+        const musicFiles = await getFiles(directoryPath, 'mp3');
+        console.log('music files');
+        console.log(musicFiles);
+
+        const clientTracks = [];
+        for (const file of musicFiles) {
+            const metadata = await musicMetadata.parseFile(file);
+            if (metadata.common.artist === undefined) {
+                console.log('undefined artist');
+            } else {
+                clientTracks.push({
                     artist: metadata.common.artist,
                     title: metadata.common.title,
-                };
-            }),
-        );
+                });
+            }
+        }
 
         console.log('clientTracks:', clientTracks);
 
-        const pymixUrl = 'http://localhost:8002';
+        // const pymixUrl = 'pymix';
+        // const pymixUrl = 'https://pymix.sub-box.net';
+        const pymixUrl = 'https://pymix.docker.localhost';
         const response = await axios.post(
             `${pymixUrl}/sync`,
             {
                 tracks: clientTracks,
             },
             {
+                // todo remove this in prod. This is only needed for dev testing
+                httpsAgent: new https.Agent({
+                    rejectUnauthorized: false,
+                }),
                 params: {
                     username,
                 },
@@ -740,8 +823,76 @@ ipcMain.handle(
         console.log('Sync response:', response.data);
         if (response.data.success) {
             console.log('Sync successful. Download file');
-            return downloadFile(fbToken);
+            await downloadFile(fbToken, 'music.zip');
+            // Unzip the file and merge with the existing 'music' directory
+            const appPath = getAppPath();
+            const zipFilePath = path.join(appPath, 'music.zip');
+            const musicDirPath = path.join(appPath);
+            await unzipAndMerge(zipFilePath, musicDirPath);
         }
-        return null;
     },
 );
+
+ipcMain.handle('upload-files', async (event, files: string[], token: string) => {
+    console.log('uploading files:', files);
+    for (const file of files) {
+        console.log('uploading file:', file);
+        // const baseUrl = 'https://browser.sub-box.net/browser'
+        const baseUrl = 'https://browser.docker.localhost/browser';
+        const resourcePath = `${baseUrl}/api/tus/uploads/${file}?override=true`;
+
+        const resp = await axios.post(resourcePath, {
+            headers: {
+                'X-Auth': `${token}`,
+            },
+        });
+        // const resp = await fetch(resourcePath,
+        //    {
+        //        headers: {
+        //            'X-Auth': `${token}`,
+        //        },
+        //        method: "POST"
+        //    }
+        // )
+        if (resp.status !== 201) {
+            throw new Error(`Failed to create an upload: ${resp.status} ${resp.statusText}`);
+        }
+        const fileBuffer = await fsp.readFile(file);
+        await new Promise((resolve, reject) => {
+            console.log('uploading', file);
+            console.log('tus object:', tus);
+            const uploader = new tus.Upload(fileBuffer, {
+                chunkSize: 10485760,
+
+                // endpoint: resourcePath,
+                headers: {
+                    'X-Auth': `${token}`,
+                },
+                // uploadSize: fileSize,
+                onError: (error) => {
+                    console.error('Error while uploading file:', error);
+                    reject(error);
+                },
+
+                onProgress: (bytesUploaded, bytesTotal) => {
+                    const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
+                    console.log(
+                        `Uploaded ${bytesUploaded} of ${bytesTotal} bytes (${percentage}%)`,
+                    );
+                },
+                onSuccess: () => {
+                    console.log('File uploaded successfully.');
+                    resolve(uploader.url);
+                },
+                uploadUrl: resourcePath,
+            });
+            uploader.start();
+        });
+    }
+    return null;
+});
+
+ipcMain.handle('download-rb-xml', async (event, fbToken: string) => {
+    downloadFile(fbToken, 'subbox_rb_export.xml');
+    return null;
+});

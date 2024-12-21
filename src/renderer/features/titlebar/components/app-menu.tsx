@@ -1,16 +1,14 @@
-import { Group } from '@mantine/core';
-import { openModal, closeAllModals } from '@mantine/modals';
+import { openContextModal } from '@mantine/modals';
 import isElectron from 'is-electron';
 import { useTranslation } from 'react-i18next';
 import {
-    RiLockLine,
+    RiAccountBoxLine,
     RiWindowFill,
     RiArrowLeftSLine,
     RiArrowRightSLine,
     RiLayoutRightLine,
     RiLayoutLeftLine,
     RiSettings3Line,
-    RiServerLine,
     RiGithubLine,
     RiExternalLinkLine,
     RiCloseCircleLine,
@@ -18,65 +16,47 @@ import {
 } from 'react-icons/ri';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
-import { DropdownMenu } from '/@/renderer/components';
-import { ServerList } from '/@/renderer/features/servers';
-import { EditServerForm } from '/@/renderer/features/servers/components/edit-server-form';
+import { ContextModalVars, DropdownMenu } from '/@/renderer/components';
+import { AddServerForm } from '/@/renderer/features/servers';
+import { CreateAccountForm } from '/@/renderer/features/servers/components/create-account-form';
 import { AppRoute } from '/@/renderer/router/routes';
-import {
-    useCurrentServer,
-    useServerList,
-    useAuthStoreActions,
-    useSidebarStore,
-    useAppStoreActions,
-} from '/@/renderer/store';
-import { ServerListItem, ServerType } from '/@/renderer/api/types';
+import { useSidebarStore, useAppStoreActions, useCurrentServer } from '/@/renderer/store';
 import packageJson from '../../../../../package.json';
 
 const browser = isElectron() ? window.electron.browser : null;
-const localSettings = isElectron() ? window.electron.localSettings : null;
 
 export const AppMenu = () => {
+    const currentServer = useCurrentServer();
+    const isLoggedOn = currentServer && currentServer.credential;
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const currentServer = useCurrentServer();
-    const serverList = useServerList();
-    const { setCurrentServer } = useAuthStoreActions();
     const { collapsed } = useSidebarStore();
     const { setSideBar } = useAppStoreActions();
+    console.log('currentServer', currentServer);
 
-    const handleSetCurrentServer = (server: ServerListItem) => {
-        navigate(AppRoute.HOME);
-        setCurrentServer(server);
-    };
-
-    const handleCredentialsModal = async (server: ServerListItem) => {
-        let password: string | null = null;
-
-        try {
-            if (localSettings && server.savePassword) {
-                password = await localSettings.passwordGet(server.id);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-        openModal({
-            children: server && (
-                <EditServerForm
-                    isUpdate
-                    password={password}
-                    server={server}
-                    onCancel={closeAllModals}
-                />
-            ),
-            size: 'sm',
-            title: `Update session for "${server.name}"`,
+    const handleCreateAccountModal = () => {
+        openContextModal({
+            innerProps: {
+                // eslint-disable-next-line react/no-unstable-nested-components
+                modalBody: (vars: ContextModalVars) => (
+                    <CreateAccountForm onCancel={() => vars.context.closeModal(vars.id)} />
+                ),
+            },
+            modal: 'base',
+            title: t('form.logon.title', { postProcess: 'titleCase' }),
         });
     };
 
-    const handleManageServersModal = () => {
-        openModal({
-            children: <ServerList />,
-            title: 'Manage Servers',
+    const handleLogOnModal = () => {
+        openContextModal({
+            innerProps: {
+                // eslint-disable-next-line react/no-unstable-nested-components
+                modalBody: (vars: ContextModalVars) => (
+                    <AddServerForm onCancel={() => vars.context.closeModal(vars.id)} />
+                ),
+            },
+            modal: 'base',
+            title: t('form.logon.title', { postProcess: 'titleCase' }),
         });
     };
 
@@ -134,43 +114,21 @@ export const AppMenu = () => {
                 {t('page.appMenu.settings', { postProcess: 'sentenceCase' })}
             </DropdownMenu.Item>
             <DropdownMenu.Item
+                disabled={!!isLoggedOn}
+                icon={<RiAccountBoxLine />}
+                onClick={handleCreateAccountModal}
+            >
+                {t('page.appMenu.createAccount', { postProcess: 'sentenceCase' })}
+            </DropdownMenu.Item>
+
+            <DropdownMenu.Item
+                disabled={!!isLoggedOn}
                 icon={<RiLoginBoxLine />}
-                onClick={handleManageServersModal}
+                onClick={handleLogOnModal}
             >
                 {t('page.appMenu.logon', { postProcess: 'sentenceCase' })}
             </DropdownMenu.Item>
 
-            <DropdownMenu.Divider />
-            <DropdownMenu.Label>
-                {t('page.appMenu.selectServer', { postProcess: 'sentenceCase' })}
-            </DropdownMenu.Label>
-            {Object.keys(serverList).map((serverId) => {
-                const server = serverList[serverId];
-                const isNavidromeExpired =
-                    server.type === ServerType.NAVIDROME && !server.ndCredential;
-                const isJellyfinExpired = server.type === ServerType.JELLYFIN && !server.credential;
-                const isSessionExpired = isNavidromeExpired || isJellyfinExpired;
-
-                return (
-                    <DropdownMenu.Item
-                        key={`server-${server.id}`}
-                        $isActive={server.id === currentServer?.id}
-                        icon={
-                            isSessionExpired ? (
-                                <RiLockLine color="var(--danger-color)" />
-                            ) : (
-                                <RiServerLine />
-                            )
-                        }
-                        onClick={() => {
-                            if (!isSessionExpired) return handleSetCurrentServer(server);
-                            return handleCredentialsModal(server);
-                        }}
-                    >
-                        <Group>{server.name}</Group>
-                    </DropdownMenu.Item>
-                );
-            })}
             <DropdownMenu.Divider />
             <DropdownMenu.Item
                 component="a"

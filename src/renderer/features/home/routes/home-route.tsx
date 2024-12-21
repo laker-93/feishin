@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { ActionIcon, Group, Stack } from '@mantine/core';
 import {
     AlbumListSort,
@@ -7,14 +7,13 @@ import {
     SongListSort,
     SortOrder,
 } from '/@/renderer/api/types';
-import { FeatureCarousel, NativeScrollArea, Spinner, TextTitle } from '/@/renderer/components';
+import { FeatureCarousel, NativeScrollArea, TextTitle } from '/@/renderer/components';
 import { useAlbumList } from '/@/renderer/features/albums';
 import { useRecentlyPlayed } from '/@/renderer/features/home/queries/recently-played-query';
 import { AnimatedPage, LibraryHeaderBar } from '/@/renderer/features/shared';
 import { AppRoute } from '/@/renderer/router/routes';
 import {
     HomeItem,
-    getPublicServer,
     useCurrentServer,
     useGeneralSettings,
     useWindowSettings,
@@ -26,16 +25,23 @@ import { queryKeys } from '/@/renderer/api/query-keys';
 import { useTranslation } from 'react-i18next';
 import { RiRefreshLine } from 'react-icons/ri';
 import { useSongList } from '/@/renderer/features/songs';
+import { useNavigate } from 'react-router';
 
 const HomeRoute = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const scrollAreaRef = useRef<HTMLDivElement>(null);
-    const publicServer = getPublicServer();
+    // const publicServer = getPublicServer();
     const server = useCurrentServer();
     const itemsPerPage = 15;
     const { windowBarStyle } = useWindowSettings();
     const { homeItems } = useGeneralSettings();
+    useEffect(() => {
+        if (!server) {
+            navigate('/about');
+        }
+    }, [server, navigate]);
 
     const featureTracks = useAlbumList({
         options: {
@@ -50,22 +56,22 @@ const HomeRoute = () => {
         },
         serverId: server?.id,
     });
-    const featureMixes = useAlbumList({
-        options: {
-            cacheTime: 1000 * 60,
-            staleTime: 1000 * 60,
-        },
-        query: {
-            limit: 20,
-            sortBy: AlbumListSort.RANDOM,
-            sortOrder: SortOrder.DESC,
-            startIndex: 0,
-        },
-        serverId: publicServer?.id,
-    });
-    const publicNd = !server;
-
-    const feature = publicNd ? featureMixes : featureTracks;
+    // const featureMixes = useAlbumList({
+    //    options: {
+    //        cacheTime: 1000 * 60,
+    //        staleTime: 1000 * 60,
+    //    },
+    //    query: {
+    //        limit: 20,
+    //        sortBy: AlbumListSort.RANDOM,
+    //        sortOrder: SortOrder.DESC,
+    //        startIndex: 0,
+    //    },
+    //    serverId: publicServer?.id,
+    // });
+    // const publicNd = !server;
+    // const feature = publicNd ? featureMixes : featureTracks;
+    const feature = featureTracks;
 
     const featureItemsWithImage = useMemo(() => {
         return feature.data?.items?.filter((item) => item.imageUrl) ?? [];
@@ -84,18 +90,18 @@ const HomeRoute = () => {
         serverId: server?.id,
     });
 
-    const randomMixes = useAlbumList({
-        options: {
-            staleTime: 1000 * 60 * 5,
-        },
-        query: {
-            limit: itemsPerPage,
-            sortBy: AlbumListSort.RANDOM,
-            sortOrder: SortOrder.ASC,
-            startIndex: 0,
-        },
-        serverId: publicServer?.id,
-    });
+    // const randomMixes = useAlbumList({
+    //    options: {
+    //        staleTime: 1000 * 60 * 5,
+    //    },
+    //    query: {
+    //        limit: itemsPerPage,
+    //        sortBy: AlbumListSort.RANDOM,
+    //        sortOrder: SortOrder.ASC,
+    //        startIndex: 0,
+    //    },
+    //    serverId: publicServer?.id,
+    // });
 
     const recentlyPlayed = useRecentlyPlayed({
         options: {
@@ -110,18 +116,18 @@ const HomeRoute = () => {
         serverId: server?.id,
     });
 
-    const recentlyPlayedMixes = useRecentlyPlayed({
-        options: {
-            staleTime: 0,
-        },
-        query: {
-            limit: itemsPerPage,
-            sortBy: AlbumListSort.RECENTLY_PLAYED,
-            sortOrder: SortOrder.DESC,
-            startIndex: 0,
-        },
-        serverId: publicServer?.id,
-    });
+    // const recentlyPlayedMixes = useRecentlyPlayed({
+    //    options: {
+    //        staleTime: 0,
+    //    },
+    //    query: {
+    //        limit: itemsPerPage,
+    //        sortBy: AlbumListSort.RECENTLY_PLAYED,
+    //        sortOrder: SortOrder.DESC,
+    //        startIndex: 0,
+    //    },
+    //    serverId: publicServer?.id,
+    // });
 
     const recentlyAdded = useAlbumList({
         options: {
@@ -136,18 +142,18 @@ const HomeRoute = () => {
         serverId: server?.id,
     });
 
-    const recentlyAddedMixes = useAlbumList({
-        options: {
-            staleTime: 1000 * 60 * 5,
-        },
-        query: {
-            limit: itemsPerPage,
-            sortBy: AlbumListSort.RECENTLY_ADDED,
-            sortOrder: SortOrder.DESC,
-            startIndex: 0,
-        },
-        serverId: publicServer?.id,
-    });
+    // const recentlyAddedMixes = useAlbumList({
+    //    options: {
+    //        staleTime: 1000 * 60 * 5,
+    //    },
+    //    query: {
+    //        limit: itemsPerPage,
+    //        sortBy: AlbumListSort.RECENTLY_ADDED,
+    //        sortOrder: SortOrder.DESC,
+    //        startIndex: 0,
+    //    },
+    //    serverId: publicServer?.id,
+    // });
     const mostPlayedAlbums = useAlbumList({
         options: {
             enabled: server?.type === ServerType.SUBSONIC || server?.type === ServerType.NAVIDROME,
@@ -179,34 +185,39 @@ const HomeRoute = () => {
         300,
     );
 
-    const mostPlayedMixes = useSongList(
-        {
-            options: {
-                staleTime: 1000 * 60 * 5,
-            },
-            query: {
-                limit: itemsPerPage,
-                sortBy: SongListSort.PLAY_COUNT,
-                sortOrder: SortOrder.DESC,
-                startIndex: 0,
-            },
-            serverId: publicServer?.id,
-        },
-        300,
-    );
+    // const mostPlayedMixes = useSongList(
+    //    {
+    //        options: {
+    //            staleTime: 1000 * 60 * 5,
+    //        },
+    //        query: {
+    //            limit: itemsPerPage,
+    //            sortBy: SongListSort.PLAY_COUNT,
+    //            sortOrder: SortOrder.DESC,
+    //            startIndex: 0,
+    //        },
+    //        serverId: publicServer?.id,
+    //    },
+    //    300,
+    // );
 
-    const isLoading = server
-        ? random.isLoading ||
-          recentlyPlayed.isLoading ||
-          recentlyAdded.isLoading ||
-          mostPlayedAlbums.isLoading
-        : randomMixes.isLoading ||
-          recentlyPlayedMixes.isLoading ||
-          recentlyAddedMixes.isLoading ||
-          mostPlayedMixes.isLoading;
+    const isLoading =
+        random.isLoading ||
+        recentlyPlayed.isLoading ||
+        recentlyAdded.isLoading ||
+        mostPlayedAlbums.isLoading;
+    // const isLoading = server
+    //    ? random.isLoading ||
+    //      recentlyPlayed.isLoading ||
+    //      recentlyAdded.isLoading ||
+    //      mostPlayedAlbums.isLoading
+    //    : randomMixes.isLoading ||
+    //      recentlyPlayedMixes.isLoading ||
+    //      recentlyAddedMixes.isLoading ||
+    //      mostPlayedMixes.isLoading;
 
     if (isLoading) {
-        return <Spinner container />;
+        return null;
     }
 
     const carousels = {
@@ -253,43 +264,43 @@ const HomeRoute = () => {
             sortOrder: SortOrder.DESC,
             title: t('page.home.mostPlayed', { postProcess: 'sentenceCase' }),
         },
-        [HomeItem.RANDOM_MIXES]: {
-            data: randomMixes?.data?.items,
-            itemType: LibraryItem.ALBUM,
-            sortBy: AlbumListSort.RANDOM,
-            sortOrder: SortOrder.ASC,
-            title: t('page.home.exploreMixes', { postProcess: 'sentenceCase' }),
-        },
-        [HomeItem.RECENTLY_PLAYED_MIXES]: {
-            data: recentlyPlayedMixes?.data?.items,
-            itemType: LibraryItem.ALBUM,
-            pagination: {
-                itemsPerPage,
-            },
-            sortBy: AlbumListSort.RECENTLY_PLAYED,
-            sortOrder: SortOrder.DESC,
-            title: t('page.home.recentlyPlayedMixes', { postProcess: 'sentenceCase' }),
-        },
-        [HomeItem.RECENTLY_ADDED_MIXES]: {
-            data: recentlyAddedMixes?.data?.items,
-            itemType: LibraryItem.ALBUM,
-            pagination: {
-                itemsPerPage,
-            },
-            sortBy: AlbumListSort.RECENTLY_ADDED,
-            sortOrder: SortOrder.DESC,
-            title: t('page.home.newlyAddedMixes', { postProcess: 'sentenceCase' }),
-        },
-        [HomeItem.MOST_PLAYED_MIXES]: {
-            data: mostPlayedMixes?.data?.items,
-            itemType: LibraryItem.SONG,
-            pagination: {
-                itemsPerPage,
-            },
-            sortBy: SongListSort.PLAY_COUNT,
-            sortOrder: SortOrder.DESC,
-            title: t('page.home.mostPlayedMixes', { postProcess: 'sentenceCase' }),
-        },
+        // [HomeItem.RANDOM_MIXES]: {
+        //    data: randomMixes?.data?.items,
+        //    itemType: LibraryItem.ALBUM,
+        //    sortBy: AlbumListSort.RANDOM,
+        //    sortOrder: SortOrder.ASC,
+        //    title: t('page.home.exploreMixes', { postProcess: 'sentenceCase' }),
+        // },
+        // [HomeItem.RECENTLY_PLAYED_MIXES]: {
+        //    data: recentlyPlayedMixes?.data?.items,
+        //    itemType: LibraryItem.ALBUM,
+        //    pagination: {
+        //        itemsPerPage,
+        //    },
+        //    sortBy: AlbumListSort.RECENTLY_PLAYED,
+        //    sortOrder: SortOrder.DESC,
+        //    title: t('page.home.recentlyPlayedMixes', { postProcess: 'sentenceCase' }),
+        // },
+        // [HomeItem.RECENTLY_ADDED_MIXES]: {
+        //    data: recentlyAddedMixes?.data?.items,
+        //    itemType: LibraryItem.ALBUM,
+        //    pagination: {
+        //        itemsPerPage,
+        //    },
+        //    sortBy: AlbumListSort.RECENTLY_ADDED,
+        //    sortOrder: SortOrder.DESC,
+        //    title: t('page.home.newlyAddedMixes', { postProcess: 'sentenceCase' }),
+        // },
+        // [HomeItem.MOST_PLAYED_MIXES]: {
+        //    data: mostPlayedMixes?.data?.items,
+        //    itemType: LibraryItem.SONG,
+        //    pagination: {
+        //        itemsPerPage,
+        //    },
+        //    sortBy: SongListSort.PLAY_COUNT,
+        //    sortOrder: SortOrder.DESC,
+        //    title: t('page.home.mostPlayedMixes', { postProcess: 'sentenceCase' }),
+        // },
     };
 
     const sortedCarousel = homeItems
@@ -362,7 +373,7 @@ const HomeRoute = () => {
                 >
                     <FeatureCarousel
                         data={featureItemsWithImage}
-                        publicNd={publicNd}
+                        publicNd={false}
                     />
                     {sortedCarousel
                         .filter((carousel) => {

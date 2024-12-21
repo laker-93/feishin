@@ -1,27 +1,17 @@
 import { Center, Group, Stack } from '@mantine/core';
-import { useTranslation } from 'react-i18next';
-import { RiCheckFill, RiHome4Line } from 'react-icons/ri';
-import { Link } from 'react-router-dom';
-import { Button, PageHeader, Text } from '/@/renderer/components';
+import { Navigate } from 'react-router-dom';
+import { PageHeader } from '/@/renderer/components';
 import { ActionRequiredContainer } from '/@/renderer/features/action-required/components/action-required-container';
-import { ServerCredentialRequired } from '/@/renderer/features/action-required/components/server-credential-required';
 import { LogonRequired } from '/@/renderer/features/action-required/components/server-required';
 import { AnimatedPage } from '/@/renderer/features/shared';
 import { AppRoute } from '/@/renderer/router/routes';
 import { useCurrentServer } from '/@/renderer/store';
 
 const ActionRequiredRoute = () => {
-    const { t } = useTranslation();
     const currentServer = useCurrentServer();
     const isServerRequired = !currentServer;
-    const isCredentialRequired = currentServer && !currentServer.credential;
 
     const checks = [
-        {
-            component: <ServerCredentialRequired />,
-            title: t('error.credentialsRequired', { postProcess: 'sentenceCase' }),
-            valid: !isCredentialRequired,
-        },
         {
             component: <LogonRequired />,
             title: '',
@@ -31,6 +21,10 @@ const ActionRequiredRoute = () => {
 
     const canReturnHome = checks.every((c) => c.valid);
     const displayedCheck = checks.find((c) => !c.valid);
+
+    if (canReturnHome) {
+        return <Navigate to={AppRoute.HOME} />;
+    }
 
     return (
         <AnimatedPage>
@@ -47,31 +41,6 @@ const ActionRequiredRoute = () => {
                             </ActionRequiredContainer>
                         )}
                     </Group>
-                    <Stack mt="2rem">
-                        {canReturnHome && (
-                            <>
-                                <Group
-                                    noWrap
-                                    position="center"
-                                >
-                                    <RiCheckFill
-                                        color="var(--success-color)"
-                                        size={30}
-                                    />
-                                    <Text size="xl">System Healthy</Text>
-                                </Group>
-                                <Button
-                                    component={Link}
-                                    disabled={!canReturnHome}
-                                    leftIcon={<RiHome4Line />}
-                                    to={AppRoute.HOME}
-                                    variant="filled"
-                                >
-                                    Enter
-                                </Button>
-                            </>
-                        )}
-                    </Stack>
                 </Stack>
             </Center>
         </AnimatedPage>
