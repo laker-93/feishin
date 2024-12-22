@@ -1,3 +1,5 @@
+# this workflow is disabled since lint is checked on pre-commit.
+# the workflows to build the app are then run manually.
 name: Test
 
 on: [push, pull_request]
