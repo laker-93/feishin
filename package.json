@@ -1,7 +1,7 @@
 {
-    "name": "feishin",
-    "productName": "Feishin",
-    "description": "Feishin music server",
+    "name": "subbox",
+    "productName": "Subbox",
+    "description": "Subbox music player",
     "version": "0.7.3",
     "scripts": {
         "build": "concurrently \"npm run build:main\" \"npm run build:renderer\" \"npm run build:remote\"",
@@ -9,7 +9,7 @@
         "build:remote": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.remote.prod.ts",
         "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
         "build:web": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.web.prod.ts",
-        "build:docker": "docker build -t jeffvli/feishin .",
+        "build:docker": "docker build -t laker93/subbox .",
         "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
         "lint": "concurrently \"npm run lint:code\" \"npm run lint:styles\"",
         "lint:code": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx --fix",
@@ -45,8 +45,8 @@
         ]
     },
     "build": {
-        "productName": "Feishin",
-        "appId": "org.jeffvli.feishin",
+        "productName": "Subbox",
+        "appId": "org.laker93.subbox",
         "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
         "asar": true,
         "asarUnpack": "**\\*.{node,dll}",
@@ -144,22 +144,22 @@
         ],
         "publish": {
             "provider": "github",
-            "owner": "jeffvli",
-            "repo": "feishin"
+            "owner": "laker-93",
+            "repo": "subbox"
         }
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/jeffvli/feishin.git"
+        "url": "git+https://github.com/laker-93/feishin.git"
     },
     "author": {
-        "name": "jeffvli",
-        "url": "https://github.com/jeffvli/"
+        "name": "laker-93",
+        "url": "https://github.com/laker-93/"
     },
     "contributors": [],
     "license": "GPL-3.0",
     "bugs": {
-        "url": "https://github.com/jeffvli/feishin/issues"
+        "url": "https://github.com/laker-93/feishin/issues"
     },
     "keywords": [
         "subsonic",
@@ -169,7 +169,7 @@
         "react",
         "electron"
     ],
-    "homepage": "https://github.com/jeffvli/feishin",
+    "homepage": "https://github.com/laker-93/feishin",
     "jest": {
         "testURL": "http://localhost/",
         "testEnvironment": "jsdom",
