@@ -10,16 +10,18 @@ import {
     Progress,
     Select,
     Divider,
-    Collapse,
     List,
     Modal,
+    Radio,
 } from '@mantine/core';
-import { Dropzone, MIME_TYPES } from '@mantine/dropzone';
+import { Dropzone } from '@mantine/dropzone';
 import { useCurrentServer } from '/@/renderer/store';
 import { pymixController } from '/@/renderer/api/pymix/pymix-controller';
 import { v4 as uuidv4 } from 'uuid';
 import RBBackup from '../../../../../assets/RB-backup.png';
 import { fbController } from '../../../api/filebrowser/filebrowser-controller';
+
+const urlConfig = JSON.parse(process.env.URL_CONFIG);
 
 type UploadHistoryEntry = {
     createdTime: string;
@@ -53,7 +55,7 @@ const upload = async (
     // Upload files
     for (const { id, file } of filePaths) {
         try {
-            const fbUrl = 'https://browser.docker.localhost/browser';
+            const fbUrl = urlConfig.url.filebrowser;
             updateUploadStatus(id, 'Uploading', 0, 0);
             await fbController.tusUpload(fbUrl, fbToken, file, (progress) => {
                 updateUploadStatus(id, 'Uploading', progress, 0);
@@ -148,10 +150,29 @@ export const UploadContent = () => {
     });
     const [isRBImport, setIsRBImport] = useState(false);
     const [rowsToShow, setRowsToShow] = useState(20);
-    const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [fbHasUnprocessedFiles, setFbHasUnprocessedFiles] = useState(false);
+    const [importType, setImportType] = useState<string>('rekordbox');
+
+    useEffect(() => {
+        const checkForUnprocessedFiles = async () => {
+            if (server && server.fbToken) {
+                try {
+                    const uploads = await fbController.listUploads(
+                        urlConfig.url.filebrowser,
+                        server.fbToken,
+                    );
+                    setFbHasUnprocessedFiles(uploads.length > 0);
+                } catch (error) {
+                    console.error('Error listing uploads:', error);
+                }
+            }
+        };
+
+        checkForUnprocessedFiles();
+    }, [server]);
 
     useEffect(() => {
         localStorage.setItem('uploadHistory', JSON.stringify(uploadHistory));
@@ -256,6 +277,7 @@ export const UploadContent = () => {
     const formatTime = (time: string) => {
         return new Date(time).toLocaleString('en-US', { hour12: false, timeStyle: 'medium' });
     };
+
     const handleImageClick = (imageSrc: string) => {
         setSelectedImage(imageSrc);
         setIsImageModalOpen(true);
@@ -269,17 +291,24 @@ export const UploadContent = () => {
         <Box
             m={2}
             p={20}
+            style={{ maxHeight: '700px', overflowY: 'auto' }}
         >
             <Text
                 align="center"
-                mb={10}
-                size="sm"
+                mb={20}
+                size="md"
             >
                 Upload music files to subbox.
             </Text>
             <Dropzone
                 multiple
-                accept={[MIME_TYPES.mp3, MIME_TYPES.wav, MIME_TYPES.ogg, MIME_TYPES.flac]}
+                accept={[
+                    'audio/mpeg',
+                    'audio/x-flac',
+                    'audio/wav',
+                    'audio/x-wav',
+                    'application/zip',
+                ]}
                 style={{
                     border: '2px dashed #cccccc',
                     cursor: 'pointer',
@@ -290,13 +319,6 @@ export const UploadContent = () => {
             >
                 <Text>Drag and drop audio files here, or click to select files</Text>
             </Dropzone>
-            <Text
-                align="center"
-                mb={10}
-                size="sm"
-            >
-                To import your collection from DJ software follow the steps below.
-            </Text>
             <Box mt={2}>
                 {files.length > 0 && (
                     <Box>
@@ -343,8 +365,7 @@ export const UploadContent = () => {
             {uploadHistory.length > 0 && (
                 <Box mt={2}>
                     <Text>Upload History:</Text>
-
-                    <Box style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    <Box>
                         <Table>
                             <thead>
                                 <tr>
@@ -360,17 +381,17 @@ export const UploadContent = () => {
                                 {uploadHistory
                                     .sort(
                                         (a, b) =>
-                                            new Date(a.createdTime).getTime() -
-                                            new Date(b.createdTime).getTime(),
+                                            new Date(b.createdTime).getTime() -
+                                            new Date(a.createdTime).getTime(),
                                     )
                                     .slice(0, rowsToShow)
                                     .map((entry) => (
                                         <tr key={entry.id}>
                                             <td>{entry.fileName}</td>
-                                            <td>
+                                            <td style={{ paddingRight: '20px' }}>
                                                 <Progress value={entry.uploadProgress || 0} />
                                             </td>
-                                            <td>
+                                            <td style={{ paddingRight: '20px' }}>
                                                 <Progress value={entry.processProgress || 0} />
                                             </td>
                                             <td>{entry.status || 'Pending'}</td>
@@ -397,7 +418,12 @@ export const UploadContent = () => {
                         mt="md"
                         position="center"
                     >
-                        <Button onClick={handleReprocessFailedFiles}>Re-process Failed</Button>
+                        <Button
+                            disabled={!fbHasUnprocessedFiles}
+                            onClick={handleReprocessFailedFiles}
+                        >
+                            Re-process Failed
+                        </Button>
                     </Group>
                 </Box>
             )}
@@ -406,72 +432,83 @@ export const UploadContent = () => {
                 <Text
                     align="center"
                     mb={20}
-                    size="md"
+                    size="xl"
+                    weight={700}
                 >
                     Import from DJ Software
                 </Text>
-                <Group position="center">
-                    <Button
-                        variant="outline"
-                        onClick={() => setIsInstructionsOpen((prev) => !prev)}
+                <Text
+                    align="center"
+                    mb={20}
+                    size="md"
+                >
+                    This section allows you to export from your DJ software and import to subbox.
+                    There are two components to this: importing the audio files and importing the
+                    meta information (information like playlists, ratings etc) You can follow the
+                    below steps to achieve this.
+                </Text>
+                <Radio.Group
+                    name="DJSoftware"
+                    value={importType}
+                    onChange={setImportType}
+                >
+                    <Group
+                        mt="xs"
+                        position="center"
                     >
-                        Import from Rekordbox
-                    </Button>
-                </Group>
-                <Collapse in={isInstructionsOpen}>
-                    <Box
-                        mt={20}
-                        style={{ maxHeight: '400px' }}
-                    >
+                        <Radio
+                            label="Rekordbox"
+                            value="rekordbox"
+                        />
+                        <Radio
+                            label="Serato"
+                            value="serato"
+                        />
+                    </Group>
+                </Radio.Group>
+                {importType === 'rekordbox' && (
+                    <Box mt={20}>
+                        <Text
+                            align="center"
+                            mb={10}
+                            size="md"
+                            weight={700}
+                        >
+                            How to import XML into RekordBox
+                        </Text>
+
                         <List
                             center
                             withPadding
                             size="sm"
                         >
-                            <List.Item>
+                            <List.Item mb={20}>
                                 Export your RB collection (From rekordbox desktop app:
                                 File-&gt;Library-&gt;Backup Library).
-                                <List
-                                    center
-                                    withPadding
-                                    size="sm"
-                                >
-                                    <List.Item mb={20}>
-                                        Make sure you select &apos;yes&apos; to backing up music
-                                        files as well. This will create a &apos;rekordbox_bak&apos;
-                                        folder with the music files in. It will also create a zip
-                                        folder but this is not needed.
-                                    </List.Item>
-                                </List>
-                                <Image
-                                    alt="RekordBox Backup"
-                                    mb={20}
-                                    src={RBBackup}
-                                    style={{ cursor: 'pointer' }}
-                                    width={200}
-                                    onClick={() => handleImageClick(RBBackup)}
-                                />
                             </List.Item>
-
-                            <List.Item>
+                            <Image
+                                alt="RekordBox Backup"
+                                mb={20}
+                                src={RBBackup}
+                                style={{ cursor: 'pointer' }}
+                                width={200}
+                                onClick={() => handleImageClick(RBBackup)}
+                            />
+                            <List.Item mb={20}>
+                                Make sure you select &apos;yes&apos; to backing up music files as
+                                well. This will create a &apos;rekordbox_bak&apos; folder with the
+                                music files in. It will also create a zip folder but this is not
+                                needed.
+                            </List.Item>
+                            <List.Item mb={20}>
                                 To decrease the time it takes to import your collection to subbox,
                                 create a zip of the &apos;rekordbox_bak&apos; directory made in the
                                 above step. Call it &apos;rekordbox_bak.zip&apos;.
                             </List.Item>
-                            <List.Item>
+                            <List.Item mb={20}>
                                 Backup your collection as xml (File -&gt; Export Collection in xml
-                                format).
-                                <List
-                                    center
-                                    withPadding
-                                    size="sm"
-                                >
-                                    <List.Item mb={20}>
-                                        Save it as &apos;rekordbox-backup.xml&apos;. This contains
-                                        all the playlist data needed to create your playlists in
-                                        subbox.
-                                    </List.Item>
-                                </List>
+                                format). Save it as &apos;rekordbox-backup.xml&apos;. This contains
+                                all the playlist data needed to create your playlists in subbox.
                             </List.Item>
                             <List.Item>
                                 Once the above has been completed in rekordbox, upload the resulting
@@ -480,7 +517,37 @@ export const UploadContent = () => {
                             </List.Item>
                         </List>
                     </Box>
-                </Collapse>
+                )}
+                {importType === 'serato' && (
+                    <Box mt={20}>
+                        <Text
+                            align="center"
+                            mb={10}
+                            size="md"
+                            weight={700}
+                        >
+                            How to import crates into Serato
+                        </Text>
+                        <List
+                            center
+                            withPadding
+                            size="sm"
+                        >
+                            <List.Item mb={20}>
+                                Locate your audio files in Serato and zip them in to a file called
+                                audio_files.zip
+                            </List.Item>
+                            <List.Item mb={20}>
+                                Zip up your subcrates folder (located ~/Music/_Serato_/SubCrates).
+                                Call it subcrates.zip.
+                            </List.Item>
+                            <List.Item mb={20}>
+                                Drag and drop in to the section above and select &apos;serato
+                                import&apos; check box
+                            </List.Item>
+                        </List>
+                    </Box>
+                )}
             </Box>
             <Modal
                 opened={isImageModalOpen}

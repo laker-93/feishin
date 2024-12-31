@@ -42,7 +42,7 @@ const seratoImport = z.object({
     success: z.boolean(),
 });
 
-const rbExport = z.object({
+const exportJob = z.object({
     beets_output: z.string(),
     n_beets_tracks: z.number(),
     reason: z.string(),
@@ -94,10 +94,10 @@ export const pymixType = {
     _parameters: {
         create: createParameters,
         deleteDuplicates: deleteParameters,
+        exportJob: rbExportParameters,
         import: importParameters,
         importProgress: importProgressParameters,
         login: loginParameters,
-        rbExport: rbExportParameters,
         rbImport: rbImportParameters,
         sync: syncParameters,
     },
@@ -106,9 +106,9 @@ export const pymixType = {
         create,
         deleteDuplicates,
         error,
+        exportJob,
         importJob,
         login,
-        rbExport,
         rbImport,
         seratoImport,
         sync,

@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { fbController } from '../../../api/filebrowser/filebrowser-controller';
 import { pymixController } from '/@/renderer/api/pymix/pymix-controller';
 
+const urlConfig = JSON.parse(process.env.URL_CONFIG);
 const localSettings = isElectron() ? window.electron.localSettings : null;
 
 interface CreateAccountFormProps {
@@ -64,7 +65,7 @@ export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
         // const url = `http://localhost:4533`;
         // for production
         // const url = `https://www.sub-box.net/navidrome${values.username}`;
-        const url = `https://docker.localhost/navidrome${values.username}`;
+        const url = `${urlConfig.url.navidromel_user}${values.username}`;
 
         try {
             setIsLoading(true);
@@ -86,7 +87,7 @@ export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
             let fbToken = null;
             // todo this is only valid once the user has created an account.
             // const fbUrl = 'https://browser.sub-box.net/browser';
-            const fbUrl = 'https://browser.docker.localhost/browser';
+            const fbUrl = urlConfig.url.filebrowser;
             fbToken = await fbController.authenticate(fbUrl, {
                 password: values.password,
                 username: values.username,

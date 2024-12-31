@@ -2,6 +2,8 @@ import { Readable } from 'stream';
 import * as tus from 'tus-js-client';
 import { fbApiClient } from './filebrowser-api';
 
+const urlConfig = JSON.parse(process.env.URL_CONFIG);
+
 type DownloadQuery = {
     filename: string;
 };
@@ -113,7 +115,7 @@ const tusUpload = async (
     console.log('uploading from the browser', fileName);
 
     // const baseUrl = 'https://browser.sub-box.net/browser'
-    const baseUrl = 'https://browser.docker.localhost/browser';
+    const baseUrl = urlConfig.url.filebrowser;
     const resourcePath = `${baseUrl}/api/tus/uploads/${fileName}?override=true`;
 
     const resp = await fetch(resourcePath, {

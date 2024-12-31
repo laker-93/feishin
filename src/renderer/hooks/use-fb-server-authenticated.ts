@@ -5,7 +5,9 @@ import { debounce } from 'lodash';
 import { toast } from '/@/renderer/components';
 import { fbController } from '/@/renderer/api/filebrowser/filebrowser-controller';
 
-const fbUrl = 'https://browser.docker.localhost/browser';
+const urlConfig = JSON.parse(process.env.URL_CONFIG);
+
+const fbUrl = urlConfig.url.filebrowser;
 export const useFBServerAuthenticated = () => {
     const priorServerId = useRef<string>();
     const server = useCurrentServer();

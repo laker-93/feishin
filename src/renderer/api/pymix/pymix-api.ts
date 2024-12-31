@@ -6,6 +6,8 @@ import { pymixType } from './pymix-types';
 import { resultWithHeaders } from '/@/renderer/api/utils';
 import i18n from '/@/i18n/i18n';
 
+const urlConfig = JSON.parse(process.env.URL_CONFIG);
+
 const c = initContract();
 
 export const contract = c.router({
@@ -55,11 +57,11 @@ export const contract = c.router({
         },
     },
     rbDownload: {
-        body: pymixType._parameters.rbExport,
+        body: pymixType._parameters.exportJob,
         method: 'POST',
         path: 'rekordbox/export',
         responses: {
-            200: resultWithHeaders(pymixType._response.login),
+            200: resultWithHeaders(pymixType._response.exportJob),
             500: resultWithHeaders(pymixType._response.error),
         },
     },
@@ -69,6 +71,15 @@ export const contract = c.router({
         path: 'rekordbox/import',
         responses: {
             200: resultWithHeaders(pymixType._response.importJob),
+            500: resultWithHeaders(pymixType._response.error),
+        },
+    },
+    seratoDownload: {
+        body: pymixType._parameters.exportJob,
+        method: 'POST',
+        path: 'serato/export',
+        responses: {
+            200: resultWithHeaders(pymixType._response.exportJob),
             500: resultWithHeaders(pymixType._response.error),
         },
     },
@@ -148,7 +159,7 @@ const waitForResult = async (count = 0): Promise<void> => {
 export const pymixApiClient = () => {
     // const baseUrl = 'http://localhost:8002'
     // const baseUrl = 'https://pymix.sub-box.net'
-    const baseUrl = 'https://pymix.docker.localhost';
+    const baseUrl = urlConfig.url.pymix;
 
     return initClient(contract, {
         api: async ({ path, method, headers, body }) => {
