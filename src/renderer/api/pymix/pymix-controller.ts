@@ -69,7 +69,6 @@ const rbDownload = async (body: RBDownloadArgs): Promise<null> => {
     if (res.status !== 200) {
         throw new Error('Failed to create rb info xml');
     }
-    console.log(res);
 
     return null;
 };
@@ -136,6 +135,19 @@ const seratoImport = async (): Promise<null> => {
 
     return null;
 };
+const seratoDownload = async (body: RBDownloadArgs): Promise<null> => {
+    const res = await pymixApiClient().seratoDownload({
+        body: {
+            user_root: body.body.user_root,
+        },
+    });
+
+    if (res.status !== 200) {
+        throw new Error('Failed to create serato crates');
+    }
+
+    return null;
+};
 
 const deleteDuplicates = async (): Promise<Array<string>> => {
     const res = await pymixApiClient().deleteDuplicates();
@@ -155,6 +167,7 @@ export const pymixController = {
     login,
     rbDownload,
     rbImport,
+    seratoDownload,
     seratoImport,
     sync,
 };

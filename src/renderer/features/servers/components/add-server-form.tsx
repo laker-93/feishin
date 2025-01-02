@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { pymixController } from '/@/renderer/api/pymix/pymix-controller';
 import { fbController } from '../../../api/filebrowser/filebrowser-controller';
 
+const urlConfig = JSON.parse(process.env.URL_CONFIG);
 const localSettings = isElectron() ? window.electron.localSettings : null;
 
 const SERVER_TYPES = [
@@ -62,7 +63,7 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
         // const url = `http://localhost:4533`;
         // for production
         // const url = `https://www.sub-box.net/navidrome${values.username}`;
-        const url = `https://docker.localhost/navidrome${values.username}`;
+        const url = `${urlConfig.url.navidrome_user}${values.username}`;
 
         try {
             setIsLoading(true);
@@ -91,7 +92,7 @@ export const AddServerForm = ({ onCancel }: AddServerFormProps) => {
             let fbToken = null;
             // todo this is only valid once the user has created an account.
             // const fbUrl = 'https://browser.sub-box.net/browser';
-            const fbUrl = 'https://browser.docker.localhost/browser';
+            const fbUrl = urlConfig.url.filebrowser;
             // cannot test with localhost due to cors limitations. todo put local filebrowser behind traefik with cors proxy to allow for local testing
             // const fbUrl = `http://localhost:8081`;
             fbToken = await fbController.authenticate(fbUrl, {
