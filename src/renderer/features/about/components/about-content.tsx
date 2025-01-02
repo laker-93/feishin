@@ -1,4 +1,4 @@
-import { Box, Text, Button, Group, Image, Divider } from '@mantine/core';
+import { Box, Text, Button, Group, Image, Divider, List, Modal } from '@mantine/core';
 import { openContextModal } from '@mantine/modals';
 import { useTranslation } from 'react-i18next';
 import { RiAccountBoxLine, RiLoginBoxLine } from 'react-icons/ri';
@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { useCurrentServer } from '/@/renderer/store';
 import { CreateAccountForm } from '/@/renderer/features/servers/components/create-account-form';
 import { AddServerForm } from '/@/renderer/features/servers';
+import { useState } from 'react';
 import discordimg from '../../../../../assets/discordimg.png';
 
 type ModalVars = {
@@ -27,6 +28,7 @@ export const AboutContent = () => {
     const { t } = useTranslation();
     const currentServer = useCurrentServer();
     const isLoggedOn = currentServer && currentServer.credential;
+    const [isGettingStartedModalOpen, setIsGettingStartedModalOpen] = useState(false);
 
     const handleCreateAccountModal = () => {
         openContextModal({
@@ -65,21 +67,54 @@ export const AboutContent = () => {
             >
                 Sub-box is a music player with tools for DJs.
             </Text>
+            <List size="md">
+                <List.Item>
+                    <Link to="/upload">Upload</Link> your audio files and then stream and organise
+                    your collection on the go from mobile, desktop or the browser.
+                </List.Item>
+                <List.Item>
+                    Use in built features, such as completing missing meta information like alburm
+                    artwork and detecting duplicate tracks, to keep your collection organised
+                </List.Item>
+                <List.Item>
+                    <Link to="/download">Export</Link> your collection from subbox to your local
+                    machine, ready to be imported in to DJ software.
+                </List.Item>
+            </List>
+
+            <Divider my={20} />
             {isLoggedOn ? (
                 <div>
                     <Text
                         align="center"
-                        size="md"
+                        mb={20}
+                        size="xl"
+                        weight={700}
                     >
-                        You can upload tracks <Link to="/upload">here</Link>.
+                        Getting Started
                     </Text>
-                    <Text
-                        align="center"
-                        size="md"
+                    <Group
+                        mt={20}
+                        position="center"
                     >
-                        You can download your collection ready to import in to your DJ software{' '}
-                        <Link to="/download">here</Link>.
-                    </Text>
+                        <Button onClick={() => setIsGettingStartedModalOpen(true)}>
+                            View Getting Started Guide
+                        </Button>
+                    </Group>
+                    <Modal
+                        opened={isGettingStartedModalOpen}
+                        title="Getting Started"
+                        onClose={() => setIsGettingStartedModalOpen(false)}
+                    >
+                        <Text
+                            align="center"
+                            mb={10}
+                            size="md"
+                        >
+                            For an overview of how to use subbox, watch the video below.
+                        </Text>
+                        {/* Add video or additional content here */}
+                    </Modal>
                 </div>
             ) : (
                 <>
@@ -123,6 +158,7 @@ export const AboutContent = () => {
                     </Group>
                 </>
             )}
+
             <Divider my={20} />
             <Text
                 align="center"
@@ -130,7 +166,7 @@ export const AboutContent = () => {
                 size="xl"
                 weight={700}
             >
-                Community
+                Community & Desktop App
             </Text>
             <Group
                 mt={20}
@@ -141,8 +177,9 @@ export const AboutContent = () => {
                     mb={10}
                     size="md"
                 >
-                    Join our Discord channel to connect with other users, get help, give feedback
-                    and stay up to date with the latest features.
+                    Join our Discord channel to connect with other users, give feedback and stay up
+                    to date with the latest features. You can also apply for beta trials of the
+                    Desktop App on the Discord channel.
                 </Text>
             </Group>
             <Group
@@ -161,6 +198,16 @@ export const AboutContent = () => {
                     onClick={handleImageClick}
                 />
             </Group>
+            <Divider my={20} />
+            <Text
+                mb={20}
+                size="s"
+            >
+                Subbox is inspired by <Link to="https://github.com/jeffvli/feishin">Feishin</Link>{' '}
+                and built on top of{' '}
+                <Link to="https://github.com/navidrome/navidrome">Navidrome</Link> and{' '}
+                <Link to="https://github.com/beetbox/beets">Beets</Link>.
+            </Text>
         </Box>
     );
 };

@@ -50,10 +50,14 @@ import {
 } from './utils';
 import './features';
 import type { TitleTheme } from '/@/renderer/types';
+import prodConfig from '../../prod-config.json';
+import devConfig from '../../url-config.json';
 // eslint-disable-next-line import/order
 const fsp = require('fs').promises;
 
 declare module 'node-mpv';
+
+const urlConfig = process.env.NODE_ENV === 'production' ? prodConfig : devConfig;
 
 export default class AppUpdater {
     constructor() {
@@ -213,7 +217,7 @@ const createTray = () => {
         createWinThumbarButtons();
     });
 
-    tray.setToolTip('Feishin');
+    tray.setToolTip('Subbox');
     tray.setContextMenu(contextMenu);
 };
 
@@ -698,7 +702,7 @@ async function downloadFile(token: string, fileName: string) {
     try {
         // const fbUrl = 'http://localhost:8081';
         // const fbUrl = 'https://browser.sub-box.net/browser';
-        const fbUrl = `https://browser.docker.localhost/browser/api/raw/downloads/${fileName}`;
+        const fbUrl = `${urlConfig.url.filebrowser}/api/raw/downloads/${fileName}`;
         // rejectUnauthorized disable workaround for dev
         const response = await axios.get(fbUrl, {
             headers: {
@@ -794,6 +798,7 @@ ipcMain.handle(
                 console.log('undefined artist');
             } else {
                 clientTracks.push({
+                    album: metadata.common.album,
                     artist: metadata.common.artist,
                     title: metadata.common.title,
                 });
@@ -804,7 +809,7 @@ ipcMain.handle(
 
         // const pymixUrl = 'pymix';
         // const pymixUrl = 'https://pymix.sub-box.net';
-        const pymixUrl = 'https://pymix.docker.localhost';
+        const pymixUrl = urlConfig.url.pymix;
         const response = await axios.post(
             `${pymixUrl}/sync`,
             {
@@ -838,7 +843,7 @@ ipcMain.handle('upload-files', async (event, files: string[], token: string) => 
     for (const file of files) {
         console.log('uploading file:', file);
         // const baseUrl = 'https://browser.sub-box.net/browser'
-        const baseUrl = 'https://browser.docker.localhost/browser';
+        const baseUrl = urlConfig.url.filebrowser;
         const resourcePath = `${baseUrl}/api/tus/uploads/${file}?override=true`;
 
         const resp = await axios.post(resourcePath, {
@@ -894,5 +899,11 @@ ipcMain.handle('upload-files', async (event, files: string[], token: string) => 
 
 ipcMain.handle('download-rb-xml', async (event, fbToken: string) => {
     downloadFile(fbToken, 'subbox_rb_export.xml');
+    return null;
+});
+
+ipcMain.handle('download-serato-crates', async (event, fbToken: string) => {
+    downloadFile(fbToken, 'SubCrates.zip');
+    // todo extract to user's Music directory
     return null;
 });

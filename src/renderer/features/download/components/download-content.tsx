@@ -1,13 +1,14 @@
 import { useCurrentServer } from '/@/renderer/store';
 import { ServerListItem } from '/@/renderer/types';
 import { useState } from 'react';
-import { Box, Button, Text, Modal, Group, Collapse, Image, List } from '@mantine/core'; // Assuming you are using Mantine UI
+import { Box, Button, Text, Modal, Group, Image, List, Radio, Divider } from '@mantine/core'; // Assuming you are using Mantine UI
 import isElectron from 'is-electron';
 import { toast } from '/@/renderer/components';
 import { useTranslation } from 'react-i18next';
 import { pymixController } from '/@/renderer/api/pymix/pymix-controller';
 import RBImportEnable from '../../../../../assets/RB-import-enable-xml.png';
 import RBImportSetPath from '../../../../../assets/RB-import-set-xml-path.png';
+import { Link } from 'react-router-dom';
 
 const userFS = isElectron() ? window.electron.userFs : null;
 const util = isElectron() ? window.electron.utils : null;
@@ -18,11 +19,7 @@ async function syncMusicDirectory(directoryPath: string, server: ServerListItem)
             // todo route to action-required
             throw new Error('FB Server is not authenticated');
         }
-        try {
-            await userFS.sync(directoryPath, server.username, server.fbToken);
-        } catch (error) {
-            console.error('Error syncing music directory:', error);
-        }
+        await userFS.sync(directoryPath, server.username, server.fbToken);
     }
 }
 
@@ -31,24 +28,56 @@ export const DownloadContent = () => {
     const { t } = useTranslation();
     const [isSyncing, setIsSyncing] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [exportType, setExportType] = useState<string>('rekordbox');
 
     if (!server || !userFS) {
-        return null;
+        return (
+            <Box
+                m={2}
+                p={20}
+            >
+                <Text
+                    align="center"
+                    mb={20}
+                    size="md"
+                >
+                    To download your collection ready to import into your DJ software, you must use
+                    the desktop app version of subbox.
+                </Text>
+                <Text
+                    align="center"
+                    mb={20}
+                    size="md"
+                >
+                    See <Link to="/about">here</Link> on how to download the desktop app.
+                </Text>
+            </Box>
+        );
     }
 
-    const handleRBDownload = async () => {
+    const handleExport = async () => {
         setIsSyncing(true);
-
-        // todo user can enter their local path so pymix prepares the download and stores on filebrowser
-        // then the user can download directly from filebrowser for webapp support.
         const appPath = await userFS.getAppPath();
         try {
-            await pymixController.rbDownload({
-                body: { user_root: appPath },
-            });
+            if (exportType === 'rekordbox') {
+                await pymixController.rbDownload({
+                    body: { user_root: appPath },
+                });
+                if (server.fbToken === undefined) {
+                    throw new Error('FB Server is not authenticated');
+                }
+                await userFS.downloadRBXML(server.fbToken);
+            } else if (exportType === 'serato') {
+                await pymixController.seratoDownload({
+                    body: { user_root: appPath },
+                });
+                if (server.fbToken === undefined) {
+                    throw new Error('FB Server is not authenticated');
+                }
+                await userFS.downloadSeratoCrates(server.fbToken);
+            }
         } catch (error) {
             toast.error({
                 message: (error as Error).message,
@@ -56,17 +85,10 @@ export const DownloadContent = () => {
                     postProcess: 'sentenceCase',
                 }),
             });
-            console.error('Error downloading rekordbox info:', error);
+            console.error('Error downloading info:', error);
         } finally {
             setIsSyncing(false);
-            setIsModalOpen(true);
-        }
-
-        if (userFS) {
-            if (server.fbToken === undefined) {
-                throw new Error('FB Server is not authenticated');
-            }
-            await userFS.downloadRBXML(server.fbToken);
+            setIsModalOpen(false);
         }
     };
 
@@ -76,6 +98,10 @@ export const DownloadContent = () => {
         const musicPath = `${appPath}/music`;
         console.log('start syncing', musicPath);
         return syncMusicDirectory(musicPath, server)
+            .then(() => {
+                setIsModalOpen(true);
+                return null;
+            })
             .catch((error) => {
                 toast.error({
                     message: (error as Error).message,
@@ -87,7 +113,6 @@ export const DownloadContent = () => {
             })
             .finally(() => {
                 setIsSyncing(false);
-                setIsModalOpen(true);
             });
     };
 
@@ -126,91 +151,74 @@ export const DownloadContent = () => {
                 title="Download Complete"
                 onClose={() => setIsModalOpen(false)}
             >
-                <Text>
-                    Download complete.{' '}
-                    <Button
-                        variant="link"
-                        onClick={async () => {
-                            if (util) {
-                                const appPath = await userFS.getAppPath();
-                                const exportZipPath = `${appPath}/subbox-export.zip`;
-                                util.openItem(exportZipPath).catch((error) => {
-                                    toast.error({
-                                        message: (error as Error).message,
-                                        title: t('error.openError', {
-                                            postProcess: 'sentenceCase',
-                                        }),
-                                    });
+                <Button
+                    variant="link"
+                    onClick={async () => {
+                        if (util) {
+                            const appPath = await userFS.getAppPath();
+                            const exportZipPath = `${appPath}/subbox-export.zip`;
+                            util.openItem(exportZipPath).catch((error) => {
+                                toast.error({
+                                    message: (error as Error).message,
+                                    title: t('error.openError', {
+                                        postProcess: 'sentenceCase',
+                                    }),
                                 });
-                            }
-                        }}
-                    >
-                        Click here to go to your download!
-                    </Button>
-                </Text>
+                            });
+                        }
+                    }}
+                >
+                    Click here to go to your download!
+                </Button>
             </Modal>
 
+            <Divider my={20} />
+            <Text
+                align="center"
+                mb={20}
+                size="xl"
+                weight={700}
+            >
+                Export to DJ software
+            </Text>
             <Text
                 align="center"
                 mb={20}
                 size="md"
             >
-                The Rekordbox Info button prepares and downloads the rekordbox.xml file to your
-                local system, which contains your playlist info for Rekordbox to understand.
+                This section prepares and downloads the meta information of your music collection,
+                such as playlists and ratings, to your local system. You can then follow the below
+                steps to import this in to your DJ software.
             </Text>
-            <Group position="center">
-                <Button
-                    color={isSyncing ? 'gray' : 'blue'}
-                    disabled={isSyncing}
-                    onClick={handleRBDownload}
-                >
-                    {isSyncing ? 'Downloading...' : 'Download Rekordbox Info'}
-                </Button>
-            </Group>
-            <Modal
-                opened={isModalOpen}
-                title="Download Complete"
-                onClose={() => setIsModalOpen(false)}
+            <Radio.Group
+                name="DJSoftware"
+                value={exportType}
+                onChange={setExportType}
             >
-                <Text>
-                    Download complete.{' '}
-                    <Button
-                        variant="link"
-                        onClick={async () => {
-                            if (util) {
-                                const appPath = await userFS.getAppPath();
-                                util.openItem(appPath).catch((error) => {
-                                    toast.error({
-                                        message: (error as Error).message,
-                                        title: t('error.openError', {
-                                            postProcess: 'sentenceCase',
-                                        }),
-                                    });
-                                });
-                            }
-                        }}
+                <Group
+                    mt="xs"
+                    position="center"
+                >
+                    <Radio
+                        label="Rekordbox"
+                        value="rekordbox"
+                    />
+                    <Radio
+                        label="Serato"
+                        value="serato"
+                    />
+                </Group>
+            </Radio.Group>
+            {exportType === 'rekordbox' && (
+                <Box mt={20}>
+                    <Text
+                        align="center"
+                        mb={20}
+                        size="md"
+                        weight={700}
                     >
-                        Click here to go to your download!
-                    </Button>
-                </Text>
-            </Modal>
-
-            <Group
-                mt={20}
-                position="center"
-            >
-                <Button
-                    variant="outline"
-                    onClick={() => setIsInstructionsOpen((prev) => !prev)}
-                >
-                    How to import XML into RekordBox
-                </Button>
-            </Group>
-            <Collapse in={isInstructionsOpen}>
-                <Box
-                    mt={20}
-                    style={{ maxHeight: '400px' }}
-                >
+                        How to import XML into RekordBox
+                    </Text>
                     <List
                         center
                         withPadding
@@ -247,7 +255,46 @@ export const DownloadContent = () => {
                         </List.Item>
                     </List>
                 </Box>
-            </Collapse>
+            )}
+            {exportType === 'serato' && (
+                <Box mt={20}>
+                    <Text
+                        align="center"
+                        mb={20}
+                        size="md"
+                        weight={700}
+                    >
+                        How to import crates into Serato
+                    </Text>
+                    <List
+                        center
+                        withPadding
+                        size="sm"
+                    >
+                        <List.Item mb={20}>
+                            The subcrates.zip file contains the meta information for the crates.
+                            Make sure to backup your existing crates if you want to be able to
+                            restore them later.
+                        </List.Item>
+                        <List.Item mb={20}>
+                            Take the subcrates.zip file downloaded and extract to
+                            ~/Music/_Serato_/SubCrates
+                        </List.Item>
+                    </List>
+                </Box>
+            )}
+            <Group
+                mt={20}
+                position="center"
+            >
+                <Button
+                    color={isSyncing ? 'gray' : 'blue'}
+                    disabled={isSyncing}
+                    onClick={handleExport}
+                >
+                    {isSyncing ? 'Exporting...' : 'Export'}
+                </Button>
+            </Group>
 
             <Modal
                 opened={isImageModalOpen}

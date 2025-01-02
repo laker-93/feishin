@@ -1,7 +1,6 @@
 /**
  * Base webpack config used across other specific configs
  */
-
 import webpack from 'webpack';
 import { dependencies as externals } from '../../release/app/package.json';
 import webpackPaths from './webpack.paths';
@@ -10,6 +9,8 @@ import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components').default;
 
 const styledComponentsTransformer = createStyledComponentsTransformer();
+const url_config = require('../../url-config.json');
+const prod_config = require('../../prod-config.json');
 
 const configuration: webpack.Configuration = {
     externals: [...Object.keys(externals || {})],
@@ -43,6 +44,7 @@ const configuration: webpack.Configuration = {
     plugins: [
         new webpack.EnvironmentPlugin({
             NODE_ENV: 'production',
+            URL_CONFIG: process.env.NODE_ENV === 'production' ? JSON.stringify(prod_config) : JSON.stringify(url_config),
         }),
     ],
 

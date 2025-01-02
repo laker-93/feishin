@@ -177,7 +177,8 @@
         "serverNotSelectedError": "no server selected",
         "serverRequired": "server required",
         "sessionExpiredError": "your session has expired",
-        "systemFontError": "an error occurred when trying to get system fonts"
+        "systemFontError": "an error occurred when trying to get system fonts",
+        "syncError": "an error occurred syncing the audio files on subbox to your machine"
     },
     "filter": {
         "album": "$t(entity.album_one)",

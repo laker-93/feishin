@@ -1,0 +1,9 @@
+{
+    "url": {
+        "ider": "http://localhost:8001",
+        "pymix": "https://pymix.docker.localhost",
+        "navidrome_user": "https://docker.localhost/navidrome",
+        "navidrome_public": "https://docker.localhost/navidromepublic",
+        "filebrowser": "https://browser.docker.localhost/browser"
+    }
+}

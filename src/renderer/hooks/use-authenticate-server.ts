@@ -7,6 +7,8 @@ import { toast } from '/@/renderer/components';
 import { nanoid } from 'nanoid';
 import { useTranslation } from 'react-i18next';
 
+const urlConfig = JSON.parse(process.env.URL_CONFIG);
+
 export const useAuthenticateServer = () => {
     const { t } = useTranslation();
     const { addPublicServer, getPublicServer } = useAuthStoreActions();
@@ -22,7 +24,7 @@ export const useAuthenticateServer = () => {
         try {
             // const publicUrl = `http://localhost:4534`;
             // const publicUrl = `https://www.sub-box.net/navidromelajp`;
-            const publicUrl = `https://docker.localhost/navidromepublic`;
+            const publicUrl = urlConfig.url.navidrome_public;
             console.log('authenticate public navidrome');
             const publicData: AuthenticationResponse | undefined =
                 await api.controller.authenticate(

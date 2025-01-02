@@ -17,8 +17,12 @@ const downloadRBXML = async (fbToken: string) => {
     return ipcRenderer.invoke('download-rb-xml', fbToken);
 };
 
+const downloadSeratoCrates = async (fbToken: string) => {
+    return ipcRenderer.invoke('download-serato-crates', fbToken);
+};
 export const userFs = {
     downloadRBXML,
+    downloadSeratoCrates,
     getAppPath,
     sync,
     upload,

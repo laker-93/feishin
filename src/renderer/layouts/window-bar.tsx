@@ -227,7 +227,7 @@ export const WindowBar = () => {
         ? currentSong?.artistName
             ? `${statusString}${queueString}${currentSong?.name} — ${currentSong?.artistName}`
             : `${statusString}${queueString}${currentSong?.name}`
-        : 'Feishin';
+        : 'Subbox';
     document.title = title;
 
     const [max, setMax] = useState(localSettings?.env.START_MAXIMIZED || false);
