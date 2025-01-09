@@ -20,9 +20,15 @@ import { ContextModalVars, DropdownMenu } from '/@/renderer/components';
 import { AddServerForm } from '/@/renderer/features/servers';
 import { CreateAccountForm } from '/@/renderer/features/servers/components/create-account-form';
 import { AppRoute } from '/@/renderer/router/routes';
-import { useSidebarStore, useAppStoreActions, useCurrentServer } from '/@/renderer/store';
+import {
+    useSidebarStore,
+    useAppStoreActions,
+    useCurrentServer,
+    useAuthStoreActions,
+} from '/@/renderer/store';
 import packageJson from '../../../../../package.json';
 
+const localSettings = isElectron() ? window.electron.localSettings : null;
 const browser = isElectron() ? window.electron.browser : null;
 
 export const AppMenu = () => {
@@ -32,7 +38,7 @@ export const AppMenu = () => {
     const navigate = useNavigate();
     const { collapsed } = useSidebarStore();
     const { setSideBar } = useAppStoreActions();
-    console.log('currentServer', currentServer);
+    const { deleteServer } = useAuthStoreActions();
 
     const handleCreateAccountModal = () => {
         openContextModal({
@@ -58,6 +64,12 @@ export const AppMenu = () => {
             modal: 'base',
             title: t('form.logon.title', { postProcess: 'titleCase' }),
         });
+    };
+    const handleLogOffModal = () => {
+        if (currentServer) {
+            deleteServer(currentServer.id);
+            localSettings?.passwordRemove(currentServer.name);
+        }
     };
 
     const handleBrowserDevTools = () => {
@@ -128,7 +140,13 @@ export const AppMenu = () => {
             >
                 {t('page.appMenu.logon', { postProcess: 'sentenceCase' })}
             </DropdownMenu.Item>
-
+            <DropdownMenu.Item
+                disabled={!isLoggedOn}
+                icon={<RiLoginBoxLine />}
+                onClick={handleLogOffModal}
+            >
+                {t('page.appMenu.logoff', { postProcess: 'sentenceCase' })}
+            </DropdownMenu.Item>
             <DropdownMenu.Divider />
             <DropdownMenu.Item
                 component="a"

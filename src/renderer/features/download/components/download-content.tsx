@@ -69,6 +69,7 @@ export const DownloadContent = () => {
                     throw new Error('FB Server is not authenticated');
                 }
                 await userFS.downloadRBXML(server.fbToken);
+                setIsModalOpen(true);
             } else if (exportType === 'serato') {
                 await pymixController.seratoDownload({
                     body: { user_root: appPath },
@@ -77,6 +78,7 @@ export const DownloadContent = () => {
                     throw new Error('FB Server is not authenticated');
                 }
                 await userFS.downloadSeratoCrates(server.fbToken);
+                setIsModalOpen(true);
             }
         } catch (error) {
             toast.error({

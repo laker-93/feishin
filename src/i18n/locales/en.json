@@ -327,12 +327,12 @@
         "appMenu": {
             "createAccount": "create account",
             "logon": "log on",
+            "logoff": "log off",
             "collapseSidebar": "collapse sidebar",
             "expandSidebar": "expand sidebar",
             "goBack": "go back",
             "goForward": "go forward",
             "manageServers": "manage servers",
-            "logon": "log on",
             "openBrowserDevtools": "open browser devtools",
             "quit": "$t(common.quit)",
             "selectServer": "select server",
