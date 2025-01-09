@@ -66,7 +66,7 @@ export const contract = c.router({
         },
     },
     rbImport: {
-        body: {},
+        body: pymixType._parameters.rbImport,
         method: 'POST',
         path: 'rekordbox/import',
         responses: {

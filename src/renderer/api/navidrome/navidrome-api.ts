@@ -433,8 +433,6 @@ export const ndApiClient = (args: {
 
             try {
                 if (shouldDelay) await waitForResult();
-
-                console.log(`url: ${baseUrl}/${api}`);
                 const result = await axiosClient.request({
                     data: body,
                     headers: {

@@ -308,6 +308,7 @@ export const UploadContent = () => {
                     'audio/wav',
                     'audio/x-wav',
                     'application/zip',
+                    'text/xml',
                 ]}
                 style={{
                     border: '2px dashed #cccccc',

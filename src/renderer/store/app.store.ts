@@ -81,7 +81,7 @@ export const useAppStore = create<AppSlice>()(
                 isReorderingQueue: false,
                 platform: Platform.WINDOWS,
                 sidebar: {
-                    collapsed: false,
+                    collapsed: true,
                     expanded: [],
                     image: false,
                     leftWidth: '400px',

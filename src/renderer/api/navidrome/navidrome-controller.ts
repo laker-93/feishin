@@ -66,7 +66,6 @@ const authenticate = async (
 ): Promise<AuthenticationResponse> => {
     const cleanServerUrl = url.replace(/\/$/, '');
 
-    console.log(`authenticate public navidrome ${cleanServerUrl}`);
     const res = await ndApiClient({ server: null, url: cleanServerUrl }).authenticate({
         body: {
             password: body.password,

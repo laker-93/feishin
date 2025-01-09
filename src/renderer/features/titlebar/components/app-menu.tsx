@@ -43,7 +43,7 @@ export const AppMenu = () => {
                 ),
             },
             modal: 'base',
-            title: t('form.logon.title', { postProcess: 'titleCase' }),
+            title: t('form.createAccount.title', { postProcess: 'titleCase' }),
         });
     };
 
