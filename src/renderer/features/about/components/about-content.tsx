@@ -73,8 +73,8 @@ export const AboutContent = () => {
                     your collection on the go from mobile, desktop or the browser.
                 </List.Item>
                 <List.Item>
-                    Use in built features, such as completing missing meta information like alburm
-                    artwork and detecting duplicate tracks, to keep your collection organised
+                    Automated tools to keep your collection organised, such as completing missing
+                    meta information like alburm artwork and detecting duplicate tracks.
                 </List.Item>
                 <List.Item>
                     <Link to="/download">Export</Link> your collection from subbox to your local

@@ -158,8 +158,7 @@ export const DownloadContent = () => {
                     onClick={async () => {
                         if (util) {
                             const appPath = await userFS.getAppPath();
-                            const exportZipPath = `${appPath}/subbox-export.zip`;
-                            util.openItem(exportZipPath).catch((error) => {
+                            util.openItem(appPath).catch((error) => {
                                 toast.error({
                                     message: (error as Error).message,
                                     title: t('error.openError', {

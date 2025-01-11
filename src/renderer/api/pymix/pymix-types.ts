@@ -27,6 +27,12 @@ const beetsImportProgress = z.object({
     result: z.boolean(),
 });
 
+const librarySize = z.object({
+    reason: z.string(),
+    success: z.boolean(),
+    total_size_bytes: z.number(),
+});
+
 const rbImport = z.object({
     beets_output: z.string(),
     imported_tracks: z.number(),
@@ -108,6 +114,7 @@ export const pymixType = {
         error,
         exportJob,
         importJob,
+        librarySize,
         login,
         rbImport,
         seratoImport,
