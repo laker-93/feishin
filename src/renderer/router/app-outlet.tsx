@@ -22,12 +22,7 @@ export const AppOutlet = () => {
     const setFallback = useSetPlayerFallback();
 
     const isActionsRequired = useMemo(() => {
-        const isServerRequired = !currentServer;
-
-        const actions = [isServerRequired];
-        const isActionRequired = actions.some((c) => c);
-
-        return isActionRequired;
+        return currentServer != null;
     }, [currentServer]);
 
     useEffect(() => {
@@ -57,7 +52,10 @@ export const AppOutlet = () => {
     }
 
     console.log('fbAuthState', fbAuthState);
-    if (isActionsRequired || authState === AuthState.INVALID || fbAuthState === AuthState.INVALID) {
+    if (
+        isActionsRequired &&
+        (authState === AuthState.INVALID || fbAuthState === AuthState.INVALID)
+    ) {
         console.log('action required');
         return (
             <Navigate

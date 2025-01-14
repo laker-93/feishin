@@ -29,6 +29,14 @@ export const contract = c.router({
             500: resultWithHeaders(pymixType._response.error),
         },
     },
+    getLibrarySize: {
+        method: 'GET',
+        path: 'user/library_size',
+        responses: {
+            200: resultWithHeaders(pymixType._response.librarySize),
+            500: resultWithHeaders(pymixType._response.error),
+        },
+    },
     import: {
         body: pymixType._parameters.import,
         method: 'POST',
@@ -66,7 +74,7 @@ export const contract = c.router({
         },
     },
     rbImport: {
-        body: {},
+        body: pymixType._parameters.rbImport,
         method: 'POST',
         path: 'rekordbox/import',
         responses: {

@@ -126,6 +126,17 @@ const rbImport = async (): Promise<string> => {
     return res.body.data.job_id;
 };
 
+const librarySize = async (): Promise<number> => {
+    const res = await pymixApiClient().getLibrarySize();
+    if (res.status !== 200) {
+        throw new Error('Failed to sync');
+    }
+    if (!res.body.data.success) {
+        throw new Error(`Failed to get size of library ${res.body.data.reason}`);
+    }
+    return res.body.data.total_size_bytes;
+};
+
 const seratoImport = async (): Promise<null> => {
     const res = await pymixApiClient().seratoImport();
 
@@ -164,6 +175,7 @@ export const pymixController = {
     beetsImportProgress,
     create,
     deleteDuplicates,
+    librarySize,
     login,
     rbDownload,
     rbImport,

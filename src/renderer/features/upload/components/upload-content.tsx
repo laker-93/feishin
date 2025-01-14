@@ -13,10 +13,13 @@ import {
     List,
     Modal,
     Radio,
+    Loader,
 } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
 import { useCurrentServer } from '/@/renderer/store';
 import { pymixController } from '/@/renderer/api/pymix/pymix-controller';
+import JSZip from 'jszip';
+import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import RBBackup from '../../../../../assets/RB-backup.png';
 import { fbController } from '../../../api/filebrowser/filebrowser-controller';
@@ -155,6 +158,8 @@ export const UploadContent = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [fbHasUnprocessedFiles, setFbHasUnprocessedFiles] = useState(false);
     const [importType, setImportType] = useState<string>('rekordbox');
+    const [isLimitExceededModalOpen, setIsLimitExceededModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const checkForUnprocessedFiles = async () => {
@@ -185,8 +190,35 @@ export const UploadContent = () => {
         throw new Error('FB Server is not authenticated');
     }
 
-    const handleDrop = (acceptedFiles: File[]) => {
+    const handleDrop = async (acceptedFiles: File[]) => {
+        setIsLoading(true);
+        const currentSize = await pymixController.librarySize();
+        let totalSize = currentSize;
+        for (const file of acceptedFiles) {
+            if (file.type === 'application/zip') {
+                const zip = new JSZip();
+                const content = await zip.loadAsync(file);
+                const totalUncompressedSize = await Promise.all(
+                    Object.values(content.files).map(async (file) => {
+                        const data = await file.async('uint8array');
+                        return data.length;
+                    }),
+                ).then((sizes) => sizes.reduce((acc, size) => acc + size, 0));
+                totalSize += totalUncompressedSize;
+            } else {
+                totalSize += file.size;
+            }
+        }
+        // Check if total size exceeds 2.5 GB
+        const maxSize = 2 * 1024 * 1024 * 1024;
+        if (totalSize > maxSize) {
+            setIsLimitExceededModalOpen(true);
+            setIsLoading(false);
+            return;
+        }
+
         setFiles([...files, ...acceptedFiles]);
+        setIsLoading(false);
     };
 
     const updateUploadStatus = (
@@ -300,25 +332,35 @@ export const UploadContent = () => {
             >
                 Upload music files to subbox.
             </Text>
-            <Dropzone
-                multiple
-                accept={[
-                    'audio/mpeg',
-                    'audio/x-flac',
-                    'audio/wav',
-                    'audio/x-wav',
-                    'application/zip',
-                ]}
-                style={{
-                    border: '2px dashed #cccccc',
-                    cursor: 'pointer',
-                    padding: '20px',
-                    textAlign: 'center',
-                }}
-                onDrop={handleDrop}
-            >
-                <Text>Drag and drop audio files here, or click to select files</Text>
-            </Dropzone>
+            {isLoading ? (
+                <Group
+                    mt="md"
+                    position="center"
+                >
+                    <Loader />
+                </Group>
+            ) : (
+                <Dropzone
+                    multiple
+                    accept={[
+                        'audio/mpeg',
+                        'audio/x-flac',
+                        'audio/wav',
+                        'audio/x-wav',
+                        'application/zip',
+                        'text/xml',
+                    ]}
+                    style={{
+                        border: '2px dashed #cccccc',
+                        cursor: 'pointer',
+                        padding: '20px',
+                        textAlign: 'center',
+                    }}
+                    onDrop={handleDrop}
+                >
+                    <Text>Drag and drop audio files here, or click to select files</Text>
+                </Dropzone>
+            )}
             <Box mt={2}>
                 {files.length > 0 && (
                     <Box>
@@ -568,6 +610,18 @@ export const UploadContent = () => {
                 <Text>
                     Seems like you are attempting to upload a Rekordbox export. If so, please check
                     the Rekordbox import check box.
+                </Text>
+            </Modal>
+            <Modal
+                centered
+                opened={isLimitExceededModalOpen}
+                size="auto"
+                onClose={() => setIsLimitExceededModalOpen(false)}
+            >
+                <Text>
+                    You have exceeded the limits for user upload. Please get in touch. See the{' '}
+                    <Link to="/about">about</Link> page for details on how to join the Discord
+                    server.
                 </Text>
             </Modal>
         </Box>

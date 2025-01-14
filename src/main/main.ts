@@ -862,21 +862,12 @@ ipcMain.handle('upload-files', async (event, files: string[], token: string) => 
                 'X-Auth': `${token}`,
             },
         });
-        // const resp = await fetch(resourcePath,
-        //    {
-        //        headers: {
-        //            'X-Auth': `${token}`,
-        //        },
-        //        method: "POST"
-        //    }
-        // )
+
         if (resp.status !== 201) {
             throw new Error(`Failed to create an upload: ${resp.status} ${resp.statusText}`);
         }
         const fileBuffer = await fsp.readFile(file);
         await new Promise((resolve, reject) => {
-            console.log('uploading', file);
-            console.log('tus object:', tus);
             const uploader = new tus.Upload(fileBuffer, {
                 chunkSize: 10485760,
 

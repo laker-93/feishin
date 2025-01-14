@@ -7,7 +7,6 @@ import isElectron from 'is-electron';
 import { initSimpleImg } from 'react-simple-img';
 import { toast } from './components';
 import { useTheme } from './hooks';
-import { IsUpdatedDialog } from './is-updated-dialog';
 import { AppRouter } from './router/app-router';
 import {
     useHotkeySettings,
@@ -290,7 +289,6 @@ export const App = () => {
                     </WebAudioContext.Provider>{' '}
                 </ContextMenuProvider>
             </PlayQueueHandlerContext.Provider>
-            <IsUpdatedDialog />
         </MantineProvider>
     );
 };

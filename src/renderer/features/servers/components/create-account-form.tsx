@@ -6,7 +6,6 @@ import { useFocusTrap } from '@mantine/hooks';
 import { closeAllModals } from '@mantine/modals';
 import isElectron from 'is-electron';
 import { nanoid } from 'nanoid/non-secure';
-import { AuthenticationResponse } from '/@/renderer/api/types';
 import { useAuthStoreActions } from '/@/renderer/store';
 import { ServerType, toServerType } from '/@/renderer/types';
 import { api } from '/@/renderer/api';
@@ -46,13 +45,6 @@ export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
     const isSubmitDisabled = !form.values.username;
 
     const handleSubmit = form.onSubmit(async (values) => {
-        await pymixController.create({
-            body: {
-                email: values.email,
-                password: values.password,
-                username: values.username,
-            },
-        });
         const authFunction = api.controller.authenticate;
 
         if (!authFunction) {
@@ -61,29 +53,18 @@ export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
             });
         }
 
-        // for local testing
-        // const url = `http://localhost:4533`;
-        // for production
-        // const url = `https://www.sub-box.net/navidrome${values.username}`;
-        const url = `${urlConfig.url.navidromel_user}${values.username}`;
+        const url = `${urlConfig.url.navidrome_user}${values.username}`;
 
         try {
             setIsLoading(true);
-            const data: AuthenticationResponse | undefined = await authFunction(
-                url,
-                {
-                    legacy: values.legacyAuth,
+            await pymixController.create({
+                body: {
+                    email: values.email,
                     password: values.password,
                     username: values.username,
                 },
-                values.type as ServerType,
-            );
+            });
 
-            if (!data) {
-                return toast.error({
-                    message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
-                });
-            }
             let fbToken = null;
             // todo this is only valid once the user has created an account.
             // const fbUrl = 'https://browser.sub-box.net/browser';
@@ -98,6 +79,22 @@ export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
                 });
             }
             console.log(`fbData: ${fbToken}`);
+
+            const data = await authFunction(
+                url,
+                {
+                    legacy: values.legacyAuth,
+                    password: values.password,
+                    username: values.username,
+                },
+                values.type as ServerType,
+            );
+
+            if (!data) {
+                return toast.error({
+                    message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
+                });
+            }
 
             const serverItem = {
                 credential: data.credential,
