@@ -15,10 +15,6 @@ import {
     genreListSortMap,
     Song,
     ControllerEndpoint,
-    DeleteSongArgs,
-    DeleteSongResponse,
-    GetBeetTrackArgs,
-    GetBeetTrackResponse,
 } from '../types';
 import { VersionInfo, getFeatures, hasFeature } from '/@/renderer/api/utils';
 import { ServerFeature, ServerFeatures } from '/@/renderer/api/features-types';
@@ -107,6 +103,22 @@ export const NavidromeController: ControllerEndpoint = {
 
         if (res.status !== 200) {
             throw new Error('Failed to delete playlist');
+        }
+
+        return null;
+    },
+    deleteSong: async (args) => {
+        const { body, apiClientProps } = args;
+        const res = await ndApiClient(apiClientProps).deleteSong({
+            body: {
+                ids: body.songId,
+                user: body.user,
+            },
+            query: null,
+        });
+
+        if (res.status !== 200) {
+            throw new Error('Failed to delete song');
         }
 
         return null;
@@ -253,6 +265,21 @@ export const NavidromeController: ControllerEndpoint = {
             apiClientProps,
             query: { ...query, limit: 1, startIndex: 0 },
         }).then((result) => result!.totalRecordCount!),
+    getBeetTrack: async (args) => {
+        const { query, apiClientProps } = args;
+        const res = await ndApiClient(apiClientProps).getBeetTrack({
+            query: {
+                id: query.id,
+                user: query.user,
+            },
+        });
+
+        if (res.status !== 200) {
+            throw new Error('Failed to get beet track');
+        }
+
+        return res.body.data;
+    },
     getDownloadUrl: SubsonicController.getDownloadUrl,
     getGenreList: async (args) => {
         const { query, apiClientProps } = args;

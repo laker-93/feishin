@@ -56,7 +56,6 @@ export const AppOutlet = () => {
         isActionsRequired &&
         (authState === AuthState.INVALID || fbAuthState === AuthState.INVALID)
     ) {
-        console.log('action required');
         return (
             <Navigate
                 replace

@@ -12,6 +12,7 @@ import {
     RiRefreshLine,
     RiDeleteBin2Line,
     RiSettings3Fill,
+    RiFolder2Fill,
 } from 'react-icons/ri';
 import { useListStoreByKey } from '../../../store/list.store';
 import { queryKeys } from '/@/renderer/api/query-keys';
@@ -26,14 +27,14 @@ import { Button, DropdownMenu, MultiSelect, Slider, Switch, Text } from '/@/rend
 import { VirtualInfiniteGridRef } from '/@/renderer/components/virtual-grid';
 import { SONG_TABLE_COLUMNS } from '/@/renderer/components/virtual-table';
 import { useListContext } from '/@/renderer/context/list-context';
-import { OrderToggleButton } from '/@/renderer/features/shared';
+import { OrderToggleButton, useMusicFolders } from '/@/renderer/features/shared';
 import { JellyfinSongFilters } from '/@/renderer/features/songs/components/jellyfin-song-filters';
 import { NavidromeSongFilters } from '/@/renderer/features/songs/components/navidrome-song-filters';
 import { useContainerQuery } from '/@/renderer/hooks';
 import { useListFilterRefresh } from '/@/renderer/hooks/use-list-filter-refresh';
 import { queryClient } from '/@/renderer/lib/react-query';
 import { SongListFilter, useCurrentServer, useListStoreActions } from '/@/renderer/store';
-import { ListDisplayType, Play, ServerListItem, TableColumn } from '/@/renderer/types';
+import { ListDisplayType, Play, TableColumn } from '/@/renderer/types';
 import i18n from '/@/i18n/i18n';
 import { SubsonicSongFilters } from '/@/renderer/features/songs/components/subsonic-song-filter';
 import { pymixController } from '/@/renderer/api/pymix/pymix-controller';
@@ -195,7 +196,7 @@ export const SongListHeaderFilters = ({
 }: SongListHeaderFiltersProps) => {
     const { t } = useTranslation();
     const curServer = useCurrentServer();
-    const server = serv || curServer;
+    const server = curServer;
     const { pageKey, handlePlay, customFilters } = useListContext();
     const { display, table, filter, grid } = useListStoreByKey<SongListQuery>({
         filter: customFilters,
@@ -212,6 +213,7 @@ export const SongListHeaderFilters = ({
     });
 
     const cq = useContainerQuery();
+    const musicFoldersQuery = useMusicFolders({ query: null, serverId: server?.id });
 
     const sortByLabel =
         (server?.type &&
@@ -254,6 +256,45 @@ export const SongListHeaderFilters = ({
             pageKey,
             server?.type,
             setFilter,
+            tableRef,
+        ],
+    );
+    const handleSetMusicFolder = useCallback(
+        (e: MouseEvent<HTMLButtonElement>) => {
+            if (!e.currentTarget?.value) return;
+
+            let updatedFilters = null;
+            if (e.currentTarget.value === String(filter.musicFolderId)) {
+                updatedFilters = setFilter({
+                    customFilters,
+                    data: { musicFolderId: undefined },
+                    itemType: LibraryItem.SONG,
+                    key: pageKey,
+                }) as SongListFilter;
+            } else {
+                updatedFilters = setFilter({
+                    customFilters,
+                    data: { musicFolderId: e.currentTarget.value },
+                    itemType: LibraryItem.SONG,
+                    key: pageKey,
+                }) as SongListFilter;
+            }
+
+            if (isGrid) {
+                handleRefreshGrid(gridRef, updatedFilters);
+            } else {
+                handleRefreshTable(tableRef, updatedFilters);
+            }
+        },
+        [
+            filter.musicFolderId,
+            isGrid,
+            setFilter,
+            customFilters,
+            pageKey,
+            handleRefreshGrid,
+            gridRef,
+            handleRefreshTable,
             tableRef,
         ],
     );
@@ -352,6 +393,7 @@ export const SongListHeaderFilters = ({
     };
 
     const handleDeleteDuplicates = async () => {
+        console.log('deleting duplicates');
         await pymixController.deleteDuplicates();
         queryClient.invalidateQueries(queryKeys.songs.list(server?.id || ''));
         if (isGrid) {

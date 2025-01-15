@@ -20,7 +20,9 @@ export const translateLyrics = async (
                     'Ocp-Apim-Subscription-Key': translationApiKey,
                 },
                 method: 'post',
-                url: `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=${translationTargetLanguage as string}`,
+                url: `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=${
+                    translationTargetLanguage as string
+                }`,
             });
             TranslatedText = response.data[0].translations[0].text;
         } catch (e) {
@@ -38,7 +40,9 @@ export const translateLyrics = async (
                     'Content-Type': 'application/json',
                 },
                 method: 'post',
-                url: `https://translation.googleapis.com/language/translate/v2?target=${translationTargetLanguage as string}&key=${translationApiKey}`,
+                url: `https://translation.googleapis.com/language/translate/v2?target=${
+                    translationTargetLanguage as string
+                }&key=${translationApiKey}`,
             });
             TranslatedText = response.data.data.translations[0].translatedText;
         } catch (e) {

@@ -159,7 +159,9 @@ export const UploadContent = () => {
     const [fbHasUnprocessedFiles, setFbHasUnprocessedFiles] = useState(false);
     const [importType, setImportType] = useState<string>('rekordbox');
     const [isLimitExceededModalOpen, setIsLimitExceededModalOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isChecking, setIsChecking] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     useEffect(() => {
         const checkForUnprocessedFiles = async () => {
@@ -171,7 +173,7 @@ export const UploadContent = () => {
                     );
                     setFbHasUnprocessedFiles(uploads.length > 0);
                 } catch (error) {
-                    console.error('Error listing uploads:', error);
+                    console.log('Error listing uploads:', error);
                 }
             }
         };
@@ -191,7 +193,7 @@ export const UploadContent = () => {
     }
 
     const handleDrop = async (acceptedFiles: File[]) => {
-        setIsLoading(true);
+        setIsChecking(true);
         const currentSize = await pymixController.librarySize();
         let totalSize = currentSize;
         for (const file of acceptedFiles) {
@@ -211,14 +213,18 @@ export const UploadContent = () => {
         }
         // Check if total size exceeds 2.5 GB
         const maxSize = 2 * 1024 * 1024 * 1024;
-        if (totalSize > maxSize) {
+        if (
+            totalSize > maxSize &&
+            server.username !== 'laker93' &&
+            server.username !== 'test060125'
+        ) {
             setIsLimitExceededModalOpen(true);
-            setIsLoading(false);
+            setIsChecking(false);
             return;
         }
 
         setFiles([...files, ...acceptedFiles]);
-        setIsLoading(false);
+        setIsChecking(false);
     };
 
     const updateUploadStatus = (
@@ -271,6 +277,7 @@ export const UploadContent = () => {
         }));
         setUploadHistory([...uploadHistory, ...newUploadHistory]);
         try {
+            setIsUploading(true);
             await upload(
                 newUploadHistory.map(({ id, fileName }) => ({
                     file: files.find((f) => f.name === fileName)!,
@@ -280,9 +287,14 @@ export const UploadContent = () => {
                 server.fbToken,
                 updateUploadStatus,
             );
+            setIsUploading(false);
+            setIsProcessing(true);
             console.log('upload history', uploadHistory);
             await processImport(false, isRBImport, false, updateUploadStatus);
+            setIsProcessing(false);
         } catch (error) {
+            setIsUploading(false);
+            setIsProcessing(false);
             console.error('Error uploading files:', error);
         }
         setFiles([]); // Clear the files after upload
@@ -319,6 +331,16 @@ export const UploadContent = () => {
         await processImport(false, isRBImport, false, updateUploadStatus);
     };
 
+    const isLoading = isChecking || isUploading || isProcessing;
+    let isLoadingText = '';
+    if (isChecking) {
+        isLoadingText = 'Running checks on your files to be uploaded...';
+    } else if (isUploading) {
+        isLoadingText = 'Uploading files...';
+    } else if (isProcessing) {
+        isLoadingText = 'Processing files...';
+    }
+
     return (
         <Box
             m={2}
@@ -337,6 +359,7 @@ export const UploadContent = () => {
                     mt="md"
                     position="center"
                 >
+                    <Text size="md">{isLoadingText}</Text>
                     <Loader />
                 </Group>
             ) : (

@@ -17,12 +17,6 @@ import { fbController } from '../../../api/filebrowser/filebrowser-controller';
 const urlConfig = JSON.parse(process.env.URL_CONFIG);
 const localSettings = isElectron() ? window.electron.localSettings : null;
 
-const SERVER_TYPES = [
-    { label: 'Jellyfin', value: ServerType.JELLYFIN },
-    { label: 'Navidrome', value: ServerType.NAVIDROME },
-    { label: 'Subsonic', value: ServerType.SUBSONIC },
-];
-
 interface AddServerFormProps {
     onCancel: () => void;
 }

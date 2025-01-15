@@ -57,7 +57,6 @@ const normalizeSong = (
         }
     }
 
-
     return {
         album: item.album || '',
         albumArtists: [

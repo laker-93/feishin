@@ -1,4 +1,4 @@
-import { Box, Text, Button, Group, Image, Divider, List, Modal } from '@mantine/core';
+import { Box, Text, Button, Group, Image, Divider, List } from '@mantine/core';
 import { openContextModal } from '@mantine/modals';
 import { useTranslation } from 'react-i18next';
 import { RiAccountBoxLine, RiLoginBoxLine } from 'react-icons/ri';
@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import { useCurrentServer } from '/@/renderer/store';
 import { CreateAccountForm } from '/@/renderer/features/servers/components/create-account-form';
 import { AddServerForm } from '/@/renderer/features/servers';
-import { useState } from 'react';
 import discordimg from '../../../../../assets/discordimg.png';
 
 type ModalVars = {
@@ -28,7 +27,6 @@ export const AboutContent = () => {
     const { t } = useTranslation();
     const currentServer = useCurrentServer();
     const isLoggedOn = currentServer && currentServer.credential;
-    const [isGettingStartedModalOpen, setIsGettingStartedModalOpen] = useState(false);
 
     const handleCreateAccountModal = () => {
         openContextModal({
@@ -82,42 +80,11 @@ export const AboutContent = () => {
                 </List.Item>
             </List>
 
-            <Divider my={20} />
             {isLoggedOn ? (
-                <div>
-                    <Text
-                        align="center"
-                        mb={20}
-                        size="xl"
-                        weight={700}
-                    >
-                        Getting Started
-                    </Text>
-                    <Group
-                        mt={20}
-                        position="center"
-                    >
-                        <Button onClick={() => setIsGettingStartedModalOpen(true)}>
-                            View Getting Started Guide
-                        </Button>
-                    </Group>
-                    <Modal
-                        opened={isGettingStartedModalOpen}
-                        title="Getting Started"
-                        onClose={() => setIsGettingStartedModalOpen(false)}
-                    >
-                        <Text
-                            align="center"
-                            mb={10}
-                            size="md"
-                        >
-                            For an overview of how to use subbox, watch the video below.
-                        </Text>
-                        {/* Add video or additional content here */}
-                    </Modal>
-                </div>
+                <div />
             ) : (
                 <>
+                    <Divider my={20} />
                     <Text
                         align="center"
                         mb={20}
@@ -166,7 +133,7 @@ export const AboutContent = () => {
                 size="xl"
                 weight={700}
             >
-                Community & Desktop App
+                Community, Mobile App & Desktop App
             </Text>
             <Group
                 mt={20}
@@ -178,8 +145,9 @@ export const AboutContent = () => {
                     size="md"
                 >
                     Join our Discord channel to connect with other users, give feedback and stay up
-                    to date with the latest features. You can also apply for beta trials of the
-                    Desktop App on the Discord channel.
+                    to date with the latest features. You can also find out how to connect to
+                    sub-box from mobile as well as apply for beta trials of the Desktop App on the
+                    Discord channel.
                 </Text>
             </Group>
             <Group

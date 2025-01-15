@@ -9,7 +9,7 @@ import {
     RiLayoutRightLine,
     RiLayoutLeftLine,
     RiSettings3Line,
-    RiGithubLine,
+    RiDiscordLine,
     RiExternalLinkLine,
     RiCloseCircleLine,
     RiLoginBoxLine,
@@ -26,7 +26,6 @@ import {
     useCurrentServer,
     useAuthStoreActions,
 } from '/@/renderer/store';
-import packageJson from '../../../../../package.json';
 
 const localSettings = isElectron() ? window.electron.localSettings : null;
 const browser = isElectron() ? window.electron.browser : null;
@@ -150,14 +149,13 @@ export const AppMenu = () => {
             <DropdownMenu.Divider />
             <DropdownMenu.Item
                 component="a"
-                href="https://github.com/jeffvli/feishin/releases"
-                icon={<RiGithubLine />}
+                href="https://discord.gg/mqrRbex3hs"
+                icon={<RiDiscordLine />}
                 rightSection={<RiExternalLinkLine />}
                 target="_blank"
             >
-                {t('page.appMenu.version', {
+                {t('page.appMenu.discord', {
                     postProcess: 'sentenceCase',
-                    version: packageJson.version,
                 })}
             </DropdownMenu.Item>
             {isElectron() && (

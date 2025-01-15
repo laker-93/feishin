@@ -20,10 +20,6 @@ const SongListRoute = lazy(() => import('/@/renderer/features/songs/routes/song-
 
 const MixListRoute = lazy(() => import('/@/renderer/features/mixes/routes/mix-list-route'));
 
-const PlaylistDetailRoute = lazy(
-    () => import('/@/renderer/features/playlists/routes/playlist-detail-route'),
-);
-
 const PlaylistDetailSongListRoute = lazy(
     () => import('/@/renderer/features/playlists/routes/playlist-detail-song-list-route'),
 );

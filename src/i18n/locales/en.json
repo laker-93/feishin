@@ -334,6 +334,7 @@
         },
         "appMenu": {
             "createAccount": "create account",
+            "discord": "discord",
             "logon": "log on",
             "logoff": "log off",
             "collapseSidebar": "collapse sidebar",

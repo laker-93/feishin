@@ -1257,7 +1257,6 @@ export type BeetResults = {
 
 export type GetBeetTrackResponse = BeetResults;
 
-
 export type MoveItemQuery = {
     endingIndex: number;
     playlistId: string;
@@ -1303,12 +1302,14 @@ export type ControllerEndpoint = {
     createPlaylist: (args: CreatePlaylistArgs) => Promise<CreatePlaylistResponse>;
     deleteFavorite: (args: FavoriteArgs) => Promise<FavoriteResponse>;
     deletePlaylist: (args: DeletePlaylistArgs) => Promise<DeletePlaylistResponse>;
+    deleteSong: (args: DeleteSongArgs) => Promise<DeleteSongResponse>;
     getAlbumArtistDetail: (args: AlbumArtistDetailArgs) => Promise<AlbumArtistDetailResponse>;
     getAlbumArtistList: (args: AlbumArtistListArgs) => Promise<AlbumArtistListResponse>;
     getAlbumArtistListCount: (args: AlbumArtistListArgs) => Promise<number>;
     getAlbumDetail: (args: AlbumDetailArgs) => Promise<AlbumDetailResponse>;
     getAlbumList: (args: AlbumListArgs) => Promise<AlbumListResponse>;
     getAlbumListCount: (args: AlbumListArgs) => Promise<number>;
+    getBeetTrack: (args: GetBeetTrackArgs) => Promise<GetBeetTrackResponse>;
     // getArtistInfo?: (args: any) => void;
     // getArtistList?: (args: ArtistListArgs) => Promise<ArtistListResponse>;
     getDownloadUrl: (args: DownloadArgs) => string;

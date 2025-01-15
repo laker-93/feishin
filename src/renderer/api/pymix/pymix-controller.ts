@@ -67,7 +67,10 @@ const rbDownload = async (body: RBDownloadArgs): Promise<null> => {
     });
 
     if (res.status !== 200) {
-        throw new Error('Failed to create rb info xml');
+        throw new Error(`Failed to create rb info xml with http status ${res.status}`);
+    }
+    if (!res.body.data.success) {
+        throw new Error(`Failed to create rb info xml ${res.body.data.reason}`);
     }
 
     return null;

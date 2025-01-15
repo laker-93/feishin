@@ -3,7 +3,7 @@ import type { AgGridReact as AgGridReactType } from '@ag-grid-community/react/li
 import { Flex, Group, Stack } from '@mantine/core';
 import debounce from 'lodash/debounce';
 import { useTranslation } from 'react-i18next';
-import { LibraryItem, SongListQuery } from '/@/renderer/api/types';
+import { LibraryItem, ServerListItem, SongListQuery } from '/@/renderer/api/types';
 import { PageHeader, SearchInput } from '/@/renderer/components';
 import { FilterBar, LibraryHeaderBar } from '/@/renderer/features/shared';
 import { SongListHeaderFilters } from '/@/renderer/features/songs/components/song-list-header-filters';

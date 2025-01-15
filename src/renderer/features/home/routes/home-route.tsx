@@ -432,17 +432,17 @@ const HomeRoute = () => {
                                             {carousel.title}
                                         </TextTitle>
 
-                                            <ActionIcon
-                                                onClick={() => invalidateCarouselQuery(carousel)}
-                                            >
-                                                <RiRefreshLine />
-                                            </ActionIcon>
-                                        </Group>
-                                    ),
-                                }}
-                                uniqueId={carousel.uniqueId}
-                            />
-                        ))}
+                                        <ActionIcon
+                                            onClick={() => invalidateCarouselQuery(carousel)}
+                                        >
+                                            <RiRefreshLine />
+                                        </ActionIcon>
+                                    </Group>
+                                ),
+                            }}
+                            uniqueId={carousel.uniqueId}
+                        />
+                    ))}
                 </Stack>
             </NativeScrollArea>
         </AnimatedPage>

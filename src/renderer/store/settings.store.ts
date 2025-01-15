@@ -689,7 +689,7 @@ const initialState: SettingsState = {
                     width: 50,
                 },
                 {
-                    column: TableColumn.TITLE_COMBINED,
+                    column: TableColumn.TITLE,
                     width: 500,
                 },
                 {

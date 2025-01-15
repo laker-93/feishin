@@ -65,7 +65,9 @@ export const SubsonicController: ControllerEndpoint = {
         const cleanServerUrl = `${url.replace(/\/$/, '')}/rest`;
 
         if (body.legacy) {
-            credential = `u=${encodeURIComponent(body.username)}&p=${encodeURIComponent(body.password)}`;
+            credential = `u=${encodeURIComponent(body.username)}&p=${encodeURIComponent(
+                body.password,
+            )}`;
             credentialParams = {
                 p: body.password,
                 u: body.username,
@@ -74,7 +76,9 @@ export const SubsonicController: ControllerEndpoint = {
             const salt = randomString(12);
             const hash = md5(body.password + salt);
 
-            credential = `u=${encodeURIComponent(body.username)}&s=${encodeURIComponent(salt)}&t=${encodeURIComponent(hash)}`;
+            credential = `u=${encodeURIComponent(body.username)}&s=${encodeURIComponent(
+                salt,
+            )}&t=${encodeURIComponent(hash)}`;
             credentialParams = {
                 s: salt,
                 t: hash,

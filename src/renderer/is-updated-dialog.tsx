@@ -1,22 +1,17 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Group, Stack } from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
-import { RiExternalLinkLine } from 'react-icons/ri';
 import { Button, Dialog, Text } from './components';
-import packageJson from '../../package.json';
 
 export const IsUpdatedDialog = () => {
-    const { version } = packageJson;
-
-    const [value, setValue] = useLocalStorage({ key: 'version' });
+    const [value, setValue] = useState(true);
 
     const handleDismiss = useCallback(() => {
-        setValue(version);
-    }, [setValue, version]);
+        setValue(false);
+    }, [setValue]);
 
     return (
         <Dialog
-            opened={value !== version}
+            opened={value}
             position={{ bottom: '5rem', right: '1rem' }}
             styles={{
                 root: {
@@ -26,18 +21,10 @@ export const IsUpdatedDialog = () => {
             }}
         >
             <Stack>
-                <Text>A new version of Feishin has been installed ({version})</Text>
+                <Text>
+                    note that sub-box is not built for mobile. Please access via a computer.
+                </Text>
                 <Group noWrap>
-                    <Button
-                        component="a"
-                        href={`https://github.com/jeffvli/feishin/releases/tag/v${version}`}
-                        rightIcon={<RiExternalLinkLine />}
-                        target="_blank"
-                        variant="filled"
-                        onClick={handleDismiss}
-                    >
-                        View release notes
-                    </Button>
                     <Button
                         variant="default"
                         onClick={handleDismiss}
