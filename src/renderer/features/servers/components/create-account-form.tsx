@@ -45,6 +45,15 @@ export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
     const isSubmitDisabled = !form.values.username;
 
     const handleSubmit = form.onSubmit(async (values) => {
+        const usernameRegex = /^[a-z0-9][a-z0-9_]*$/;
+        if (!usernameRegex.test(values.username)) {
+            return toast.error({
+                message: t('error.invalidUsername', {
+                    postProcess: 'sentenceCase',
+                }),
+            });
+        }
+
         const authFunction = api.controller.authenticate;
 
         if (!authFunction) {

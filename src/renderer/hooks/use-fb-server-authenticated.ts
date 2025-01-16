@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAuthStore, useCurrentServer } from '/@/renderer/store';
 import { AuthState, ServerListItem, ServerType } from '/@/renderer/types';
 import { debounce } from 'lodash';
-import { toast } from '/@/renderer/components';
 import { fbController } from '/@/renderer/api/filebrowser/filebrowser-controller';
 
 const urlConfig = JSON.parse(process.env.URL_CONFIG);
@@ -20,11 +19,9 @@ export const useFBServerAuthenticated = () => {
             await fbController.listUploads(fbUrl, server.fbToken!);
             setReady(AuthState.VALID);
         } catch (error) {
-            toast.error({ message: (error as Error).message });
             setReady(AuthState.INVALID);
             const currentServer = useAuthStore.getState().currentServer;
             if (currentServer) {
-                console.log('clearning current server');
                 useAuthStore.getState().actions.updateServer(currentServer.id, {
                     credential: undefined,
                     fbToken: undefined,
