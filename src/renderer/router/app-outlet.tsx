@@ -18,7 +18,6 @@ export const AppOutlet = () => {
     const fbAuthState = useFBServerAuthenticated();
     const currentServer = useCurrentServer();
 
-    console.log('app outlet');
     const setFallback = useSetPlayerFallback();
 
     const isActionsRequired = useMemo(() => {
@@ -51,7 +50,6 @@ export const AppOutlet = () => {
         );
     }
 
-    console.log('fbAuthState', fbAuthState);
     if (
         isActionsRequired &&
         (authState === AuthState.INVALID || fbAuthState === AuthState.INVALID)

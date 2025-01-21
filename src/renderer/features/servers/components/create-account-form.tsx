@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Stack, Group, Checkbox } from '@mantine/core';
+import { Stack, Group, Checkbox, Tooltip } from '@mantine/core';
 import { Button, PasswordInput, TextInput, toast } from '/@/renderer/components';
 import { useForm } from '@mantine/form';
-import { useFocusTrap } from '@mantine/hooks';
 import { closeAllModals } from '@mantine/modals';
 import isElectron from 'is-electron';
 import { nanoid } from 'nanoid/non-secure';
@@ -22,7 +21,6 @@ interface CreateAccountFormProps {
 
 export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
     const { t } = useTranslation();
-    const focusTrapRef = useFocusTrap(true);
     const [isLoading, setIsLoading] = useState(false);
     const { addServer, setCurrentServer } = useAuthStoreActions();
 
@@ -33,6 +31,7 @@ export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
             name: (localSettings ? localSettings.env.SERVER_NAME : window.SERVER_NAME) ?? '',
             password: '',
             savePassword: false,
+            token: '',
             type:
                 (localSettings
                     ? localSettings.env.SERVER_TYPE
@@ -45,104 +44,147 @@ export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
     const isSubmitDisabled = !form.values.username;
 
     const handleSubmit = form.onSubmit(async (values) => {
-        const authFunction = api.controller.authenticate;
+        const usernameRegex = /^[a-z0-9][a-z0-9_]*$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        if (!authFunction) {
+        if (!usernameRegex.test(values.username)) {
             return toast.error({
-                message: t('error.invalidServer', { postProcess: 'sentenceCase' }),
+                message: t('error.invalidUsername', {
+                    postProcess: 'sentenceCase',
+                }),
             });
         }
 
-        const url = `${urlConfig.url.navidrome_user}${values.username}`;
+        if (!emailRegex.test(values.email)) {
+            return toast.error({
+                message: t('error.invalidMail', {
+                    postProcess: 'sentenceCase',
+                }),
+            });
+        }
 
+        setIsLoading(true);
         try {
-            setIsLoading(true);
-            await pymixController.create({
-                body: {
-                    email: values.email,
-                    password: values.password,
-                    username: values.username,
-                },
-            });
-
-            let fbToken = null;
-            // todo this is only valid once the user has created an account.
-            // const fbUrl = 'https://browser.sub-box.net/browser';
-            const fbUrl = urlConfig.url.filebrowser;
-            fbToken = await fbController.authenticate(fbUrl, {
-                password: values.password,
-                username: values.username,
-            });
-            if (!fbToken) {
-                toast.error({
-                    message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
-                });
-            }
-            console.log(`fbData: ${fbToken}`);
-
-            const data = await authFunction(
-                url,
-                {
-                    legacy: values.legacyAuth,
-                    password: values.password,
-                    username: values.username,
-                },
-                values.type as ServerType,
-            );
-
-            if (!data) {
+            const isValidToken = await pymixController.validateToken(values.token);
+            if (!isValidToken) {
+                setIsLoading(false);
                 return toast.error({
-                    message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
+                    message: (
+                        <>
+                            The token you provided is not valid. Please get in touch on the Discord
+                            server:
+                            <a
+                                href="https://discord.gg/mqrRbex3hs"
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                https://discord.gg/mqrRbex3hs
+                            </a>
+                        </>
+                    ),
                 });
             }
 
-            const serverItem = {
-                credential: data.credential,
-                fbToken,
-                id: nanoid(),
-                isPublic: false,
-                name: data.username,
-                ndCredential: data.ndCredential,
-                type: values.type as ServerType,
-                url: url.replace(/\/$/, ''),
-                userId: data.userId,
-                username: data.username,
-            };
+            const authFunction = api.controller.authenticate;
 
-            addServer(serverItem);
-            setCurrentServer(serverItem);
+            if (!authFunction) {
+                return toast.error({
+                    message: t('error.invalidServer', { postProcess: 'sentenceCase' }),
+                });
+            }
 
-            closeAllModals();
+            const url = `${urlConfig.url.navidrome_user}${values.username}`;
 
-            toast.success({
-                message: t('form.createAccount.success', { postProcess: 'sentenceCase' }),
-            });
+            try {
+                setIsLoading(true);
+                await pymixController.create({
+                    body: {
+                        email: values.email,
+                        password: values.password,
+                        token: values.token,
+                        username: values.username,
+                    },
+                });
 
-            if (localSettings && values.savePassword) {
-                const saved = await localSettings.passwordSet(values.password, serverItem.id);
-                if (!saved) {
+                let fbToken = null;
+                // todo this is only valid once the user has created an account.
+                // const fbUrl = 'https://browser.sub-box.net/browser';
+                const fbUrl = urlConfig.url.filebrowser;
+                fbToken = await fbController.authenticate(fbUrl, {
+                    password: values.password,
+                    username: values.username,
+                });
+                if (!fbToken) {
                     toast.error({
-                        message: t('form.createAccount.error', {
-                            context: 'savePassword',
-                            postProcess: 'sentenceCase',
-                        }),
+                        message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
                     });
                 }
+                console.log(`fbData: ${fbToken}`);
+
+                const data = await authFunction(
+                    url,
+                    {
+                        legacy: values.legacyAuth,
+                        password: values.password,
+                        username: values.username,
+                    },
+                    values.type as ServerType,
+                );
+
+                if (!data) {
+                    return toast.error({
+                        message: t('error.authenticationFailed', { postProcess: 'sentenceCase' }),
+                    });
+                }
+
+                const serverItem = {
+                    credential: data.credential,
+                    fbToken,
+                    id: nanoid(),
+                    isPublic: false,
+                    name: data.username,
+                    ndCredential: data.ndCredential,
+                    type: values.type as ServerType,
+                    url: url.replace(/\/$/, ''),
+                    userId: data.userId,
+                    username: data.username,
+                };
+
+                addServer(serverItem);
+                setCurrentServer(serverItem);
+
+                closeAllModals();
+
+                toast.success({
+                    message: t('form.createAccount.success', { postProcess: 'sentenceCase' }),
+                });
+
+                if (localSettings && values.savePassword) {
+                    const saved = await localSettings.passwordSet(values.password, serverItem.id);
+                    if (!saved) {
+                        toast.error({
+                            message: t('form.createAccount.error', {
+                                context: 'savePassword',
+                                postProcess: 'sentenceCase',
+                            }),
+                        });
+                    }
+                }
+            } catch (err: any) {
+                setIsLoading(false);
+                return toast.error({ message: err?.message });
             }
+
+            return setIsLoading(false);
         } catch (err: any) {
             setIsLoading(false);
             return toast.error({ message: err?.message });
         }
-
-        return setIsLoading(false);
     });
 
     return (
         <form onSubmit={handleSubmit}>
-            <Stack
-                ref={focusTrapRef}
-                m={5}
-            >
+            <Stack m={5}>
                 <TextInput
                     label={t('form.createAccount.input', {
                         context: 'username',
@@ -164,6 +206,18 @@ export const CreateAccountForm = ({ onCancel }: CreateAccountFormProps) => {
                     })}
                     {...form.getInputProps('email')}
                 />
+                <Tooltip
+                    withArrow
+                    label="Enter the token provided to you to sign up"
+                >
+                    <TextInput
+                        label={t('form.createAccount.input', {
+                            context: 'token',
+                            postProcess: 'titleCase',
+                        })}
+                        {...form.getInputProps('token')}
+                    />
+                </Tooltip>
                 {localSettings && form.values.type === ServerType.NAVIDROME && (
                     <Checkbox
                         label={t('form.createAccount.input', {

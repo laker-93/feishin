@@ -839,7 +839,6 @@ export const usePlayerStore = create<PlayerSlice>()(
                         },
                         setCurrentTime: (time, seek = false) => {
                             set((state) => {
-                                console.log(`lajp setting current time ${time}`);
                                 state.current.seek = seek;
                                 state.current.time = time;
                             });
