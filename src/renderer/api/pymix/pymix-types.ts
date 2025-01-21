@@ -5,6 +5,11 @@ const error = z.string();
 const create = z.null({});
 const login = z.null({});
 const sync = z.null({});
+const isValidToken = z.object({
+    is_valid_token: z.boolean(),
+    reason: z.string(),
+    success: z.boolean(),
+});
 
 const deleteDuplicates = z.object({
     duplicates_removed: z.array(z.string()),
@@ -58,6 +63,7 @@ const exportJob = z.object({
 const createParameters = z.object({
     email: z.string(),
     password: z.string(),
+    token: z.string(),
     username: z.string(),
 });
 
@@ -96,6 +102,10 @@ const deleteParameters = z.object({
     public: z.boolean(),
 });
 
+const isValidTokenParameters = z.object({
+    token: z.string(),
+});
+
 export const pymixType = {
     _parameters: {
         create: createParameters,
@@ -103,6 +113,7 @@ export const pymixType = {
         exportJob: rbExportParameters,
         import: importParameters,
         importProgress: importProgressParameters,
+        isValidToken: isValidTokenParameters,
         login: loginParameters,
         rbImport: rbImportParameters,
         sync: syncParameters,
@@ -114,6 +125,7 @@ export const pymixType = {
         error,
         exportJob,
         importJob,
+        isValidToken,
         librarySize,
         login,
         rbImport,

@@ -169,7 +169,8 @@
         "endpointNotImplementedError": "endpoint {{endpoint}} is not implemented for {{serverType}}",
         "genericError": "an error occurred",
         "invalidServer": "invalid server",
-        "invalidUsername": " username mustonly contain lowercase alphanumeric characters and underscores and start with a letter or number",
+        "invalidUsername": "username mustonly contain lowercase alphanumeric characters and underscores and start with a letter or number",
+        "invalidMail": "invalid email",
         "localFontAccessDenied": "access denied to local fonts",
         "loginRateError": "too many login attempts, please try again in a few seconds",
         "mpvRequired": "MPV required",
@@ -257,6 +258,7 @@
             "input_savePassword": "save password",
             "input_url": "url",
             "input_username": "username",
+            "input_token": "token",
             "input_email": "email",
             "success": "success",
             "title": "create $t(entity.account)"

@@ -109,6 +109,15 @@ export const contract = c.router({
             500: resultWithHeaders(pymixType._response.error),
         },
     },
+    validateToken: {
+        method: 'GET',
+        path: 'user/is_valid_token',
+        query: pymixType._parameters.isValidToken,
+        responses: {
+            200: resultWithHeaders(pymixType._response.isValidToken),
+            500: resultWithHeaders(pymixType._response.error),
+        },
+    },
 });
 
 const axiosClient = axios.create({

@@ -4,6 +4,7 @@ import { BeetImportProgress } from '/@/renderer/api/types';
 type CreateBody = {
     email: string;
     password: string;
+    token: string;
     username: string;
 };
 type CreateArgs = { body: CreateBody };
@@ -33,6 +34,7 @@ const create = async (body: CreateArgs): Promise<null> => {
         body: {
             email: body.body.email,
             password: body.body.password,
+            token: body.body.token,
             username: body.body.username,
         },
     });
@@ -120,6 +122,14 @@ const beetsImportProgress = async (args: ImportProgressArgs): Promise<BeetImport
     };
 };
 
+const validateToken = async (token: string): Promise<boolean> => {
+    const res = await pymixApiClient().validateToken({ query: { token } });
+    if (res.status !== 200) {
+        throw new Error('Failed to validate token');
+    }
+    return res.body.data.is_valid_token;
+};
+
 const rbImport = async (): Promise<string> => {
     const res = await pymixApiClient().rbImport({});
     if (res.status !== 200) {
@@ -185,4 +195,5 @@ export const pymixController = {
     seratoDownload,
     seratoImport,
     sync,
+    validateToken,
 };
